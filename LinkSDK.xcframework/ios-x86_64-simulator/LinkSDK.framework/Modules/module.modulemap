@@ -1,0 +1,4 @@
+framework module LinkSDK {
+  header "LinkSDK-Swift.h"
+  requires objc
+}
