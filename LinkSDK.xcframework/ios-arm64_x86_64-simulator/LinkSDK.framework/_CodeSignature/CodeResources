@@ -10,7 +10,7 @@
 		</data>
 		<key>Headers/LinkSDK-Swift.h</key>
 		<data>
-		lPhhlDsvy33aJaiyLt08pHr3+gs=
+		KeDqraB+YaXKcs6KOgF5QS/ey0k=
 		</data>
 		<key>Info.plist</key>
 		<data>
@@ -23,6 +23,26 @@
 		<key>LinkWebViewViewController.nib/runtime.nib</key>
 		<data>
 		2uvCUTbnPykXqgMGMhBHrwuNrlo=
+		</data>
+		<key>Modules/LinkSDK.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
+		<data>
+		PeSQGsBd6fC+QJqhWQluPEo24EE=
+		</data>
+		<key>Modules/LinkSDK.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
+		<data>
+		4axatkJbRfNtptQE+lfo/Q53WGE=
+		</data>
+		<key>Modules/LinkSDK.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
+		<data>
+		yVpfCLydiVmdDe4gcpA7DJNE1Bc=
+		</data>
+		<key>Modules/LinkSDK.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
+		<data>
+		4axatkJbRfNtptQE+lfo/Q53WGE=
+		</data>
+		<key>Modules/LinkSDK.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
+		<data>
+		V4eoBEeobsFGsyUT8+u4WBqstxk=
 		</data>
 		<key>Modules/LinkSDK.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
@@ -62,7 +82,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			lFsXjmk8+DiuLdb6nTEJjA6lhtuDPU3bt/syf0zRM80=
+			X4wRZgW+ZCthWHYe1+FeVFhN+mQoKudySAIuk/C2aqg=
 			</data>
 		</dict>
 		<key>LinkWebViewViewController.nib/objects-14.0+.nib</key>
@@ -77,6 +97,41 @@
 			<key>hash2</key>
 			<data>
 			u8wVuPqCFDREjezbLvx/Ehp59v4pzgFkLWbgsycac1A=
+			</data>
+		</dict>
+		<key>Modules/LinkSDK.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Xrcs2ZD3Q5a4S4dGWnlr+NBYQfxfpek3brYOWeT60I0=
+			</data>
+		</dict>
+		<key>Modules/LinkSDK.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			zzDzs3Uqj9oSHscZr5AplB55nST+JLT+d20KH92ljVI=
+			</data>
+		</dict>
+		<key>Modules/LinkSDK.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			dj65EO8y0zUQ75Zod6mMBzuobR5IIWUuExD6iRK9VHQ=
+			</data>
+		</dict>
+		<key>Modules/LinkSDK.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			zzDzs3Uqj9oSHscZr5AplB55nST+JLT+d20KH92ljVI=
+			</data>
+		</dict>
+		<key>Modules/LinkSDK.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			3a+3P0IbfxgZpnxyE+6P4AsjZUk4Y/sR2Yuq4G0OtkY=
 			</data>
 		</dict>
 		<key>Modules/LinkSDK.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
