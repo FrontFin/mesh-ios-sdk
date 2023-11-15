@@ -34,7 +34,7 @@ let configuration = LinkConfiguration(
     onExit: onExit)
 ```
 
-The parameter `useSecureOnDeviceStorag`  can be used to enable connected accounts storage in the keychain (disabled by default):
+The parameter `useSecureOnDeviceStorage`  can be used to enable connected accounts storage in the keychain (disabled by default):
 
 ```swift
 let settings = LinkSettings(useSecureOnDeviceStorage: true)
