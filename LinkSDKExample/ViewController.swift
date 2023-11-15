@@ -46,7 +46,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             var message: String
             switch linkPayload {
             case .accessToken(let accessTokenPayload):
-                let accounts = accessTokenPayload.accountTokens.map() { $0.account.accountName ?? "" }.joined(separator: "\n") ?? ""
+                let accounts = accessTokenPayload.accountTokens.map() { $0.account.accountName }.joined(separator: "\n")
                 let brokerName = accessTokenPayload.brokerName
                 message = "Successfully connected \(brokerName) account(s):\n\(accounts)"
                 print(accessTokenPayload)
@@ -54,6 +54,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
                 let brokerName = delayedAuthPayload.brokerName
                 message = "Delayed authentication \(brokerName)"
                 print(delayedAuthPayload)
+            @unknown default:
+                print("unknown LinkPayload value")
             }
             self.statusLabel.text = message
         }
@@ -74,6 +76,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
                 }
             case .error(let errorPayload):
                 message = errorPayload.errorMessage
+            @unknown default:
+                print("unknown TransferFinishedPayload value")
             }
             self.statusLabel.text = message
             print(message)
@@ -97,6 +101,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
             self.statusLabel.text = error
         case .success(let handler):
             handler.present(in: self)
+        @unknown default:
+            print("unknown LinkResult value")
         }
         linkTokenTextField.text = nil
         connectAccountButton.isEnabled = false
