@@ -1292,6 +1292,33 @@
             ]
           },
           {
+            "kind": "Function",
+            "name": "integrationAccessToken",
+            "printedName": "integrationAccessToken(accountToken:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "IntegrationAccessToken",
+                "printedName": "LinkSDK.IntegrationAccessToken",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AccountToken",
+                "printedName": "LinkSDK.AccountToken",
+                "usr": "s:7LinkSDK12AccountTokenV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7LinkSDK18AccessTokenPayloadV011integrationcD007accountD0AA011IntegrationcD0VAA07AccountD0V_tF",
+            "mangledName": "$s7LinkSDK18AccessTokenPayloadV011integrationcD007accountD0AA011IntegrationcD0VAA07AccountD0V_tF",
+            "moduleName": "LinkSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(from:)",
@@ -4076,6 +4103,512 @@
         "declKind": "Struct",
         "usr": "s:7LinkSDK28TransferFinishedErrorPayloadV",
         "mangledName": "$s7LinkSDK28TransferFinishedErrorPayloadV",
+        "moduleName": "LinkSDK",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Decodable",
+            "printedName": "Decodable",
+            "usr": "s:Se",
+            "mangledName": "$sSe"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Encodable",
+            "printedName": "Encodable",
+            "usr": "s:SE",
+            "mangledName": "$sSE"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "IntegrationAccessToken",
+        "printedName": "IntegrationAccessToken",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "accountId",
+            "printedName": "accountId",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7LinkSDK22IntegrationAccessTokenV9accountIdSSvp",
+            "mangledName": "$s7LinkSDK22IntegrationAccessTokenV9accountIdSSvp",
+            "moduleName": "LinkSDK",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV9accountIdSSvg",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV9accountIdSSvg",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV9accountIdSSvs",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV9accountIdSSvs",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV9accountIdSSvM",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV9accountIdSSvM",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "accountName",
+            "printedName": "accountName",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7LinkSDK22IntegrationAccessTokenV11accountNameSSvp",
+            "mangledName": "$s7LinkSDK22IntegrationAccessTokenV11accountNameSSvp",
+            "moduleName": "LinkSDK",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV11accountNameSSvg",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV11accountNameSSvg",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV11accountNameSSvs",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV11accountNameSSvs",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV11accountNameSSvM",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV11accountNameSSvM",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "accessToken",
+            "printedName": "accessToken",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7LinkSDK22IntegrationAccessTokenV06accessE0SSvp",
+            "mangledName": "$s7LinkSDK22IntegrationAccessTokenV06accessE0SSvp",
+            "moduleName": "LinkSDK",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV06accessE0SSvg",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV06accessE0SSvg",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV06accessE0SSvs",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV06accessE0SSvs",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV06accessE0SSvM",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV06accessE0SSvM",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "brokerType",
+            "printedName": "brokerType",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7LinkSDK22IntegrationAccessTokenV10brokerTypeSSvp",
+            "mangledName": "$s7LinkSDK22IntegrationAccessTokenV10brokerTypeSSvp",
+            "moduleName": "LinkSDK",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV10brokerTypeSSvg",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV10brokerTypeSSvg",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV10brokerTypeSSvs",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV10brokerTypeSSvs",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV10brokerTypeSSvM",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV10brokerTypeSSvM",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "brokerName",
+            "printedName": "brokerName",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7LinkSDK22IntegrationAccessTokenV10brokerNameSSvp",
+            "mangledName": "$s7LinkSDK22IntegrationAccessTokenV10brokerNameSSvp",
+            "moduleName": "LinkSDK",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV10brokerNameSSvg",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV10brokerNameSSvg",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV10brokerNameSSvs",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV10brokerNameSSvs",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV10brokerNameSSvM",
+                "mangledName": "$s7LinkSDK22IntegrationAccessTokenV10brokerNameSSvM",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(from:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "IntegrationAccessToken",
+                "printedName": "LinkSDK.IntegrationAccessToken",
+                "usr": "s:7LinkSDK22IntegrationAccessTokenV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Decoder",
+                "printedName": "Swift.Decoder",
+                "usr": "s:s7DecoderP"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:7LinkSDK22IntegrationAccessTokenV4fromACs7Decoder_p_tKcfc",
+            "mangledName": "$s7LinkSDK22IntegrationAccessTokenV4fromACs7Decoder_p_tKcfc",
+            "moduleName": "LinkSDK",
+            "implicit": true,
+            "throwing": true,
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "encode",
+            "printedName": "encode(to:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Encoder",
+                "printedName": "Swift.Encoder",
+                "usr": "s:s7EncoderP"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7LinkSDK22IntegrationAccessTokenV6encode2toys7Encoder_p_tKF",
+            "mangledName": "$s7LinkSDK22IntegrationAccessTokenV6encode2toys7Encoder_p_tKF",
+            "moduleName": "LinkSDK",
+            "implicit": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:7LinkSDK22IntegrationAccessTokenV",
+        "mangledName": "$s7LinkSDK22IntegrationAccessTokenV",
         "moduleName": "LinkSDK",
         "declAttributes": [
           "AccessControl"
@@ -7283,9 +7816,277 @@
             ]
           },
           {
+            "kind": "Var",
+            "name": "accessTokens",
+            "printedName": "accessTokens",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "[LinkSDK.IntegrationAccessToken]?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[LinkSDK.IntegrationAccessToken]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "IntegrationAccessToken",
+                        "printedName": "LinkSDK.IntegrationAccessToken",
+                        "usr": "s:7LinkSDK22IntegrationAccessTokenV"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7LinkSDK0A8SettingsV12accessTokensSayAA22IntegrationAccessTokenVGSgvp",
+            "mangledName": "$s7LinkSDK0A8SettingsV12accessTokensSayAA22IntegrationAccessTokenVGSgvp",
+            "moduleName": "LinkSDK",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "[LinkSDK.IntegrationAccessToken]?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Array",
+                        "printedName": "[LinkSDK.IntegrationAccessToken]",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "IntegrationAccessToken",
+                            "printedName": "LinkSDK.IntegrationAccessToken",
+                            "usr": "s:7LinkSDK22IntegrationAccessTokenV"
+                          }
+                        ],
+                        "usr": "s:Sa"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK0A8SettingsV12accessTokensSayAA22IntegrationAccessTokenVGSgvg",
+                "mangledName": "$s7LinkSDK0A8SettingsV12accessTokensSayAA22IntegrationAccessTokenVGSgvg",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "[LinkSDK.IntegrationAccessToken]?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Array",
+                        "printedName": "[LinkSDK.IntegrationAccessToken]",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "IntegrationAccessToken",
+                            "printedName": "LinkSDK.IntegrationAccessToken",
+                            "usr": "s:7LinkSDK22IntegrationAccessTokenV"
+                          }
+                        ],
+                        "usr": "s:Sa"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK0A8SettingsV12accessTokensSayAA22IntegrationAccessTokenVGSgvs",
+                "mangledName": "$s7LinkSDK0A8SettingsV12accessTokensSayAA22IntegrationAccessTokenVGSgvs",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK0A8SettingsV12accessTokensSayAA22IntegrationAccessTokenVGSgvM",
+                "mangledName": "$s7LinkSDK0A8SettingsV12accessTokensSayAA22IntegrationAccessTokenVGSgvM",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "transferDestinationTokens",
+            "printedName": "transferDestinationTokens",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "[LinkSDK.IntegrationAccessToken]?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[LinkSDK.IntegrationAccessToken]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "IntegrationAccessToken",
+                        "printedName": "LinkSDK.IntegrationAccessToken",
+                        "usr": "s:7LinkSDK22IntegrationAccessTokenV"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7LinkSDK0A8SettingsV25transferDestinationTokensSayAA22IntegrationAccessTokenVGSgvp",
+            "mangledName": "$s7LinkSDK0A8SettingsV25transferDestinationTokensSayAA22IntegrationAccessTokenVGSgvp",
+            "moduleName": "LinkSDK",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "[LinkSDK.IntegrationAccessToken]?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Array",
+                        "printedName": "[LinkSDK.IntegrationAccessToken]",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "IntegrationAccessToken",
+                            "printedName": "LinkSDK.IntegrationAccessToken",
+                            "usr": "s:7LinkSDK22IntegrationAccessTokenV"
+                          }
+                        ],
+                        "usr": "s:Sa"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK0A8SettingsV25transferDestinationTokensSayAA22IntegrationAccessTokenVGSgvg",
+                "mangledName": "$s7LinkSDK0A8SettingsV25transferDestinationTokensSayAA22IntegrationAccessTokenVGSgvg",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "[LinkSDK.IntegrationAccessToken]?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Array",
+                        "printedName": "[LinkSDK.IntegrationAccessToken]",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "IntegrationAccessToken",
+                            "printedName": "LinkSDK.IntegrationAccessToken",
+                            "usr": "s:7LinkSDK22IntegrationAccessTokenV"
+                          }
+                        ],
+                        "usr": "s:Sa"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK0A8SettingsV25transferDestinationTokensSayAA22IntegrationAccessTokenVGSgvs",
+                "mangledName": "$s7LinkSDK0A8SettingsV25transferDestinationTokensSayAA22IntegrationAccessTokenVGSgvs",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7LinkSDK0A8SettingsV25transferDestinationTokensSayAA22IntegrationAccessTokenVGSgvM",
+                "mangledName": "$s7LinkSDK0A8SettingsV25transferDestinationTokensSayAA22IntegrationAccessTokenVGSgvM",
+                "moduleName": "LinkSDK",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(useSecureOnDeviceStorage:)",
+            "printedName": "init(useSecureOnDeviceStorage:accessTokens:transferDestinationTokens:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -7298,11 +8099,57 @@
                 "name": "Bool",
                 "printedName": "Swift.Bool",
                 "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "[LinkSDK.IntegrationAccessToken]?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[LinkSDK.IntegrationAccessToken]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "IntegrationAccessToken",
+                        "printedName": "LinkSDK.IntegrationAccessToken",
+                        "usr": "s:7LinkSDK22IntegrationAccessTokenV"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "[LinkSDK.IntegrationAccessToken]?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[LinkSDK.IntegrationAccessToken]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "IntegrationAccessToken",
+                        "printedName": "LinkSDK.IntegrationAccessToken",
+                        "usr": "s:7LinkSDK22IntegrationAccessTokenV"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:7LinkSDK0A8SettingsV24useSecureOnDeviceStorageACSb_tcfc",
-            "mangledName": "$s7LinkSDK0A8SettingsV24useSecureOnDeviceStorageACSb_tcfc",
+            "usr": "s:7LinkSDK0A8SettingsV24useSecureOnDeviceStorage12accessTokens019transferDestinationJ0ACSb_SayAA22IntegrationAccessTokenVGSgAJtcfc",
+            "mangledName": "$s7LinkSDK0A8SettingsV24useSecureOnDeviceStorage12accessTokens019transferDestinationJ0ACSb_SayAA22IntegrationAccessTokenVGSgAJtcfc",
             "moduleName": "LinkSDK",
             "declAttributes": [
               "AccessControl"
@@ -7714,231 +8561,294 @@
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 399,
+      "offset": 415,
       "length": 9,
       "value": "\"success\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 442,
+      "offset": 458,
       "length": 7,
       "value": "\"error\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 399,
+      "offset": 415,
       "length": 9,
       "value": "\"success\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 442,
+      "offset": 458,
       "length": 7,
       "value": "\"error\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 680,
+      "offset": 696,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 718,
+      "offset": 734,
       "length": 18,
       "value": "\"jsMessageHandler\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 919,
+      "offset": 935,
       "length": 27,
       "value": "\"LinkWebViewViewController\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 1031,
+      "offset": 1047,
       "length": 39,
       "value": "\"init(coder:) has not been implemented\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 1617,
+      "offset": 1633,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 1970,
+      "offset": 1986,
       "length": 5,
       "value": "\"URL\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 2033,
+      "offset": 2049,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 459,
+      "offset": 475,
       "length": 25,
       "value": "\"LinkSDK.LinkWebViewViewController\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 3194,
+      "offset": 3210,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 3357,
+      "offset": 3373,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 3405,
+      "offset": 3421,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 3474,
+      "offset": 3490,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 3540,
+      "offset": 3556,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 3583,
+      "offset": 3599,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 4496,
+      "offset": 4512,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 4736,
+      "offset": 4752,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 5028,
+      "offset": 5044,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 5526,
+      "offset": 5542,
       "length": 6,
       "value": "\"type\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 5588,
+      "offset": 5604,
       "length": 19,
       "value": "\"Undefined message\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 5811,
+      "offset": 5827,
       "length": 9,
       "value": "\"payload\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 5969,
+      "offset": 5985,
       "length": 9,
       "value": "\"payload\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 6279,
+      "offset": 6295,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 6531,
+      "offset": 6547,
       "length": 9,
       "value": "\"payload\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 6934,
+      "offset": 6950,
       "length": 9,
       "value": "\"payload\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 7036,
+      "offset": 7052,
       "length": 8,
       "value": "\"status\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 7060,
+      "offset": 7076,
       "length": 2,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 7199,
+      "offset": 7215,
       "length": 9,
       "value": "\"payload\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 7655,
+      "offset": 7671,
       "length": 9,
       "value": "\"payload\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 8216,
+      "length": 33,
+      "value": "\"window.meshSdkPlatform = 'iOS';\""
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 8294,
+      "length": 19,
+      "value": "\"org.front.LinkSDK\""
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 8368,
+      "length": 28,
+      "value": "\"CFBundleShortVersionString\""
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 8426,
+      "length": 39,
+      "value": "\"window.meshSdkVersion = '\""
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 8462,
+      "length": 3,
+      "value": "\"';\""
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 8756,
+      "length": 40,
+      "value": "\"window.accessTokens = '\""
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 8793,
+      "length": 3,
+      "value": "\"';\""
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 9131,
+      "length": 53,
+      "value": "\"window.transferDestinationTokens = '\""
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 9181,
+      "length": 3,
+      "value": "\"';\""
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 8593,
+      "offset": 9701,
       "length": 5,
       "value": "false"
     },
@@ -8183,42 +9093,42 @@
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
       "kind": "StringLiteral",
-      "offset": 1185,
+      "offset": 1550,
       "length": 16,
       "value": "\"transfer_token\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
       "kind": "BooleanLiteral",
-      "offset": 1206,
+      "offset": 1571,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
       "kind": "StringLiteral",
-      "offset": 1969,
+      "offset": 2334,
       "length": 83,
       "value": "\"Either 'onIntegrationConnected' or 'onTransferFinished' callback must be provided\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
       "kind": "StringLiteral",
-      "offset": 2207,
+      "offset": 2572,
       "length": 19,
       "value": "\"Invalid linkToken\""
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
       "kind": "BooleanLiteral",
-      "offset": 2802,
+      "offset": 3167,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
       "kind": "BooleanLiteral",
-      "offset": 3032,
+      "offset": 3397,
       "length": 4,
       "value": "true"
     },

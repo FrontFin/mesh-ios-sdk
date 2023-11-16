@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,6 +12,7 @@
 		1BA3A058AC280CFDA2A85060 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5A8C01C059CAA56E3830E048 /* LaunchScreen.storyboard */; };
 		6EB4E3B0695E77C1E2C53E70 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11C31BD426D7A2CA865F05B /* AppDelegate.swift */; };
 		7693E27A60069EF763E48BA9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72907DA15A474A33894F0477 /* SceneDelegate.swift */; };
+		99C4DBD54679526F7C7ACBCF /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AD2814D08564A17FB95D0569 /* Info.plist */; };
 		C5FD4663270389802669C7DA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C1A9CDE587D7199B8DA9FC73 /* Main.storyboard */; };
 		C7C02278E96AFCD163BE2A12 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A63197F98155433B262E7C73 /* Assets.xcassets */; };
 		E393C67930539F8C73DB49B8 /* LinkSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8D67BF2606E20FA96C1221 /* LinkSDK.xcframework */; };
@@ -152,6 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C7C02278E96AFCD163BE2A12 /* Assets.xcassets in Resources */,
+				99C4DBD54679526F7C7ACBCF /* Info.plist in Resources */,
 				1BA3A058AC280CFDA2A85060 /* LaunchScreen.storyboard in Resources */,
 				C5FD4663270389802669C7DA /* Main.storyboard in Resources */,
 			);
@@ -245,7 +247,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.0.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -305,7 +307,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.0.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -55,7 +55,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
                 message = "Delayed authentication \(brokerName)"
                 print(delayedAuthPayload)
             @unknown default:
-                print("unknown LinkPayload value")
+                message = "unknown LinkPayload value"
             }
             self.statusLabel.text = message
         }
@@ -77,7 +77,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             case .error(let errorPayload):
                 message = errorPayload.errorMessage
             @unknown default:
-                print("unknown TransferFinishedPayload value")
+                message = "unknown TransferFinishedPayload value"
             }
             self.statusLabel.text = message
             print(message)
