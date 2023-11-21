@@ -34,11 +34,12 @@ let configuration = LinkConfiguration(
     onExit: onExit)
 ```
 
-The parameter `useSecureOnDeviceStorage`  can be used to enable connected accounts storage in the keychain (disabled by default):
+The `LinkSettings` class allows to configure the Link behaviour:
+- `useSecureOnDeviceStorage` - enables connected accounts storage in the keychain (disabled by default);
+- `accessTokens` - an array of `IntegrationAccessToken` objects that is used as an origin for crypto transfer flow;
+- `transferDestinationTokens` - an array of `IntegrationAccessToken` objects that is used as a destination for crypto transfer flow;
 
-```swift
-let settings = LinkSettings(useSecureOnDeviceStorage: true)
-```
+The `AccessTokenPayload.integrationAccessToken(accountToken: AccountToken)` function is used to convert an `AccessTokenPayload` to the `IntegrationAccessToken` object.
 
 The `LinkStore` class is responsible for adding, removing, and retrieving connected accounts.
 
@@ -55,7 +56,18 @@ let onIntegrationConnected: (LinkPayload)->() = { linkPayload in
 }
 ```
 
-The callback `onTransferFinished` callback is called once a crypto transfer has been executed or failed. The parameter is either `success(TransferFinishedSuccessPayload)` or `error(TransferFinishedErrorPayload)`
+The callback `onTransferFinished` is called once a crypto transfer has been executed or failed.
+
+```swift
+let onTransferFinished: (TransferFinishedPayload)->() = { transferFinishedPayload in
+    switch transferFinishedPayload {
+    case .success(let successPayload):
+        print(successPayload)
+    case .error(let errorPayload):
+        print(errorPayload.errorMessage)
+    }
+}
+```
 
 The callback `onEvent` is called to provide more details on the user's progress while interacting with the Link.
 This is a list of possible event types, some of them may have additional parameters:

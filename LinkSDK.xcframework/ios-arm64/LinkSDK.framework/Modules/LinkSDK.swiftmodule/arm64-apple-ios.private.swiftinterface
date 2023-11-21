@@ -46,6 +46,7 @@ public struct AccessTokenPayload : Swift.Codable {
   public var refreshTokenExpiresInSeconds: Swift.Int?
   public var brokerType: Swift.String
   public var brokerName: Swift.String
+  public func integrationAccessToken(accountToken: LinkSDK.AccountToken) -> LinkSDK.IntegrationAccessToken
   public func encode(to encoder: any Swift.Encoder) throws
   public init(from decoder: any Swift.Decoder) throws
 }
@@ -97,6 +98,15 @@ public struct TransferFinishedSuccessPayload : Swift.Codable {
 }
 public struct TransferFinishedErrorPayload : Swift.Codable {
   public var errorMessage: Swift.String
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct IntegrationAccessToken : Swift.Codable {
+  public var accountId: Swift.String
+  public var accountName: Swift.String
+  public var accessToken: Swift.String
+  public var brokerType: Swift.String
+  public var brokerName: Swift.String
   public func encode(to encoder: any Swift.Encoder) throws
   public init(from decoder: any Swift.Decoder) throws
 }
@@ -168,7 +178,9 @@ public enum LinkResult {
 }
 public struct LinkSettings {
   public var useSecureOnDeviceStorage: Swift.Bool
-  public init(useSecureOnDeviceStorage: Swift.Bool)
+  public var accessTokens: [LinkSDK.IntegrationAccessToken]?
+  public var transferDestinationTokens: [LinkSDK.IntegrationAccessToken]?
+  public init(useSecureOnDeviceStorage: Swift.Bool, accessTokens: [LinkSDK.IntegrationAccessToken]? = nil, transferDestinationTokens: [LinkSDK.IntegrationAccessToken]? = nil)
 }
 public class LinkConfiguration {
   public var isLinkTokenValid: Swift.Bool {
