@@ -1,24 +1,21 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.128.108 clang-1500.0.40.1)
+// swift-compiler-version: Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)
 // swift-module-flags: -target x86_64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name LinkSDK
 // swift-module-flags-ignorable: -enable-bare-slash-regex
 import CryptoKit
-import DeveloperToolsSupport
 import Foundation
 import Swift
-import SwiftUI
 import UIKit
 import WebKit
 import _Concurrency
 import _StringProcessing
-import _SwiftConcurrencyShims
 public struct BrokerAuthentication : Swift.Encodable, Swift.Hashable {
   public let authToken: Swift.String
   public let type: Swift.String
   public init(authToken: Swift.String, type: Swift.String)
   public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: LinkSDK.BrokerAuthentication, b: LinkSDK.BrokerAuthentication) -> Swift.Bool
-  public func encode(to encoder: any Swift.Encoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
   public var hashValue: Swift.Int {
     get
   }
@@ -47,8 +44,8 @@ public struct AccessTokenPayload : Swift.Codable {
   public var brokerType: Swift.String
   public var brokerName: Swift.String
   public func integrationAccessToken(accountToken: LinkSDK.AccountToken) -> LinkSDK.IntegrationAccessToken
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
 }
 public struct DelayedAuthPayload : Swift.Codable {
   public var refreshTokenExpiresInSeconds: Swift.Int?
@@ -56,15 +53,15 @@ public struct DelayedAuthPayload : Swift.Codable {
   public var refreshToken: Swift.String
   public var brokerName: Swift.String
   public var brokerBrandInfo: LinkSDK.BrandInfo
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
 }
 public struct AccountToken : Swift.Codable {
   public var account: LinkSDK.Account
   public var accessToken: Swift.String
   public var refreshToken: Swift.String?
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
 }
 public struct Account : Swift.Codable {
   public var accountId: Swift.String
@@ -73,14 +70,14 @@ public struct Account : Swift.Codable {
   public var fund: Swift.Double?
   public var cash: Swift.Double?
   public var isReconnected: Swift.Bool?
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
 }
 public struct BrandInfo : Swift.Codable {
   public var brokerLogo: Swift.String
   public var brokerPrimaryColor: Swift.String?
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
 }
 public enum TransferFinishedPayload {
   case success(LinkSDK.TransferFinishedSuccessPayload)
@@ -93,13 +90,13 @@ public struct TransferFinishedSuccessPayload : Swift.Codable {
   public var symbol: Swift.String
   public var amount: Swift.Double
   public var networkId: Swift.String
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
 }
 public struct TransferFinishedErrorPayload : Swift.Codable {
   public var errorMessage: Swift.String
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
 }
 public struct IntegrationAccessToken : Swift.Codable {
   public var accountId: Swift.String
@@ -107,8 +104,8 @@ public struct IntegrationAccessToken : Swift.Codable {
   public var accessToken: Swift.String
   public var brokerType: Swift.String
   public var brokerName: Swift.String
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
 }
 public enum BrokerAuthenticationStatus : Swift.String, Swift.Codable {
   case succeeded
@@ -127,8 +124,8 @@ public enum BrokerAuthenticationStatus : Swift.String, Swift.Codable {
 public struct BrokerBrandInfo : Swift.Codable {
   public var imagePath: Swift.String?
   public var colorHEX: Swift.String?
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
 }
 public protocol LinkStoring {
   var accessTokens: [LinkSDK.AccessTokenPayload] { get }
@@ -162,7 +159,7 @@ public protocol BrokerAccountable : AnyObject, Swift.Decodable, Swift.Encodable 
   var authentication: LinkSDK.BrokerAuthentication { get }
   var refreshTokenUpdatedAt: Foundation.Date? { get set }
   var needToRefreshToken: Swift.Bool { get }
-  func update(broker: any LinkSDK.BrokerAccountable)
+  func update(broker: LinkSDK.BrokerAccountable)
 }
 extension LinkSDK.BrokerAccountable {
   public var authentication: LinkSDK.BrokerAuthentication {

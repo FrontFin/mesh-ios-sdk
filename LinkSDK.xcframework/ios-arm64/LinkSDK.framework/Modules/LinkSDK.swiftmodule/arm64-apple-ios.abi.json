@@ -7580,17 +7580,17 @@
         "conformances": [
           {
             "kind": "Conformance",
-            "name": "Encodable",
-            "printedName": "Encodable",
-            "usr": "s:SE",
-            "mangledName": "$sSE"
-          },
-          {
-            "kind": "Conformance",
             "name": "Decodable",
             "printedName": "Decodable",
             "usr": "s:Se",
             "mangledName": "$sSe"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Encodable",
+            "printedName": "Encodable",
+            "usr": "s:SE",
+            "mangledName": "$sSE"
           }
         ]
       },
@@ -8511,633 +8511,80 @@
           "AccessControl"
         ],
         "hasMissingDesignatedInitializers": true
-      },
-      {
-        "kind": "Import",
-        "name": "Foundation",
-        "printedName": "Foundation",
-        "declKind": "Import",
-        "moduleName": "LinkSDK"
-      },
-      {
-        "kind": "Import",
-        "name": "UIKit",
-        "printedName": "UIKit",
-        "declKind": "Import",
-        "moduleName": "LinkSDK"
-      },
-      {
-        "kind": "Import",
-        "name": "SwiftUI",
-        "printedName": "SwiftUI",
-        "declKind": "Import",
-        "moduleName": "LinkSDK"
-      },
-      {
-        "kind": "Import",
-        "name": "DeveloperToolsSupport",
-        "printedName": "DeveloperToolsSupport",
-        "declKind": "Import",
-        "moduleName": "LinkSDK"
       }
     ],
     "json_format_version": 8
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/BrokerAccount.swift",
-      "kind": "StringLiteral",
-      "offset": 4952,
-      "length": 2,
-      "value": "\"\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/String+MD5.swift",
-      "kind": "StringLiteral",
-      "offset": 293,
-      "length": 8,
-      "value": "\"%02hhx\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/runner\/work\/Front.Mobile.iOS\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
       "offset": 415,
       "length": 9,
       "value": "\"success\""
     },
     {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/runner\/work\/Front.Mobile.iOS\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
       "offset": 458,
       "length": 7,
       "value": "\"error\""
     },
     {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/runner\/work\/Front.Mobile.iOS\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
       "offset": 415,
       "length": 9,
       "value": "\"success\""
     },
     {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/runner\/work\/Front.Mobile.iOS\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
       "offset": 458,
       "length": 7,
       "value": "\"error\""
     },
     {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/runner\/work\/Front.Mobile.iOS\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
       "offset": 696,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/runner\/work\/Front.Mobile.iOS\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
       "offset": 734,
       "length": 18,
       "value": "\"jsMessageHandler\""
     },
     {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 935,
-      "length": 27,
-      "value": "\"LinkWebViewViewController\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 1047,
-      "length": 39,
-      "value": "\"init(coder:) has not been implemented\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 1633,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 1986,
-      "length": 5,
-      "value": "\"URL\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 2049,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/runner\/work\/Front.Mobile.iOS\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
       "offset": 475,
       "length": 25,
       "value": "\"LinkSDK.LinkWebViewViewController\""
     },
     {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3210,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3373,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3421,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3490,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3556,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3599,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 4512,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 4752,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 5044,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 5542,
-      "length": 6,
-      "value": "\"type\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 5604,
-      "length": 19,
-      "value": "\"Undefined message\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 5827,
-      "length": 9,
-      "value": "\"payload\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 5985,
-      "length": 9,
-      "value": "\"payload\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 6295,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 6547,
-      "length": 9,
-      "value": "\"payload\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 6950,
-      "length": 9,
-      "value": "\"payload\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 7052,
-      "length": 8,
-      "value": "\"status\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 7076,
-      "length": 2,
-      "value": "\"\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 7215,
-      "length": 9,
-      "value": "\"payload\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 7671,
-      "length": 9,
-      "value": "\"payload\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 8216,
-      "length": 33,
-      "value": "\"window.meshSdkPlatform = 'iOS';\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 8294,
-      "length": 19,
-      "value": "\"org.front.LinkSDK\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 8368,
-      "length": 28,
-      "value": "\"CFBundleShortVersionString\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 8426,
-      "length": 39,
-      "value": "\"window.meshSdkVersion = '\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 8462,
-      "length": 3,
-      "value": "\"';\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 8756,
-      "length": 40,
-      "value": "\"window.accessTokens = '\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 8793,
-      "length": 3,
-      "value": "\"';\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 9131,
-      "length": 53,
-      "value": "\"window.transferDestinationTokens = '\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 9181,
-      "length": 3,
-      "value": "\"';\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 9701,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/Models\/Payload.swift",
-      "kind": "StringLiteral",
-      "offset": 356,
-      "length": 2,
-      "value": "\"\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
+      "filePath": "\/Users\/runner\/work\/Front.Mobile.iOS\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
       "kind": "StringLiteral",
       "offset": 629,
       "length": 9,
       "value": "\"brokers\""
     },
     {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
+      "filePath": "\/Users\/runner\/work\/Front.Mobile.iOS\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
       "kind": "StringLiteral",
       "offset": 693,
       "length": 14,
       "value": "\"accessTokens\""
     },
     {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
+      "filePath": "\/Users\/runner\/work\/Front.Mobile.iOS\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
       "kind": "Array",
       "offset": 767,
       "length": 2,
       "value": "[]"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2169,
-      "length": 11,
-      "value": "\"accountId\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2193,
-      "length": 11,
-      "value": "\"accountId\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2223,
-      "length": 13,
-      "value": "\"accountName\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2249,
-      "length": 13,
-      "value": "\"accountName\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2327,
-      "length": 9,
-      "value": "\"account\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2363,
-      "length": 13,
-      "value": "\"accessToken\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2389,
-      "length": 13,
-      "value": "\"accessToken\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2421,
-      "length": 14,
-      "value": "\"refreshToken\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2448,
-      "length": 14,
-      "value": "\"refreshToken\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2534,
-      "length": 2,
-      "value": "\"\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2589,
-      "length": 12,
-      "value": "\"brokerLogo\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2631,
-      "length": 20,
-      "value": "\"brokerPrimaryColor\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2755,
-      "length": 15,
-      "value": "\"accountTokens\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2804,
-      "length": 17,
-      "value": "\"brokerBrandInfo\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2856,
-      "length": 18,
-      "value": "\"expiresInSeconds\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2887,
-      "length": 18,
-      "value": "\"expiresInSeconds\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2924,
-      "length": 30,
-      "value": "\"refreshTokenExpiresInSeconds\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 2967,
-      "length": 30,
-      "value": "\"refreshTokenExpiresInSeconds\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 3016,
-      "length": 12,
-      "value": "\"brokerType\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 3041,
-      "length": 12,
-      "value": "\"brokerType\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 3072,
-      "length": 12,
-      "value": "\"brokerName\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/LinkStore.swift",
-      "kind": "StringLiteral",
-      "offset": 3097,
-      "length": 12,
-      "value": "\"brokerName\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/KeyChain.swift",
-      "kind": "BooleanLiteral",
-      "offset": 1919,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/KeyChain.swift",
-      "kind": "BooleanLiteral",
-      "offset": 1986,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/BrokerAccountable.swift",
-      "kind": "StringLiteral",
-      "offset": 1111,
-      "length": 2,
-      "value": "\"\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/BrokerAccountable.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1581,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/BrokerAccountable.swift",
-      "kind": "BooleanLiteral",
-      "offset": 1639,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/BrokerAccountable.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1978,
-      "length": 1,
-      "value": "2"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/BrokerAccountable.swift",
-      "kind": "IntegerLiteral",
-      "offset": 2229,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkStore\/BrokerAccountable.swift",
-      "kind": "BooleanLiteral",
-      "offset": 2420,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
-      "kind": "StringLiteral",
-      "offset": 1550,
-      "length": 16,
-      "value": "\"transfer_token\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
-      "kind": "BooleanLiteral",
-      "offset": 1571,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
-      "kind": "StringLiteral",
-      "offset": 2334,
-      "length": 83,
-      "value": "\"Either 'onIntegrationConnected' or 'onTransferFinished' callback must be provided\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
-      "kind": "StringLiteral",
-      "offset": 2572,
-      "length": 19,
-      "value": "\"Invalid linkToken\""
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3167,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Documents\/Front.Mobile.iOS\/LinkSDK\/LinkSDK.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3397,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/alexander\/Library\/Developer\/Xcode\/DerivedData\/Front-copclegbvyjxltfofhezksibfsep\/Build\/Intermediates.noindex\/ArchiveIntermediates\/LinkSDK\/IntermediateBuildFilesPath\/Front.build\/Production-iphoneos\/LinkSDK.build\/DerivedSources\/GeneratedAssetSymbols.swift",
-      "kind": "StringLiteral",
-      "offset": 730,
-      "length": 11,
-      "value": "\"mesh_logo\""
     }
   ]
 }
