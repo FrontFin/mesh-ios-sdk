@@ -40,6 +40,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             print("linkToken is not assigned")
             return
         }
+        
         let settings = LinkSettings(useSecureOnDeviceStorage: true)
         
         let onIntegrationConnected: (LinkPayload)->() = { linkPayload in
@@ -66,13 +67,17 @@ class ViewController: UIViewController, UITextFieldDelegate {
                 let amount = successPayload.amount
                 let symbol = successPayload.symbol
                 message = "Transfered \(amount) \(symbol)"
-                let fromAddr = successPayload.fromAddress
+                let fromAddr = successPayload.fromAddress ?? ""
                 if fromAddr.count != 0 {
                     message += " from \(fromAddr)"
                 }
-                let toAddr = successPayload.toAddress
+                let toAddr = successPayload.toAddress ?? ""
                 if toAddr.count != 0 {
                     message += " to \(toAddr)"
+                }
+                let txId = successPayload.txId ?? ""
+                if txId.count != 0 {
+                    message += " txId \(txId)"
                 }
             case .error(let errorPayload):
                 message = errorPayload.errorMessage
