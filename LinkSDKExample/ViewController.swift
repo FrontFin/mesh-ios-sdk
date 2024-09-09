@@ -35,6 +35,17 @@ class ViewController: UIViewController, UITextFieldDelegate {
         return true
     }
     
+    @IBAction func editingChanged(_ sender: Any){
+        linkToken = linkTokenTextField.text
+        let configuration = LinkConfiguration(linkToken: linkToken ?? "")
+        if !configuration.isLinkTokenValid {
+            connectAccountButton.isEnabled = false
+            return
+        }
+        connectAccountButton.isEnabled = true
+        
+    }
+    
     @IBAction func connectAccountTapped(_ sender: Any) {
         guard let linkToken else {
             print("linkToken is not assigned")
@@ -111,6 +122,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         }
         linkTokenTextField.text = nil
         connectAccountButton.isEnabled = false
+        linkTokenTextField.resignFirstResponder()
     }
 
 }
