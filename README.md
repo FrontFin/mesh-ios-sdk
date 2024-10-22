@@ -35,7 +35,6 @@ let configuration = LinkConfiguration(
 ```
 
 The `LinkSettings` class allows to configure the Link behaviour:
-- `useSecureOnDeviceStorage` - enables connected accounts storage in the keychain (disabled by default);
 - `accessTokens` - an array of `IntegrationAccessToken` objects that is used as an origin for crypto transfer flow;
 - `transferDestinationTokens` - an array of `IntegrationAccessToken` objects that is used as a destination for crypto transfer flow;
 
@@ -100,35 +99,3 @@ case .success(let handler):
 ```
 
 In case of success, you can call `LinkHandler.present(in viewController)` function to let `LinkSDK` modally present the Link view controller and dismiss it on exit, or get the reference to a view controller by calling `LinkHandler.create()` if you prefer your app to manage its life cycle.
-
-## Store/Load connected accounts
-
-The `LinkStore` keeps the connected account data in the keychain and allows to load it.
-- `accessTokens` is an array of connected accounts
-- `add(accessToken: AccessTokenPayload)` is called by SDK automatically on a successful account connection if `settings.useSecureOnDeviceStorage == true`
-- `remove(accessToken: AccessTokenPayload)` the [Remove connection API](https://docs.meshconnect.com/reference/delete_api-v1-account) must be called before removing an account from `LinkStore`
-- `saveAccessTokens()` is called automatically when an account is added/removed, and can be called by the app if some account's fields need to be modified
-
-## V1 -> V2 migration guide
-
-In Mesh Connect iOS SDK v2 the connected accounts are stored in the keychain as `AccessTokenPayload` instances.
-Accounts, that were connected in an app using SDK v1, are converted to `AccessTokenPayload` automatically
-
-```swift
-let linkStore = LinkStore()
-let accessTokens = linkStore.accessTokens
-```
-
-The following table explains how SDK classes and structures changed from v1 to v2
-
-| SDK v1 | SDK v2 |
-| ------ | ------ |
-| GetFrontLinkSDK | LinkConfiguration, LinkHandler |
-| GetFrontLinkSDK.brokerConnectWebViewController | LinkHandler.create() |
-| GetFrontLinkSDK.connectBrokers(in:, delegate:) | LinkHandler.present(in viewController:) |
-| BrokerConnectViewControllerDelegate | LinkConfiguration callbacks |
-| accountsConnected(accounts:) | onIntegrationConnected: ((LinkPayload) -> Void) |
-| transferFinished(transfer:) | onTransferFinished: ((TransferFinishedPayload) -> Void) |
-| closeViewController(withConfirmation:) | onExit: (() -> Void) |
-| GetFrontLinkSDK.defaultBrokersManager | LinkStore |
-| BrokerAccount | AccessTokenPayload |

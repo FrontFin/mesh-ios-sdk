@@ -2,7 +2,7 @@
 //  SceneDelegate.swift
 //  LinkSDKExample
 //
-//  Created by Alexander on 3/13/23.
+//  Created by Mesh Connect, Inc
 //
 
 import UIKit

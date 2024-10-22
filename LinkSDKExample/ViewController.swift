@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  LinkSDKExample
 //
-//  Created by Alexander on 3/13/23.
+//  Created by Mesh Connect, Inc
 //
 
 import UIKit
@@ -52,7 +52,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        let settings = LinkSettings(useSecureOnDeviceStorage: true)
+        let settings = LinkSettings()
         
         let onIntegrationConnected: (LinkPayload)->() = { linkPayload in
             var message: String
