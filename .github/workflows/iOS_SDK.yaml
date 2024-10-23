@@ -85,7 +85,7 @@ jobs:
           xcodebuild -scheme LinkSDK -destination 'platform=iOS Simulator,name=iPhone 14' test
 
       - name: Checkout mesh-ios-sdk Repository
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != ''
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -93,14 +93,16 @@ jobs:
           path: 'mesh-ios-sdk_repo'
           token: ${{ secrets.GH_ACCESS_TOKEN }}
 
+      - name: Setup git config
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != ''
+        uses: qoomon/actions--setup-git@v1
+        with:
+          user: GitHub Actions <noreply@github.com>
+
       - name: Create new Release
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != ''
         working-directory: mesh-ios-sdk_repo
-        env:
-          GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
           git checkout -b release_${{ env.MARKETING_VERSION }} ${{ env.BASE_BRANCH }}
           cp -r ../mesh-ios-sdk/* .
           git add .

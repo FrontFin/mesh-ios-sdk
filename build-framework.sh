@@ -7,7 +7,7 @@ if [ -z "$SDK_FRAMEWORK_NAME" ]
     echo 'Version parameter is requiredﬂ'
     exit 0
 fi
-CURRENT_PROJECT_VERSION=`echo ${MARKETING_VERSION[1]}`
+CURRENT_PROJECT_VERSION=`echo ${MARKETING_VERSION%%.*}`
 
 echo 'Building '"$SDK_FRAMEWORK_NAME"' ...'
 
