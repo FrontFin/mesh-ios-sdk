@@ -2,5 +2,4 @@
 
 ## User settings
 xcuserdata/
-/*.xcodeproj
 *.xcworkspace/xcshareddata/swiftpm/
