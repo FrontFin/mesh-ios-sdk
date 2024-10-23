@@ -2,23 +2,20 @@
 
 SDK_FRAMEWORK_NAME='LinkSDK'
 MARKETING_VERSION="$1"
-if [ -z "$SDK_FRAMEWORK_NAME" ]
+if [ -z "$MARKETING_VERSION" ]
   then
-    echo 'Version parameter is requiredﬂ'
+    echo 'Version parameter is required'
     exit 0
 fi
 CURRENT_PROJECT_VERSION=`echo ${MARKETING_VERSION%%.*}`
 
-echo 'Building '"$SDK_FRAMEWORK_NAME"' ...'
+echo 'Building '"$SDK_FRAMEWORK_NAME"' v.$MARKETING_VERSION...'
 
 BUILD_FOLDER='./build'
 SDK_FRAMEWORK_FILENAME="$SDK_FRAMEWORK_NAME"'.xcframework'
 SDK_FOLDER="$BUILD_FOLDER"'/'"$SDK_FRAMEWORK_FILENAME"
 FRAMEWORK_FINAL_PATH='./'"$SDK_FRAMEWORK_FILENAME"
 PLIST="$SDK_FOLDER"'/Info.plist'
-
-rm -r $BUILD_FOLDER
-rm -r $FRAMEWORK_FINAL_PATH
 
 # build for iOS platform
 xcodebuild archive \
