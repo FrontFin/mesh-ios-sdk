@@ -4,8 +4,7 @@ SDK_FRAMEWORK_NAME='LinkSDK'
 MARKETING_VERSION="$1"
 if [ -z "$MARKETING_VERSION" ]
   then
-    echo 'Version parameter is required'
-    exit 0
+    MARKETING_VERSION='1.0'
 fi
 CURRENT_PROJECT_VERSION=`echo ${MARKETING_VERSION%%.*}`
 
