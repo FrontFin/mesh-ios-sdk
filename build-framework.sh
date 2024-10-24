@@ -22,6 +22,7 @@ xcodebuild archive \
 -configuration Release \
 -destination 'generic/platform=iOS' \
 -archivePath "$BUILD_FOLDER"'/'"$SDK_FRAMEWORK_NAME"'.framework-iphoneos.xcarchive' \
+CODE_SIGN_IDENTITY="iPhone Distribution" \
 SKIP_INSTALL=NO \
 BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
 MARKETING_VERSION=$MARKETING_VERSION \
