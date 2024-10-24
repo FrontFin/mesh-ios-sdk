@@ -70,6 +70,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		114F4A312CC95199007418CA /* LinkSDK.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = LinkSDK.xctestplan; sourceTree = "<group>"; };
 		11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkWebViewViewController.swift; sourceTree = "<group>"; };
 		11E114E82CC0130800F08496 /* LinkWebViewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LinkWebViewViewController.xib; sourceTree = "<group>"; };
 		11E114EA2CC0130800F08496 /* Payload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payload.swift; sourceTree = "<group>"; };
@@ -119,6 +120,7 @@
 		11E114BD2CC012BC00F08496 = {
 			isa = PBXGroup;
 			children = (
+				114F4A312CC95199007418CA /* LinkSDK.xctestplan */,
 				11E114FD2CC013E700F08496 /* LinkSDKExample */,
 				11E114EF2CC0130800F08496 /* LinkSDK */,
 				11E114F22CC0130800F08496 /* LinkSDKTests */,

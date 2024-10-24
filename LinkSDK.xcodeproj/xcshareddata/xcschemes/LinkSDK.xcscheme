@@ -30,7 +30,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:LinkSDKTests/TestPlan.xctestplan"
+            reference = "container:LinkSDK.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>

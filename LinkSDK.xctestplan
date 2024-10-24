@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "053F808F-3378-4442-A843-634317933E01",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:LinkSDK.xcodeproj",
+        "identifier" : "11E1157D2CC1151900F08496",
+        "name" : "LinkSDKTests"
+      }
+    }
+  ],
+  "version" : 1
+}
