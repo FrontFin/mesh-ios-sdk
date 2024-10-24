@@ -70,10 +70,10 @@ jobs:
           # cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
         
       - name: Set Marketing Version
-        if: github.event_name == 'workflow_dispatch' && inputs.execute_release == 'true' && inputs.MARKETING_VERSION != ''
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         id: set_version
         run: |
-          version=${{ inputs.MARKETING_VERSION }}
+          version=${{ github.event.inputs.MARKETING_VERSION }}
           echo "MARKETING_VERSION=$version" >> $GITHUB_ENV
           
       - name: Build SDK
@@ -85,7 +85,7 @@ jobs:
           xcodebuild -scheme LinkSDK -destination 'platform=iOS Simulator,name=iPhone 14' test
 
       - name: Checkout mesh-ios-sdk Repository
-        if: github.event_name == 'workflow_dispatch' && inputs.execute_release == 'true' && inputs.MARKETING_VERSION != ''
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -94,13 +94,13 @@ jobs:
           token: ${{ secrets.GH_ACCESS_TOKEN }}
 
       - name: Setup git config
-        if: github.event_name == 'workflow_dispatch' && inputs.execute_release == 'true' && inputs.MARKETING_VERSION != ''
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         uses: qoomon/actions--setup-git@v1
         with:
           user: GitHub Actions <noreply@github.com>
 
       - name: Create new Release
-        if: github.event_name == 'workflow_dispatch' && inputs.execute_release == 'true' && inputs.MARKETING_VERSION != ''
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         working-directory: mesh-ios-sdk_repo
         run: |
           git checkout -b release_${{ env.MARKETING_VERSION }} ${{ env.BASE_BRANCH }}
