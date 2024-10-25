@@ -71,7 +71,7 @@ jobs:
           # cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
         
       - name: Set Marketing Version
-        if: ${{ RELEASE }}
+        if: ${{ env.RELEASE }}
         id: set_version
         run: |
           version=${{ github.event.inputs.MARKETING_VERSION }}
@@ -87,13 +87,13 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Setup git config
-        if: ${{ RELEASE }}
+        if: ${{ env.RELEASE }}
         uses: qoomon/actions--setup-git@v1
         with:
           user: GitHub Actions <noreply@github.com>
 
       - name: Checkout mesh-ios-sdk Repository
-        if: ${{ RELEASE }}
+        if: ${{ env.RELEASE }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -102,12 +102,12 @@ jobs:
           token: ${{ steps.app.outputs.token }}
 
       - name: Build SDK
-        if: ${{ RELEASE }}
+        if: ${{ env.RELEASE }}
         working-directory: mesh-ios-sdk_repo
         run: ./build-framework.sh ${{ env.MARKETING_VERSION }}
 
       - name: Create new Release
-        if: ${{ RELEASE }}
+        if: ${{ env.RELEASE }}
         working-directory: mesh-ios-sdk_repo
         run: |
           git checkout -b release_${{ env.MARKETING_VERSION }} ${{ env.BASE_BRANCH }}
