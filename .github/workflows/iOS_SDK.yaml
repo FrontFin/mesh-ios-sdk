@@ -23,7 +23,6 @@ on:
 env:
   BASE_BRANCH: main
   REMOTE_REPOSITORY: "FrontFin/mesh-ios-sdk"
-  RELEASE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
 
 jobs:
   build-and-test:
@@ -32,9 +31,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-#      - uses: maxim-lobanov/setup-xcode@v1
-#        with:
-#          xcode-version: '16.0'
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.0'
         
 #      - name: Install dependencies
 #        run: |
@@ -71,7 +70,7 @@ jobs:
           # cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
         
       - name: Set Marketing Version
-        if: ${{ env.RELEASE }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         id: set_version
         run: |
           version=${{ github.event.inputs.MARKETING_VERSION }}
@@ -87,13 +86,13 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Setup git config
-        if: ${{ env.RELEASE }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         uses: qoomon/actions--setup-git@v1
         with:
           user: GitHub Actions <noreply@github.com>
 
       - name: Checkout mesh-ios-sdk Repository
-        if: ${{ env.RELEASE }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -102,12 +101,12 @@ jobs:
           token: ${{ steps.app.outputs.token }}
 
       - name: Build SDK
-        if: ${{ env.RELEASE }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         working-directory: mesh-ios-sdk_repo
         run: ./build-framework.sh ${{ env.MARKETING_VERSION }}
 
       - name: Create new Release
-        if: ${{ env.RELEASE }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         working-directory: mesh-ios-sdk_repo
         run: |
           git checkout -b release_${{ env.MARKETING_VERSION }} ${{ env.BASE_BRANCH }}
