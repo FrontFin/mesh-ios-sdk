@@ -91,14 +91,14 @@ jobs:
         with:
           user: GitHub Actions <noreply@github.com>
 
-#      - name: Checkout mesh-ios-sdk Repository
-#        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
-#        uses: actions/checkout@v4
-#        with:
-#          fetch-depth: 0
-#          repository: ${{ env.REMOTE_REPOSITORY }}
+      - name: Checkout mesh-ios-sdk Repository
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: ${{ env.REMOTE_REPOSITORY }}
 #          path: 'mesh-ios-sdk_repo'
-#          token: ${{ steps.app.outputs.token }}
+          token: ${{ steps.app.outputs.token }}
 
       - name: Build SDK
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
