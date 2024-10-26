@@ -91,26 +91,26 @@ jobs:
         with:
           user: GitHub Actions <noreply@github.com>
 
-      - name: Checkout mesh-ios-sdk Repository
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          repository: ${{ env.REMOTE_REPOSITORY }}
-          path: 'mesh-ios-sdk_repo'
-          token: ${{ steps.app.outputs.token }}
+#      - name: Checkout mesh-ios-sdk Repository
+#        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
+#        uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#          repository: ${{ env.REMOTE_REPOSITORY }}
+#          path: 'mesh-ios-sdk_repo'
+#          token: ${{ steps.app.outputs.token }}
 
       - name: Build SDK
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
-        working-directory: mesh-ios-sdk_repo
+#        working-directory: mesh-ios-sdk_repo
         run: ./build-framework.sh ${{ env.MARKETING_VERSION }}
 
       - name: Create new Release
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
-        working-directory: mesh-ios-sdk_repo
+#        working-directory: mesh-ios-sdk_repo
         run: |
           git checkout -b release_${{ env.MARKETING_VERSION }} origin/${{ env.BASE_BRANCH }}
-          cp -r ../mesh-ios-sdk/* .
+#          cp -r ../mesh-ios-sdk/* .
           git add .
           git commit -m "Release ${{ env.MARKETING_VERSION }}"
           git push -u origin release_${{ env.MARKETING_VERSION }}
