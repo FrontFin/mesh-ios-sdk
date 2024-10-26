@@ -110,7 +110,6 @@ jobs:
 #        working-directory: mesh-ios-sdk_repo
         run: |
           git checkout -b release_${{ env.MARKETING_VERSION }} origin/${{ env.BASE_BRANCH }}
-#          cp -r ../mesh-ios-sdk/* .
           git add .
           git commit -m "Release ${{ env.MARKETING_VERSION }}"
           git push -u origin release_${{ env.MARKETING_VERSION }}
