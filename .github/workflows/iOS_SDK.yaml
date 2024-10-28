@@ -137,3 +137,5 @@ jobs:
           else
             echo "COMMENT_BODY=Error creating PR: $pr_result version: \"${{ github.run_number }}\"" >> $GITHUB_OUTPUT
           fi
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
