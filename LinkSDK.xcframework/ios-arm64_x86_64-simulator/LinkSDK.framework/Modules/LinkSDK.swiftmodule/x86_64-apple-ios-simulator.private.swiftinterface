@@ -1,0 +1,128 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
+// swift-module-flags: -target x86_64-apple-ios18.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -Onone -enable-bare-slash-regex -module-name LinkSDK
+import CryptoKit
+import DeveloperToolsSupport
+import Foundation
+import Swift
+import SwiftUI
+import UIKit
+import WebKit
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public enum TransferFinishedStatus : Swift.String {
+  case transferFinishedSuccess
+  case transferFinishedError
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum LinkPayload {
+  case accessToken(LinkSDK.AccessTokenPayload)
+  case delayedAuth(LinkSDK.DelayedAuthPayload)
+}
+public struct AccessTokenPayload : Swift.Codable {
+  public var id: Swift.String {
+    get
+  }
+  public var accountTokens: [LinkSDK.AccountToken]
+  public var brokerBrandInfo: LinkSDK.BrandInfo
+  public var expiresInSeconds: Swift.Int?
+  public var refreshTokenExpiresInSeconds: Swift.Int?
+  public var brokerType: Swift.String
+  public var brokerName: Swift.String
+  public func integrationAccessToken(accountToken: LinkSDK.AccountToken) -> LinkSDK.IntegrationAccessToken
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct DelayedAuthPayload : Swift.Codable {
+  public var refreshTokenExpiresInSeconds: Swift.Int?
+  public var brokerType: Swift.String
+  public var refreshToken: Swift.String
+  public var brokerName: Swift.String
+  public var brokerBrandInfo: LinkSDK.BrandInfo
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct AccountToken : Swift.Codable {
+  public var account: LinkSDK.Account
+  public var accessToken: Swift.String
+  public var refreshToken: Swift.String?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct Account : Swift.Codable {
+  public var accountId: Swift.String
+  public var accountName: Swift.String
+  public var frontAccountId: Swift.String?
+  public var fund: Swift.Double?
+  public var cash: Swift.Double?
+  public var isReconnected: Swift.Bool?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct BrandInfo : Swift.Codable {
+  public var brokerLogo: Swift.String
+  public var brokerPrimaryColor: Swift.String?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public enum TransferFinishedPayload {
+  case success(LinkSDK.TransferFinishedSuccessPayload)
+  case error(LinkSDK.TransferFinishedErrorPayload)
+}
+public struct TransferFinishedSuccessPayload : Swift.Codable {
+  public var txId: Swift.String?
+  public var fromAddress: Swift.String?
+  public var toAddress: Swift.String?
+  public var symbol: Swift.String
+  public var amount: Swift.Double
+  public var networkId: Swift.String?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct TransferFinishedErrorPayload : Swift.Codable {
+  public var errorMessage: Swift.String
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct IntegrationAccessToken : Swift.Codable {
+  public var accountId: Swift.String
+  public var accountName: Swift.String
+  public var accessToken: Swift.String
+  public var brokerType: Swift.String
+  public var brokerName: Swift.String
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public enum LinkResult {
+  case failure(Swift.String)
+  case success(LinkSDK.LinkHandler)
+}
+public struct LinkSettings {
+  public var accessTokens: [LinkSDK.IntegrationAccessToken]?
+  public var transferDestinationTokens: [LinkSDK.IntegrationAccessToken]?
+  public init(accessTokens: [LinkSDK.IntegrationAccessToken]? = nil, transferDestinationTokens: [LinkSDK.IntegrationAccessToken]? = nil)
+}
+public class LinkConfiguration {
+  public var isLinkTokenValid: Swift.Bool {
+    get
+  }
+  public var isTransferLink: Swift.Bool {
+    get
+  }
+  public init(linkToken: Swift.String, settings: LinkSDK.LinkSettings? = nil, onIntegrationConnected: ((LinkSDK.LinkPayload) -> Swift.Void)? = nil, onTransferFinished: ((LinkSDK.TransferFinishedPayload) -> Swift.Void)? = nil, onEvent: (([Swift.String : Any]?) -> Swift.Void)? = nil, onExit: (() -> Swift.Void)? = nil)
+  public func createHandler() -> LinkSDK.LinkResult
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class LinkHandler {
+  public func create() -> UIKit.UIViewController
+  public func present(in viewController: UIKit.UIViewController)
+  @objc deinit
+}
+extension LinkSDK.TransferFinishedStatus : Swift.Equatable {}
+extension LinkSDK.TransferFinishedStatus : Swift.Hashable {}
+extension LinkSDK.TransferFinishedStatus : Swift.RawRepresentable {}
