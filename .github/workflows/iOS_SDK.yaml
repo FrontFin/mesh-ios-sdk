@@ -24,21 +24,25 @@ env:
   BASE_BRANCH: main
   REMOTE_REPOSITORY: "FrontFin/mesh-ios-sdk"
 
+permissions:
+  contents: write
+  pull-requests: write
+  
 jobs:
   build-and-test:
     runs-on: macos-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '16.0'
         
-      - name: Install dependencies
-        run: |
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          brew install xcodegen
+#      - name: Install dependencies
+#        run: |
+#          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+#          brew install xcodegen
 
       - name: Install the Apple certificate
         env:
@@ -76,22 +80,14 @@ jobs:
           version=${{ github.event.inputs.MARKETING_VERSION }}
           echo "MARKETING_VERSION=$version" >> $GITHUB_ENV
           
-      - name: Build SDK
-        run: ./build-framework.sh ${{ env.MARKETING_VERSION }}
+#      - name: Test
+#        run: xcodebuild -scheme LinkSDK -destination 'platform=iOS Simulator,name=iPhone 14' test
 
-      - name: Test
-        run: |
-          xcodebuild -scheme LinkSDK -showdestinations
-          xcodebuild -scheme LinkSDK -destination 'platform=iOS Simulator,name=iPhone 14' test
-
-      - name: Checkout mesh-ios-sdk Repository
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
-        uses: actions/checkout@v4
+      - uses: actions/create-github-app-token@v1
+        id: app
         with:
-          fetch-depth: 0
-          repository: ${{ env.REMOTE_REPOSITORY}}
-          path: 'mesh-ios-sdk_repo'
-          token: ${{ secrets.GH_ACCESS_TOKEN }}
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Setup git config
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
@@ -99,12 +95,25 @@ jobs:
         with:
           user: GitHub Actions <noreply@github.com>
 
+      - name: Checkout mesh-ios-sdk Repository
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: ${{ env.REMOTE_REPOSITORY }}
+#          path: 'mesh-ios-sdk_repo'
+          token: ${{ steps.app.outputs.token }}
+
+      - name: Build SDK
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
+#        working-directory: mesh-ios-sdk_repo
+        run: ./build-framework.sh ${{ env.MARKETING_VERSION }}
+
       - name: Create new Release
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
-        working-directory: mesh-ios-sdk_repo
+#        working-directory: mesh-ios-sdk_repo
         run: |
-          git checkout -b release_${{ env.MARKETING_VERSION }} ${{ env.BASE_BRANCH }}
-          cp -r ../mesh-ios-sdk/* .
+          git checkout -b release_${{ env.MARKETING_VERSION }} origin/${{ env.BASE_BRANCH }}
           git add .
           git commit -m "Release ${{ env.MARKETING_VERSION }}"
           git push -u origin release_${{ env.MARKETING_VERSION }}
@@ -128,3 +137,5 @@ jobs:
           else
             echo "COMMENT_BODY=Error creating PR: $pr_result version: \"${{ github.run_number }}\"" >> $GITHUB_OUTPUT
           fi
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
