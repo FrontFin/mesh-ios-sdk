@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -49,13 +49,6 @@
                                         <action selector="backTapped" destination="-1" eventType="touchUpInside" id="qw5-Oo-txn"/>
                                     </connections>
                                 </button>
-                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mesh_logo" translatesAutoresizingMaskIntoConstraints="NO" id="obk-aM-zBW">
-                                    <rect key="frame" x="145.66666666666666" y="25" width="102" height="18"/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" constant="102" id="1N0-Q6-w1q"/>
-                                        <constraint firstAttribute="height" constant="18" id="dwI-lY-i5Y"/>
-                                    </constraints>
-                                </imageView>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aaO-Os-n2d">
                                     <rect key="frame" x="343" y="12" width="44" height="44"/>
                                     <constraints>
@@ -78,8 +71,6 @@
                                 <constraint firstItem="KW0-8r-YIx" firstAttribute="leading" secondItem="E5S-OF-ZIi" secondAttribute="leading" constant="6" id="Maz-0J-85l"/>
                                 <constraint firstAttribute="trailing" secondItem="aaO-Os-n2d" secondAttribute="trailing" constant="6" id="Yyh-SM-1Z0"/>
                                 <constraint firstItem="KW0-8r-YIx" firstAttribute="centerY" secondItem="E5S-OF-ZIi" secondAttribute="centerY" id="aRb-bT-SJm"/>
-                                <constraint firstItem="obk-aM-zBW" firstAttribute="centerY" secondItem="E5S-OF-ZIi" secondAttribute="centerY" id="cMT-AB-vL4"/>
-                                <constraint firstItem="obk-aM-zBW" firstAttribute="centerX" secondItem="E5S-OF-ZIi" secondAttribute="centerX" id="qEw-Mw-Ug9"/>
                             </constraints>
                         </view>
                         <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kfY-ot-jNk">
@@ -110,7 +101,6 @@
     </objects>
     <resources>
         <image name="chevron.left" catalog="system" width="97" height="128"/>
-        <image name="mesh_logo" width="72" height="19"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
