@@ -155,11 +155,16 @@ internal extension LinkWebViewViewController {
     }
 }
 
+let allowedUrls = [
+    "https://link.trustwallet.com",
+    "https://appopener.meshconnect.com"
+]
+
 extension LinkWebViewViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void) {
         if let url = navigationAction.request.url {
-            if url.absoluteString.starts(with: "https://link.trustwallet.com") == true {
+            if allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) {
                 decisionHandler(.cancel)
                 if UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url, options: [:], completionHandler: nil)
