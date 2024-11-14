@@ -158,6 +158,15 @@ internal extension LinkWebViewViewController {
 extension LinkWebViewViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void) {
+        if let url = navigationAction.request.url {
+            if url.absoluteString.starts(with: "https://link.trustwallet.com") == true {
+                decisionHandler(.cancel)
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+                return
+            }
+        }
         decisionHandler(.allow)
     }
     
