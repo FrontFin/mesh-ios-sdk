@@ -7,11 +7,17 @@
 
 import UIKit
 @preconcurrency import WebKit
+import SafariServices
 
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
 let DARK_THEME_COLOR_BOTTOM : UInt = 0x0E0D0D
 let LIGHT_THEME_COLOR_BOTTOM : UInt = 0xFBFBFB
+
+let allowedUrls = [
+    "https://link.trustwallet.com",
+    "https://appopener.meshconnect.com"
+]
 
 enum JSMessageType: String {
     case showClose
@@ -36,6 +42,8 @@ class LinkWebViewViewController: UIViewController {
     
     var configuration: LinkConfiguration
     
+    private var safariViewController: SFSafariViewController?
+    
     private var showNativeNavBarDelayed = false
     private var isDarkTheme = false
     private var themeColorTop = LIGHT_THEME_COLOR_TOP
@@ -47,12 +55,18 @@ class LinkWebViewViewController: UIViewController {
         self.configuration = configuration
         let bundle = Bundle(for: LinkWebViewViewController.self)
         super.init(nibName: "LinkWebViewViewController", bundle: bundle)
+        NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIScene.didEnterBackgroundNotification, object: nil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc func didEnterBackground() {
+        safariViewController?.dismiss(animated: false)
+        safariViewController = nil
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -155,20 +169,15 @@ internal extension LinkWebViewViewController {
     }
 }
 
-let allowedUrls = [
-    "https://link.trustwallet.com",
-    "https://appopener.meshconnect.com"
-]
-
 extension LinkWebViewViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void) {
         if let url = navigationAction.request.url {
             if allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) {
                 decisionHandler(.cancel)
-                if UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                }
+                safariViewController = SFSafariViewController(url: url)
+                guard let safariViewController else { return }
+                present(safariViewController, animated: true)
                 return
             }
         }
