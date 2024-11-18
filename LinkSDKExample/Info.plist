@@ -2,6 +2,28 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>trust</string>
+		<string>robinhood</string>
+		<string>metamask</string>
+		<string>rainbow</string>
+		<string>uniswap</string>
+		<string>exodus</string>
+		<string>robinhood-wallet</string>
+		<string>blockchain-wallet</string>
+		<string>1inch</string>
+		<string>cryptowallet</string>
+		<string>okx</string>
+		<string>bitkeep</string>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

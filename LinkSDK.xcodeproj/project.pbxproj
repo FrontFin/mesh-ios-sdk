@@ -10,7 +10,6 @@
 		11E1152A2CC0158100F08496 /* LinkSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11E115222CC0158100F08496 /* LinkSDK.framework */; };
 		11E1152B2CC0158100F08496 /* LinkSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 11E115222CC0158100F08496 /* LinkSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		11E115562CC0189800F08496 /* LinkWebViewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11E114E82CC0130800F08496 /* LinkWebViewViewController.xib */; };
-		11E115572CC0189800F08496 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11E114ED2CC0130800F08496 /* Images.xcassets */; };
 		11E115602CC018DD00F08496 /* LinkWebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */; };
 		11E115612CC018DD00F08496 /* Payload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114EA2CC0130800F08496 /* Payload.swift */; };
 		11E115622CC018DD00F08496 /* LinkSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114EC2CC0130800F08496 /* LinkSDK.swift */; };
@@ -27,7 +26,6 @@
 		11E1158E2CC11D8800F08496 /* LinkSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114EC2CC0130800F08496 /* LinkSDK.swift */; };
 		11E1159A2CC1200800F08496 /* LinkWebViewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11E114E82CC0130800F08496 /* LinkWebViewViewController.xib */; };
 		11E1159B2CC1200800F08496 /* LinkWebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */; };
-		11E1159C2CC1201700F08496 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11E114ED2CC0130800F08496 /* Images.xcassets */; };
 		11E1159D2CC1201700F08496 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114EE2CC0130800F08496 /* Utils.swift */; };
 /* End PBXBuildFile section */
 
@@ -75,7 +73,6 @@
 		11E114E82CC0130800F08496 /* LinkWebViewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LinkWebViewViewController.xib; sourceTree = "<group>"; };
 		11E114EA2CC0130800F08496 /* Payload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payload.swift; sourceTree = "<group>"; };
 		11E114EC2CC0130800F08496 /* LinkSDK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkSDK.swift; sourceTree = "<group>"; };
-		11E114ED2CC0130800F08496 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		11E114EE2CC0130800F08496 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		11E114F02CC0130800F08496 /* LinkSDKTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkSDKTests.swift; sourceTree = "<group>"; };
 		11E115082CC0149D00F08496 /* LinkSDKExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LinkSDKExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -161,7 +158,6 @@
 				11E114E92CC0130800F08496 /* LinkWebViewController */,
 				11E114EB2CC0130800F08496 /* Models */,
 				11E114EC2CC0130800F08496 /* LinkSDK.swift */,
-				11E114ED2CC0130800F08496 /* Images.xcassets */,
 				11E114EE2CC0130800F08496 /* Utils.swift */,
 			);
 			path = LinkSDK;
@@ -323,7 +319,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				11E115562CC0189800F08496 /* LinkWebViewViewController.xib in Resources */,
-				11E115572CC0189800F08496 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,7 +327,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				11E1159A2CC1200800F08496 /* LinkWebViewViewController.xib in Resources */,
-				11E1159C2CC1201700F08496 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -663,6 +657,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C6WMXUCWYF;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.meshconnect.LinkSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -679,6 +674,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C6WMXUCWYF;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.meshconnect.LinkSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
