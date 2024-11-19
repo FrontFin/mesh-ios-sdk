@@ -30,14 +30,14 @@ permissions:
   
 jobs:
   build-and-test:
-    runs-on: macos-15
+    runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16.0'
+          xcode-version: '15'
         
 #      - name: Install dependencies
 #        run: |
