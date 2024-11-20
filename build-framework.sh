@@ -51,3 +51,5 @@ xcodebuild -create-xcframework \
 
 cp -R $SDK_FOLDER $FRAMEWORK_FINAL_PATH
 rm -r $BUILD_FOLDER
+
+plutil -p LinkSDK.xcframework/ios-arm64/LinkSDK.framework/Info.plist
