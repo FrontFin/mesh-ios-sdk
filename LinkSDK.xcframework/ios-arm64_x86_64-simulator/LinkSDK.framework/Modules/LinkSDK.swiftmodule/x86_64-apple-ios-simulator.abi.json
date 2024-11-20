@@ -25,6 +25,13 @@
         ]
       },
       {
+        "kind": "Import",
+        "name": "SafariServices",
+        "printedName": "SafariServices",
+        "declKind": "Import",
+        "moduleName": "LinkSDK"
+      },
+      {
         "kind": "TypeDecl",
         "name": "TransferFinishedStatus",
         "printedName": "TransferFinishedStatus",
@@ -5487,108 +5494,80 @@
         "printedName": "CryptoKit",
         "declKind": "Import",
         "moduleName": "LinkSDK"
-      },
-      {
-        "kind": "Import",
-        "name": "Foundation",
-        "printedName": "Foundation",
-        "declKind": "Import",
-        "moduleName": "LinkSDK"
-      },
-      {
-        "kind": "Import",
-        "name": "UIKit",
-        "printedName": "UIKit",
-        "declKind": "Import",
-        "moduleName": "LinkSDK"
-      },
-      {
-        "kind": "Import",
-        "name": "SwiftUI",
-        "printedName": "SwiftUI",
-        "declKind": "Import",
-        "moduleName": "LinkSDK"
-      },
-      {
-        "kind": "Import",
-        "name": "DeveloperToolsSupport",
-        "printedName": "DeveloperToolsSupport",
-        "declKind": "Import",
-        "moduleName": "LinkSDK"
       }
     ],
     "json_format_version": 8
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/runner\/work\/mesh-ios-sdk\/mesh-ios-sdk\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/alexander\/Documents\/1\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 169,
+      "offset": 191,
       "length": 8,
       "value": "0x1E1E24"
     },
     {
-      "filePath": "\/Users\/runner\/work\/mesh-ios-sdk\/mesh-ios-sdk\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/alexander\/Documents\/1\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 213,
+      "offset": 235,
       "length": 8,
       "value": "0xF3F4F5"
     },
     {
-      "filePath": "\/Users\/runner\/work\/mesh-ios-sdk\/mesh-ios-sdk\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/alexander\/Documents\/1\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 259,
+      "offset": 281,
       "length": 8,
       "value": "0x0E0D0D"
     },
     {
-      "filePath": "\/Users\/runner\/work\/mesh-ios-sdk\/mesh-ios-sdk\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/alexander\/Documents\/1\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 306,
+      "offset": 328,
       "length": 8,
       "value": "0xFBFBFB"
     },
     {
-      "filePath": "\/Users\/runner\/work\/mesh-ios-sdk\/mesh-ios-sdk\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/alexander\/Documents\/1\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "Array",
+      "offset": 356,
+      "length": 79,
+      "value": "[\"https:\/\/link.trustwallet.com\", \"https:\/\/appopener.meshconnect.com\"]"
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/1\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 612,
+      "offset": 733,
       "length": 9,
       "value": "\"success\""
     },
     {
-      "filePath": "\/Users\/runner\/work\/mesh-ios-sdk\/mesh-ios-sdk\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/alexander\/Documents\/1\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "StringLiteral",
-      "offset": 655,
+      "offset": 776,
       "length": 7,
       "value": "\"error\""
     },
     {
-      "filePath": "\/Users\/runner\/work\/mesh-ios-sdk\/mesh-ios-sdk\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "filePath": "\/Users\/alexander\/Documents\/1\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 949,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/runner\/work\/mesh-ios-sdk\/mesh-ios-sdk\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 985,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/runner\/work\/mesh-ios-sdk\/mesh-ios-sdk\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
-      "kind": "StringLiteral",
       "offset": 1137,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/1\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1173,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/alexander\/Documents\/1\/LinkSDK\/LinkWebViewController\/LinkWebViewViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 1325,
       "length": 18,
       "value": "\"jsMessageHandler\""
-    },
-    {
-      "filePath": "\/Users\/runner\/Library\/Developer\/Xcode\/DerivedData\/LinkSDK-cyibcppqspeqongpfyytilcejtdt\/Build\/Intermediates.noindex\/ArchiveIntermediates\/LinkSDK\/IntermediateBuildFilesPath\/LinkSDK.build\/Release-iphonesimulator\/LinkSDK.build\/DerivedSources\/GeneratedAssetSymbols.swift",
-      "kind": "StringLiteral",
-      "offset": 823,
-      "length": 11,
-      "value": "\"mesh_logo\""
     }
   ]
 }
