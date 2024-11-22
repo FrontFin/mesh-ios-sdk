@@ -16,7 +16,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "LinkSDK",
-            path: "LinkSDK.xcframework"
+            url: "",
+            checksum: ""
         )
     ]
 )
