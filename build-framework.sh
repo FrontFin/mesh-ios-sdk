@@ -51,3 +51,13 @@ xcodebuild -create-xcframework \
 
 cp -R $SDK_FOLDER $FRAMEWORK_FINAL_PATH
 rm -r $BUILD_FOLDER
+
+# Compress and compute checksum
+zip -r "$SDK_FRAMEWORK_FILENAME.zip" "$SDK_FRAMEWORK_FILENAME"
+CHECKSUM=`swift package compute-checksum "$SDK_FRAMEWORK_FILENAME.zip"`
+SDK_URL="https://github.com/FrontFin/mesh-ios-sdk/releases/download/latest/$SDK_FRAMEWORK_FILENAME.zip"
+
+# Update Package.swift
+sed -i '' "s|checksum: \".*\"|checksum: \"$CHECKSUM\"|g" Package.swift
+sed -i '' "s|url: \".*\"|url: \"$SDK_URL\"|g" Package.swift
+rm -r $SDK_FRAMEWORK_FILENAME
