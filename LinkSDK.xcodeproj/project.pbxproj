@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		11E1152A2CC0158100F08496 /* LinkSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11E115222CC0158100F08496 /* LinkSDK.framework */; };
 		11E1152B2CC0158100F08496 /* LinkSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 11E115222CC0158100F08496 /* LinkSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		11E115562CC0189800F08496 /* LinkWebViewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11E114E82CC0130800F08496 /* LinkWebViewViewController.xib */; };
 		11E115602CC018DD00F08496 /* LinkWebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */; };
 		11E115612CC018DD00F08496 /* Payload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114EA2CC0130800F08496 /* Payload.swift */; };
 		11E115622CC018DD00F08496 /* LinkSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114EC2CC0130800F08496 /* LinkSDK.swift */; };
@@ -24,7 +23,6 @@
 		11E1158B2CC11A9E00F08496 /* LinkSDKTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114F02CC0130800F08496 /* LinkSDKTests.swift */; };
 		11E1158C2CC11D2100F08496 /* Payload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114EA2CC0130800F08496 /* Payload.swift */; };
 		11E1158E2CC11D8800F08496 /* LinkSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114EC2CC0130800F08496 /* LinkSDK.swift */; };
-		11E1159A2CC1200800F08496 /* LinkWebViewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 11E114E82CC0130800F08496 /* LinkWebViewViewController.xib */; };
 		11E1159B2CC1200800F08496 /* LinkWebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */; };
 		11E1159D2CC1201700F08496 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114EE2CC0130800F08496 /* Utils.swift */; };
 /* End PBXBuildFile section */
@@ -70,7 +68,6 @@
 /* Begin PBXFileReference section */
 		114F4A312CC95199007418CA /* LinkSDK.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = LinkSDK.xctestplan; sourceTree = "<group>"; };
 		11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkWebViewViewController.swift; sourceTree = "<group>"; };
-		11E114E82CC0130800F08496 /* LinkWebViewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LinkWebViewViewController.xib; sourceTree = "<group>"; };
 		11E114EA2CC0130800F08496 /* Payload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payload.swift; sourceTree = "<group>"; };
 		11E114EC2CC0130800F08496 /* LinkSDK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkSDK.swift; sourceTree = "<group>"; };
 		11E114EE2CC0130800F08496 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -139,7 +136,6 @@
 			isa = PBXGroup;
 			children = (
 				11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */,
-				11E114E82CC0130800F08496 /* LinkWebViewViewController.xib */,
 			);
 			path = LinkWebViewController;
 			sourceTree = "<group>";
@@ -226,7 +222,6 @@
 				11E1151D2CC0158100F08496 /* Headers */,
 				11E1151E2CC0158100F08496 /* Sources */,
 				11E1151F2CC0158100F08496 /* Frameworks */,
-				11E115202CC0158100F08496 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -314,19 +309,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		11E115202CC0158100F08496 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				11E115562CC0189800F08496 /* LinkWebViewViewController.xib in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		11E1157C2CC1151900F08496 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				11E1159A2CC1200800F08496 /* LinkWebViewViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -593,6 +579,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACH_O_TYPE = staticlib;
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
@@ -633,6 +620,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACH_O_TYPE = staticlib;
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
