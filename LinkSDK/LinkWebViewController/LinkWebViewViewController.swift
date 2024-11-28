@@ -36,9 +36,64 @@ public enum TransferFinishedStatus: String {
 }
 
 class LinkWebViewViewController: UIViewController {
-    @IBOutlet weak var webView: WKWebView!
-    @IBOutlet weak var topBar: UIView!
-    @IBOutlet weak var statusBarBackgroundView: UIView!
+    private let webView: WKWebView = {
+        let wkWebView = WKWebView()
+        wkWebView.contentMode = .scaleToFill
+        wkWebView.translatesAutoresizingMaskIntoConstraints = false
+        wkWebView.backgroundColor = UIColor(cgColor: CGColor(genericGrayGamma2_2Gray: 1, alpha: 1))
+        return wkWebView
+    }()
+
+    private let topBar: UIView = {
+        let view = UIView()
+        view.isHidden = true
+        view.contentMode = .scaleToFill
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor(cgColor: CGColor(genericGrayGamma2_2Gray: 1, alpha: 1))
+        return view
+    }()
+
+    private let statusBarBackgroundView: UIView = {
+        let view = UIView()
+        view.contentMode = .scaleToFill
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .systemBackground
+        return view
+    }()
+    
+    private let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.contentMode = .scaleToFill
+        stackView.axis = .vertical
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    private let backButton: UIButton = {
+        let button = UIButton()
+        button.contentMode = .scaleToFill
+        button.contentHorizontalAlignment = .center
+        button.contentVerticalAlignment = .center
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.titleLabel?.font = .systemFont(ofSize: 18)
+        button.tintColor = UIColor(cgColor: CGColor(genericGrayGamma2_2Gray: 0.0, alpha: 1))
+        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        button.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private let closeButton: UIButton = {
+        let button = UIButton()
+        button.contentMode = .scaleToFill
+        button.contentHorizontalAlignment = .center
+        button.contentVerticalAlignment = .center
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.titleLabel?.font = .systemFont(ofSize: 26)
+        button.tintColor = UIColor(cgColor: CGColor(genericGrayGamma2_2Gray: 0.0, alpha: 1))
+        button.setImage(UIImage(systemName: "xmark"), for: .normal)
+        button.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
+        return button
+    }()
     
     var configuration: LinkConfiguration
     
@@ -53,14 +108,9 @@ class LinkWebViewViewController: UIViewController {
 
     init(configuration: LinkConfiguration) {
         self.configuration = configuration
-        let bundle = Bundle(for: LinkWebViewViewController.self)
-        guard let resourceBundleURL = bundle.url(forResource: "LinkSDKResources", withExtension: "bundle"),
-              let resourceBundle = Bundle(url: resourceBundleURL) else {
-            fatalError("LinkSDKResources bundle not found")
-        }
-
-        super.init(nibName: "LinkWebViewViewController", bundle: resourceBundle)
+        super.init(nibName: nil, bundle: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIScene.didEnterBackgroundNotification, object: nil)
+        setupGeneratedViews()
     }
     
     required init?(coder: NSCoder) {
@@ -84,6 +134,7 @@ class LinkWebViewViewController: UIViewController {
         navigationController?.navigationBar.compactAppearance = appearance
         navigationItem.hidesBackButton = true
         
+        setupGeneratedViews()
         setupWebView()
     }
     
@@ -131,11 +182,11 @@ class LinkWebViewViewController: UIViewController {
         return isDarkTheme ? .lightContent : .darkContent
     }
     
-    @IBAction func closeTapped() {
+    @objc func closeTapped() {
         configuration.onExit?()
     }
     
-    @IBAction func backTapped() {
+    @objc func backTapped() {
         webView.goBack()
     }
     
@@ -171,6 +222,53 @@ internal extension LinkWebViewViewController {
             topBar.isHidden = true
             showNativeNavBarDelayed = false
         }
+    }
+    
+    func setupGeneratedViews() {
+        view.backgroundColor = .systemBackground
+        
+        addSubViews()
+        setupConstraints()
+    }
+
+    func addSubViews() {
+        view.addSubview(statusBarBackgroundView)
+        view.addSubview(stackView)
+        stackView.addArrangedSubview(topBar)
+        stackView.addArrangedSubview(webView)
+        topBar.addSubview(backButton)
+        topBar.addSubview(closeButton)
+        
+    }
+
+    func setupConstraints() {
+        NSLayoutConstraint.activate([
+            backButton.leadingAnchor.constraint(equalTo: topBar.leadingAnchor, constant: 6),
+            backButton.centerYAnchor.constraint(equalTo: topBar.centerYAnchor),
+            backButton.widthAnchor.constraint(equalToConstant: 44),
+            backButton.heightAnchor.constraint(equalToConstant: 44),
+        
+            closeButton.trailingAnchor.constraint(equalTo: topBar.trailingAnchor, constant: -6),
+            closeButton.centerYAnchor.constraint(equalTo: topBar.centerYAnchor),
+            closeButton.widthAnchor.constraint(equalToConstant: 44),
+            closeButton.heightAnchor.constraint(equalToConstant: 44),
+        
+            topBar.heightAnchor.constraint(equalToConstant: 68),
+        
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            stackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+        
+            view.trailingAnchor.constraint(equalTo: statusBarBackgroundView.trailingAnchor),
+        
+            statusBarBackgroundView.topAnchor.constraint(equalTo: view.topAnchor),
+            statusBarBackgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        
+            view.safeAreaLayoutGuide.topAnchor.constraint(equalTo: statusBarBackgroundView.bottomAnchor),
+        
+        ])
+        
     }
 }
 
