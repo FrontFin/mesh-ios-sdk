@@ -1,6 +1,7 @@
 #!/bin/sh
 
 SDK_FRAMEWORK_NAME='LinkSDK'
+SDK_RESOURCES_NAME='LinkSDKResources'
 MARKETING_VERSION="$1"
 if [ -z "$MARKETING_VERSION" ]
   then
@@ -12,9 +13,18 @@ echo 'Building '"$SDK_FRAMEWORK_NAME"' v.'"$MARKETING_VERSION"
 
 BUILD_FOLDER='./build'
 SDK_FRAMEWORK_FILENAME="$SDK_FRAMEWORK_NAME"'.xcframework'
+RESOURCE_BUNDLE_PATH="$BUILD_FOLDER/Release-iphoneos/$SDK_RESOURCES_NAME.bundle"
 SDK_FOLDER="$BUILD_FOLDER"'/'"$SDK_FRAMEWORK_FILENAME"
 FRAMEWORK_FINAL_PATH='./'"$SDK_FRAMEWORK_FILENAME"
 PLIST="$SDK_FOLDER"'/Info.plist'
+
+# build the resource bundle
+xcodebuild -target "$SDK_RESOURCES_NAME" \
+-configuration Release \
+-sdk iphoneos \
+BUILD_DIR="$BUILD_FOLDER" \
+MARKETING_VERSION=$MARKETING_VERSION \
+CURRENT_PROJECT_VERSION=$CURRENT_PROJECT_VERSION
 
 # build for iOS platform
 xcodebuild archive \
@@ -45,6 +55,8 @@ xcodebuild -create-xcframework \
 -framework "$BUILD_FOLDER"'/'"$SDK_FRAMEWORK_NAME"'.framework-iphonesimulator.xcarchive/Products/Library/Frameworks/'"$SDK_FRAMEWORK_NAME"'.framework' \
 -framework "$BUILD_FOLDER"'/'"$SDK_FRAMEWORK_NAME"'.framework-iphoneos.xcarchive/Products/Library/Frameworks/'"$SDK_FRAMEWORK_NAME"'.framework' \
 -output $SDK_FOLDER
+
+cp -R "$RESOURCE_BUNDLE_PATH" "$SDK_FOLDER"
 
 /usr/libexec/Plistbuddy -c "Add :CFBundleVersion string $MARKETING_VERSION" "$PLIST"
 /usr/libexec/Plistbuddy -c "Add :CFBundleShortVersionString string $CURRENT_PROJECT_VERSION" "$PLIST"

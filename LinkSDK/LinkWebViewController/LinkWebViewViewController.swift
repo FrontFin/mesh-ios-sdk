@@ -54,7 +54,12 @@ class LinkWebViewViewController: UIViewController {
     init(configuration: LinkConfiguration) {
         self.configuration = configuration
         let bundle = Bundle(for: LinkWebViewViewController.self)
-        super.init(nibName: "LinkWebViewViewController", bundle: bundle)
+        guard let resourceBundleURL = bundle.url(forResource: "LinkSDKResources", withExtension: "bundle"),
+              let resourceBundle = Bundle(url: resourceBundleURL) else {
+            fatalError("LinkSDKResources bundle not found")
+        }
+
+        super.init(nibName: "LinkWebViewViewController", bundle: resourceBundle)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIScene.didEnterBackgroundNotification, object: nil)
     }
     
