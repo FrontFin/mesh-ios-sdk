@@ -274,18 +274,38 @@ internal extension LinkWebViewViewController {
 
 extension LinkWebViewViewController: WKNavigationDelegate {
     
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void) {
-        if let url = navigationAction.request.url {
-            if allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) {
-                decisionHandler(.cancel)
-                safariViewController = SFSafariViewController(url: url)
-                guard let safariViewController else { return }
-                present(safariViewController, animated: true)
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        guard let url = navigationAction.request.url else {
+            decisionHandler(.allow)
+            return
+        }
+
+        // Check if the URL is in allowedUrls (only for http/https)
+        if ["http", "https"].contains(url.scheme),
+           allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) {
+            // Open allowed http/https URLs in Safari
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            decisionHandler(.cancel) // Cancel WebView navigation
+            return
+        }
+
+        // Handle custom schemes (e.g., wallet://)
+        if !["http", "https"].contains(url.scheme) {
+            // Open in external app if the scheme is supported
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                decisionHandler(.cancel) // Cancel WebView navigation
                 return
+            } else {
+                print("Unsupported URL scheme: \(url.scheme ?? "unknown")")
             }
         }
+
+        // Allow other http/https URLs to load in WebView
         decisionHandler(.allow)
     }
+
+
     
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
 #if DEBUG
