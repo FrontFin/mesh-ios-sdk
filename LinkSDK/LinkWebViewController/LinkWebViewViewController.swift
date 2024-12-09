@@ -19,6 +19,41 @@ let allowedUrls = [
     "https://appopener.meshconnect.com"
 ]
 
+let whitelistedOrigins = [
+    ".meshconnect.com",
+    ".getfront.com",
+    ".walletconnect.com",
+    ".walletconnect.org",
+    ".walletlink.org",
+    ".coinbase.com",
+    ".okx.com",
+    ".gemini.com",
+    ".coinbase.com",
+    ".hcaptcha.com",
+    ".robinhood.com",
+    ".google.com",
+    "https://meshconnect.com",
+    "https://getfront.com",
+    "https://walletconnect.com",
+    "https://walletconnect.org",
+    "https://walletlink.org",
+    "https://coinbase.com",
+    "https://okx.com",
+    "https://gemini.com",
+    "https://coinbase.com",
+    "https://hcaptcha.com",
+    "https://robinhood.com",
+    "https://google.com",
+    "https://front-web-platform-dev",
+    "https://front-b2b-api-test.azurewebsites.net",
+    "https://web.getfront.com",
+    "https://web.meshconnect.com",
+    "https://applink.robinhood.com",
+    "https://m.stripe.network",
+    "https://js.stripe.com",
+    "https://app.usercentrics.eu"
+]
+
 enum JSMessageType: String {
     case showClose
     case close
@@ -281,12 +316,16 @@ extension LinkWebViewViewController: WKNavigationDelegate {
         }
 
         // Check if the URL is in allowedUrls (only for http/https)
-        if ["http", "https"].contains(url.scheme),
-           allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) {
-            // Open allowed http/https URLs in Safari
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            decisionHandler(.cancel) // Cancel WebView navigation
-            return
+        if ["http", "https"].contains(url.scheme) {
+            // if a url is in allowedUrls open it inSafari
+            if allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) ||
+                // or if domain whitelisting is not disable and url is not included in the list, open it inSafari
+                (!(configuration.disableDomainWhiteList ?? false) &&
+                   !whitelistedOrigins.contains(where: { url.absoluteString.contains($0) })) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                decisionHandler(.cancel) // Cancel WebView navigation
+                return
+            }
         }
 
         // Handle custom schemes (e.g., wallet://)
