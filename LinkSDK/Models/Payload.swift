@@ -64,11 +64,15 @@ public enum TransferFinishedPayload {
 
 public struct TransferFinishedSuccessPayload: Codable {
     public var txId: String?
+    public var txHash: String?
     public var fromAddress: String?
     public var toAddress: String?
     public var symbol: String
     public var amount: Double
+    public var amountInFiat: Double?
+    public var totalAmountInFiat: Double?
     public var networkId: String?
+    public var networkName: String?
 }
 
 public struct TransferFinishedErrorPayload: Codable {
