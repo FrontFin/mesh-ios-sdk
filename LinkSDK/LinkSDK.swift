@@ -26,6 +26,7 @@ public struct LinkSettings {
 public class LinkConfiguration {
     var linkToken: String
     var settings: LinkSettings?
+    var disableDomainWhiteList: Bool?
     var onIntegrationConnected: ((LinkPayload) -> Void)?
     var onTransferFinished: ((TransferFinishedPayload) -> Void)?
     var onEvent: (([String: Any]?) -> Void)?
@@ -51,12 +52,14 @@ public class LinkConfiguration {
 
     public init(linkToken: String,
                 settings: LinkSettings? = nil,
+                disableDomainWhiteList: Bool? = nil,
                 onIntegrationConnected: ((LinkPayload) -> Void)? = nil,
                 onTransferFinished: ((TransferFinishedPayload) -> Void)? = nil,
                 onEvent: (([String: Any]?) -> Void)? = nil,
                 onExit: (() -> Void)? = nil) {
         self.linkToken = linkToken
         self.settings = settings
+        self.disableDomainWhiteList = disableDomainWhiteList
         self.onIntegrationConnected = onIntegrationConnected
         self.onTransferFinished = onTransferFinished
         self.onEvent = onEvent
