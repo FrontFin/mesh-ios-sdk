@@ -28,6 +28,7 @@ Create a `LinkConfiguration` instance with the `linkToken` and the callbacks:
 let configuration = LinkConfiguration(
     linkToken: linkToken,
     settings: LinkSettings?,
+    disableDomainWhiteList: Bool?,
     onIntegrationConnected: onIntegrationConnected,
     onTransferFinished: onTransferFinished,
     onEvent: onEvent,
@@ -38,9 +39,9 @@ The `LinkSettings` class allows to configure the Link behaviour:
 - `accessTokens` - an array of `IntegrationAccessToken` objects that is used as an origin for crypto transfer flow;
 - `transferDestinationTokens` - an array of `IntegrationAccessToken` objects that is used as a destination for crypto transfer flow;
 
-The `AccessTokenPayload.integrationAccessToken(accountToken: AccountToken)` function is used to convert an `AccessTokenPayload` to the `IntegrationAccessToken` object.
+The `disableDomainWhiteList` parameter is a boolean flag that allows to disable origin whitelisting. By default, the origin is whitelisted, with the predefined domains set
 
-The `LinkStore` class is responsible for adding, removing, and retrieving connected accounts.
+The `AccessTokenPayload.integrationAccessToken(accountToken: AccountToken)` function is used to convert an `AccessTokenPayload` to the `IntegrationAccessToken` object.
 
 The callback `onIntegrationConnected` is called with `LinkPayload` once an integration has been connected.
 

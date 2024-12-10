@@ -19,6 +19,23 @@ let allowedUrls = [
     "https://appopener.meshconnect.com"
 ]
 
+let whitelistedOrigins = [
+    ".meshconnect.com",
+    ".walletconnect.com",
+    ".walletconnect.org",
+    ".walletlink.org",
+    ".coinbase.com",
+    ".okx.com",
+    ".gemini.com",
+    ".hcaptcha.com",
+    ".robinhood.com",
+    ".google.com",
+    "https://robinhood.com",
+    "https://m.stripe.network",
+    "https://js.stripe.com",
+    "https://app.usercentrics.eu"
+]
+
 enum JSMessageType: String {
     case showClose
     case close
@@ -69,7 +86,7 @@ class LinkWebViewViewController: UIViewController {
         return stackView
     }()
     
-    private let backButton: UIButton = {
+    private lazy var backButton: UIButton = {
         let button = UIButton()
         button.contentMode = .scaleToFill
         button.contentHorizontalAlignment = .center
@@ -82,7 +99,7 @@ class LinkWebViewViewController: UIViewController {
         return button
     }()
     
-    private let closeButton: UIButton = {
+    private lazy var closeButton: UIButton = {
         let button = UIButton()
         button.contentMode = .scaleToFill
         button.contentHorizontalAlignment = .center
@@ -194,8 +211,6 @@ class LinkWebViewViewController: UIViewController {
 
 internal extension LinkWebViewViewController {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        //viewModel.observeValue(forKeyPath: keyPath, change: change)
-
         if let keyUrl = change?[NSKeyValueChangeKey.newKey] as? URL {
             let key = keyUrl.absoluteString
             updateUI(currentUrl: key)
@@ -281,12 +296,16 @@ extension LinkWebViewViewController: WKNavigationDelegate {
         }
 
         // Check if the URL is in allowedUrls (only for http/https)
-        if ["http", "https"].contains(url.scheme),
-           allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) {
-            // Open allowed http/https URLs in Safari
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            decisionHandler(.cancel) // Cancel WebView navigation
-            return
+        if ["http", "https"].contains(url.scheme) {
+            // if a url is in allowedUrls open it inSafari
+            if allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) ||
+                // or if domain whitelisting is not disable and url is not included in the list, open it inSafari
+                (!(configuration.disableDomainWhiteList ?? false) &&
+                 !whitelistedOrigins.contains(where: { url.absoluteString.hasPrefix($0) || url.host?.hasSuffix($0) ?? false })) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                decisionHandler(.cancel) // Cancel WebView navigation
+                return
+            }
         }
 
         // Handle custom schemes (e.g., wallet://)
