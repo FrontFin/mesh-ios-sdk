@@ -21,34 +21,16 @@ let allowedUrls = [
 
 let whitelistedOrigins = [
     ".meshconnect.com",
-    ".getfront.com",
     ".walletconnect.com",
     ".walletconnect.org",
     ".walletlink.org",
     ".coinbase.com",
     ".okx.com",
     ".gemini.com",
-    ".coinbase.com",
     ".hcaptcha.com",
     ".robinhood.com",
     ".google.com",
-    "https://meshconnect.com",
-    "https://getfront.com",
-    "https://walletconnect.com",
-    "https://walletconnect.org",
-    "https://walletlink.org",
-    "https://coinbase.com",
-    "https://okx.com",
-    "https://gemini.com",
-    "https://coinbase.com",
-    "https://hcaptcha.com",
     "https://robinhood.com",
-    "https://google.com",
-    "https://front-web-platform-dev",
-    "https://front-b2b-api-test.azurewebsites.net",
-    "https://web.getfront.com",
-    "https://web.meshconnect.com",
-    "https://applink.robinhood.com",
     "https://m.stripe.network",
     "https://js.stripe.com",
     "https://app.usercentrics.eu"
@@ -104,7 +86,7 @@ class LinkWebViewViewController: UIViewController {
         return stackView
     }()
     
-    private let backButton: UIButton = {
+    private lazy var backButton: UIButton = {
         let button = UIButton()
         button.contentMode = .scaleToFill
         button.contentHorizontalAlignment = .center
@@ -117,7 +99,7 @@ class LinkWebViewViewController: UIViewController {
         return button
     }()
     
-    private let closeButton: UIButton = {
+    private lazy var closeButton: UIButton = {
         let button = UIButton()
         button.contentMode = .scaleToFill
         button.contentHorizontalAlignment = .center
@@ -229,8 +211,6 @@ class LinkWebViewViewController: UIViewController {
 
 internal extension LinkWebViewViewController {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        //viewModel.observeValue(forKeyPath: keyPath, change: change)
-
         if let keyUrl = change?[NSKeyValueChangeKey.newKey] as? URL {
             let key = keyUrl.absoluteString
             updateUI(currentUrl: key)
@@ -321,7 +301,7 @@ extension LinkWebViewViewController: WKNavigationDelegate {
             if allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) ||
                 // or if domain whitelisting is not disable and url is not included in the list, open it inSafari
                 (!(configuration.disableDomainWhiteList ?? false) &&
-                   !whitelistedOrigins.contains(where: { url.absoluteString.contains($0) })) {
+                 !whitelistedOrigins.contains(where: { url.absoluteString.hasPrefix($0) || url.host?.hasSuffix($0) ?? false })) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 decisionHandler(.cancel) // Cancel WebView navigation
                 return
