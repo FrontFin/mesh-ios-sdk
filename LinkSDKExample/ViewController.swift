@@ -18,7 +18,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         linkTokenTextField.delegate = self
-        connectAccountButton.layer.borderColor = Color.black.cgColor
+        connectAccountButton.layer.borderColor = UIColor.black.cgColor
         connectAccountButton.layer.borderWidth = 1
         connectAccountButton.layer.cornerRadius = connectAccountButton.bounds.size.height * 0.5
     }

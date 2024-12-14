@@ -64,6 +64,7 @@ public enum TransferFinishedPayload {
 
 public struct TransferFinishedSuccessPayload: Codable {
     public var txId: String?
+    public var transferId: String?
     public var txHash: String?
     public var fromAddress: String?
     public var toAddress: String?
