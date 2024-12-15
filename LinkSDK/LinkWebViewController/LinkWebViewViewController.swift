@@ -45,6 +45,7 @@ enum JSMessageType: String {
     case showNativeNavbar
     case transferFinished
     case loaded
+    case handleUniversalLink
 }
 
 public enum TransferFinishedStatus: String {
@@ -313,10 +314,22 @@ extension LinkWebViewViewController: WKNavigationDelegate {
             // Open in external app if the scheme is supported
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                let message = [
+                    "url": url.absoluteString,
+                    "canOpen": true
+                ] as [String : Any]
+                configuration.onEvent?(message)
                 decisionHandler(.cancel) // Cancel WebView navigation
                 return
             } else {
-                print("Unsupported URL scheme: \(url.scheme ?? "unknown")")
+            // Send a simple message indicating the URL cannot be opened
+                let message = [
+                    "url": url.absoluteString,
+                    "canOpen": false
+                ] as [String : Any]
+                configuration.onEvent?(message)
+                decisionHandler(.cancel)
+                return
             }
         }
 
@@ -400,7 +413,10 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
                       let jsonData = try? JSONSerialization.data(withJSONObject: payload),
                       let transferFinishedErrorPayload = try? JSONDecoder().decode(TransferFinishedErrorPayload.self, from: jsonData) else { return }
                 configuration.onTransferFinished?(.error(transferFinishedErrorPayload))
-            }
+            case .handleUniversalLink:
+                guard let url = messageBody["url"] as? String,
+                      let canOpen = messageBody["canOpen"] as? Bool else { return }
+                configuration.onEvent?(["type": "handleUniversalLink", "url": url, "canOpen": canOpen])
         case .showClose, .close, .done:
             configuration.onExit?()
         case .loaded:
