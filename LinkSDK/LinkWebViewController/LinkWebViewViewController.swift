@@ -56,6 +56,7 @@ enum JSMessageType: String {
     case showNativeNavbar
     case transferFinished
     case loaded
+    case selectedIntegration
 }
 
 public enum TransferFinishedStatus: String {
@@ -330,15 +331,6 @@ extension LinkWebViewViewController: WKNavigationDelegate {
                 return
             } else {
                 print("Unsupported URL scheme: \(url.scheme ?? "unknown")")
-                let script = """
-                    window.handleUniversalLink = { 
-                        url: '\(url.absoluteString)', 
-                        canOpen: false 
-                    };
-                """
-                webView.evaluateJavaScript(script)
-                decisionHandler(.cancel)
-                return
             }
         }
 
@@ -423,6 +415,35 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
             }
         case .showClose, .close, .done:
             configuration.onExit?()
+        case .selectedIntegration:
+            guard let payload = messageBody["payload"] as? [String: Any],
+                let integrationType = payload["integrationType"] as? String,
+                let integrationName = payload["integrationName"] as? String else { return }
+            
+            let nativeLink = payload["nativeLink"] as? String
+            
+            let selectedIntegrationPayload = IntegrationSelectedPayload(
+                integrationType: integrationType,
+                integrationName: integrationName,
+                nativeLink: nativeLink
+            )
+
+            if let nativeLink = nativeLink,
+                let url = URL(string: nativeLink),
+                !["http", "https"].contains(url.scheme ?? ""),
+                !UIApplication.shared.canOpenURL(url) {
+                    
+                    print("Unsupported URL scheme: \(url.scheme ?? "unknown")")
+                    webView.evaluateJavaScript("""
+                        window.handleUniversalLink = { 
+                            url: '\(url.absoluteString)', 
+                            canOpen: false 
+                        };
+                    """)
+            }
+            configuration.onIntegrationSelected?(selectedIntegrationPayload)
+
+
         case .loaded:
             configuration.onEvent?(messageBody)
 

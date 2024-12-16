@@ -87,3 +87,9 @@ public struct IntegrationAccessToken: Codable {
     public var brokerType: String
     public var brokerName: String
 }
+
+public struct IntegrationSelectedPayload: Decodable {
+    public let integrationType: String
+    public let integrationName: String
+    public let nativeLink: String?
+}
