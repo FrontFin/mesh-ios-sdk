@@ -29,11 +29,22 @@ let whitelistedOrigins = [
     ".gemini.com",
     ".hcaptcha.com",
     ".robinhood.com",
+    //recaptcha
     ".google.com",
+    //Robinhood
     "https://robinhood.com",
     "https://m.stripe.network",
     "https://js.stripe.com",
-    "https://app.usercentrics.eu"
+    "https://app.usercentrics.eu",
+    //Coinbase
+    "https://api.cb-device-intelligence.com",
+    //Okx
+    "https://contentmx.okcoin.com",
+    "https://www.recaptcha.net",
+    //Revolut
+    "https://ramp.revolut.codes",
+    "https://sso.revolut.codes",
+    "https://ramp.revolut.com"
 ]
 
 enum JSMessageType: String {
@@ -295,6 +306,8 @@ extension LinkWebViewViewController: WKNavigationDelegate {
             return
         }
 
+        print("WebView navigation: ", url)
+        
         // Check if the URL is in allowedUrls (only for http/https)
         if ["http", "https"].contains(url.scheme) {
             // if a url is in allowedUrls open it inSafari
