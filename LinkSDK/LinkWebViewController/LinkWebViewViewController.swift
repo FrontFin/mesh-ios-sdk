@@ -56,7 +56,7 @@ enum JSMessageType: String {
     case showNativeNavbar
     case transferFinished
     case loaded
-    case selectedIntegration
+    case integrationSelected
 }
 
 public enum TransferFinishedStatus: String {
@@ -415,35 +415,19 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
             }
         case .showClose, .close, .done:
             configuration.onExit?()
-        case .selectedIntegration:
+        case .integrationSelected:
             guard let payload = messageBody["payload"] as? [String: Any],
-                let integrationType = payload["integrationType"] as? String,
-                let integrationName = payload["integrationName"] as? String else { return }
-            
-            let nativeLink = payload["nativeLink"] as? String
-            
-            let selectedIntegrationPayload = IntegrationSelectedPayload(
-                integrationType: integrationType,
-                integrationName: integrationName,
-                nativeLink: nativeLink
-            )
-
-            if let nativeLink = nativeLink,
-                let url = URL(string: nativeLink),
-                !["http", "https"].contains(url.scheme ?? ""),
-                !UIApplication.shared.canOpenURL(url) {
-                    
-                    print("Unsupported URL scheme: \(url.scheme ?? "unknown")")
-                    webView.evaluateJavaScript("""
-                        window.handleUniversalLink = { 
-                            url: '\(url.absoluteString)', 
-                            canOpen: false 
-                        };
-                    """)
-            }
-            configuration.onIntegrationSelected?(selectedIntegrationPayload)
-
-
+                  let nativeLink = payload["nativeLink"] as? String,
+                  let url = URL(string: nativeLink),
+                  !["http", "https"].contains(url.scheme ?? ""),
+                  !UIApplication.shared.canOpenURL(url) else { return }
+            print("Unsupported URL scheme: \(url.scheme ?? "unknown")")
+            webView.evaluateJavaScript("""
+                window.handleUniversalLink = {
+                    url: '\(url.absoluteString)',
+                    canOpen: false
+                };
+            """)
         case .loaded:
             configuration.onEvent?(messageBody)
 
