@@ -317,14 +317,21 @@ extension LinkWebViewViewController: WKNavigationDelegate {
                 return
             } else {
                 print("Unsupported URL scheme: \(url.scheme ?? "unknown")")
+                let script = """
+                    window.handleUniversalLink = { 
+                        url: '\(url.absoluteString)', 
+                        canOpen: false 
+                    };
+                """
+                webView.evaluateJavaScript(script)
+                decisionHandler(.cancel)
+                return
             }
         }
 
         // Allow other http/https URLs to load in WebView
         decisionHandler(.allow)
     }
-
-
     
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
 #if DEBUG
