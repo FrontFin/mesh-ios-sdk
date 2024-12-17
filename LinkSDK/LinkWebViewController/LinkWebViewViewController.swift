@@ -419,15 +419,10 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
             guard let payload = messageBody["payload"] as? [String: Any],
                   let nativeLink = payload["nativeLink"] as? String,
                   let url = URL(string: nativeLink),
-                  !["http", "https"].contains(url.scheme ?? ""),
-                  !UIApplication.shared.canOpenURL(url) else { return }
-            print("Unsupported URL scheme: \(url.scheme ?? "unknown")")
-            webView.evaluateJavaScript("""
-                window.handleUniversalLink = {
-                    url: '\(url.absoluteString)',
-                    canOpen: false
-                };
-            """)
+                  !["http", "https"].contains(url.scheme ?? "") else { return }
+            let canOpen = UIApplication.shared.canOpenURL(url)
+            let js = "window.handleNativeLink = { url: '\(url.absoluteString)', canOpen: \(canOpen) };"
+            webView.evaluateJavaScript(js)
         case .loaded:
             configuration.onEvent?(messageBody)
 
