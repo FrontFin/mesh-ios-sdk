@@ -307,8 +307,6 @@ extension LinkWebViewViewController: WKNavigationDelegate {
             return
         }
 
-        print("WebView navigation: ", url)
-        
         // Check if the URL is in allowedUrls (only for http/https)
         if ["http", "https"].contains(url.scheme) {
             // if a url is in allowedUrls open it inSafari

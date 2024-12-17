@@ -17,7 +17,7 @@ let package = Package(
         .binaryTarget(
             name: "LinkSDK",
             url: "https://github.com/FrontFin/mesh-ios-sdk/releases/download/3.0.10/LinkSDK.xcframework.zip",
-            checksum: "e34a1de40047b3878ea9c448fec74e6e9ef044945abff063f210ca50459b04aa"
+            checksum: "3be23a40ec3851d20d45c7795c250b7425faf9c1a36d37d8b07b262d6ec7f7aa"
         )
     ]
 )
