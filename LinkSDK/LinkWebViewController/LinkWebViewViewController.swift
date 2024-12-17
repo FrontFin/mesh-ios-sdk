@@ -56,6 +56,7 @@ enum JSMessageType: String {
     case showNativeNavbar
     case transferFinished
     case loaded
+    case integrationSelected
 }
 
 public enum TransferFinishedStatus: String {
@@ -330,15 +331,6 @@ extension LinkWebViewViewController: WKNavigationDelegate {
                 return
             } else {
                 print("Unsupported URL scheme: \(url.scheme ?? "unknown")")
-                let script = """
-                    window.handleUniversalLink = { 
-                        url: '\(url.absoluteString)', 
-                        canOpen: false 
-                    };
-                """
-                webView.evaluateJavaScript(script)
-                decisionHandler(.cancel)
-                return
             }
         }
 
@@ -423,6 +415,14 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
             }
         case .showClose, .close, .done:
             configuration.onExit?()
+        case .integrationSelected:
+            guard let payload = messageBody["payload"] as? [String: Any],
+                  let nativeLink = payload["nativeLink"] as? String,
+                  let url = URL(string: nativeLink),
+                  !["http", "https"].contains(url.scheme ?? "") else { return }
+            let canOpen = UIApplication.shared.canOpenURL(url)
+            let js = "window.handleNativeLink = { url: '\(url.absoluteString)', canOpen: \(canOpen) };"
+            webView.evaluateJavaScript(js)
         case .loaded:
             configuration.onEvent?(messageBody)
 
