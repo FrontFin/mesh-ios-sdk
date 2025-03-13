@@ -52,7 +52,14 @@ class ViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        let settings = LinkSettings()
+        var settings = LinkSettings()
+        
+        // Configure Quantum settings
+        settings.quantumConfig = [
+            "environment": "sandbox",  // Use "production" for production environment
+            "theme": "system",        // Use "light" or "dark" for specific themes
+            "debug": true             // Enable debug logging
+        ]
         
         let onIntegrationConnected: (LinkPayload)->() = { linkPayload in
             var message: String
@@ -71,6 +78,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             }
             self.statusLabel.text = message
         }
+        
         let onTransferFinished: (TransferFinishedPayload)->() = { transferFinishedPayload in
             var message: String
             switch transferFinishedPayload {
@@ -98,9 +106,33 @@ class ViewController: UIViewController, UITextFieldDelegate {
             self.statusLabel.text = message
             print(message)
         }
+        
         let onEvent: ([String: Any]?)->() = { payload in
             print("Event: \(payload ?? [:])")
+            
+            // Handle Quantum events
+            if let type = payload?["type"] as? String,
+               type == "quantumEvent",
+               let quantumPayload = payload?["payload"] as? [String: Any] {
+                
+                // Handle different Quantum event types
+                if let status = quantumPayload["status"] as? String {
+                    switch status {
+                    case "success":
+                        self.statusLabel.text = "Quantum flow completed successfully"
+                    case "error":
+                        if let error = quantumPayload["error"] as? String {
+                            self.statusLabel.text = "Quantum error: \(error)"
+                        }
+                    case "cancel":
+                        self.statusLabel.text = "Quantum flow cancelled"
+                    default:
+                        self.statusLabel.text = "Quantum event: \(status)"
+                    }
+                }
+            }
         }
+        
         let onExit: ()->() = {
         }
         
@@ -112,6 +144,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             onTransferFinished: onTransferFinished,
             onEvent: onEvent,
             onExit: onExit)
+            
         let result = configuration.createHandler()
         switch result {
         case .failure(let error):
