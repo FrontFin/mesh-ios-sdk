@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		112288BE2DA9264D007D65D5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 112288BC2DA9264D007D65D5 /* Localizable.strings */; };
+		112288BF2DA9264D007D65D5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 112288BC2DA9264D007D65D5 /* Localizable.strings */; };
 		11E1152A2CC0158100F08496 /* LinkSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11E115222CC0158100F08496 /* LinkSDK.framework */; };
 		11E1152B2CC0158100F08496 /* LinkSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 11E115222CC0158100F08496 /* LinkSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		11E115602CC018DD00F08496 /* LinkWebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */; };
@@ -66,6 +68,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		112288BD2DA9264D007D65D5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		114F4A312CC95199007418CA /* LinkSDK.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = LinkSDK.xctestplan; sourceTree = "<group>"; };
 		11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkWebViewViewController.swift; sourceTree = "<group>"; };
 		11E114EA2CC0130800F08496 /* Payload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payload.swift; sourceTree = "<group>"; };
@@ -155,6 +158,7 @@
 				11E114EB2CC0130800F08496 /* Models */,
 				11E114EC2CC0130800F08496 /* LinkSDK.swift */,
 				11E114EE2CC0130800F08496 /* Utils.swift */,
+				112288BC2DA9264D007D65D5 /* Localizable.strings */,
 			);
 			path = LinkSDK;
 			sourceTree = "<group>";
@@ -304,6 +308,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				11E115772CC01B5500F08496 /* Main.storyboard in Resources */,
+				112288BF2DA9264D007D65D5 /* Localizable.strings in Resources */,
 				11E115782CC01B5500F08496 /* LaunchScreen.storyboard in Resources */,
 				11E115742CC01ACE00F08496 /* Assets.xcassets in Resources */,
 			);
@@ -313,6 +318,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				112288BE2DA9264D007D65D5 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -371,6 +377,17 @@
 			targetProxy = 11F31F7F2CC125DE00CFB8C9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		112288BC2DA9264D007D65D5 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				112288BD2DA9264D007D65D5 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		11E114DC2CC012BF00F08496 /* Debug */ = {
@@ -432,6 +449,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -488,6 +506,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -509,7 +528,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -541,7 +560,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -563,6 +582,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = C6WMXUCWYF;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -572,7 +592,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -603,6 +623,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = C6WMXUCWYF;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -612,7 +633,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

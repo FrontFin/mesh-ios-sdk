@@ -31,7 +31,9 @@ public class LinkConfiguration {
     var onTransferFinished: ((TransferFinishedPayload) -> Void)?
     var onEvent: (([String: Any]?) -> Void)?
     var onExit: (() -> Void)?
-    
+    var linkViewController: LinkWebViewViewController?
+    var originalOnExit: (() -> Void)?
+
     var catalogLink: String? {
         guard let linkTokenData = Data(base64Encoded: linkToken),
               let catalogLink = String(data: linkTokenData, encoding: .utf8),
@@ -90,13 +92,31 @@ public class LinkHandler {
     }
     
     public func present(in viewController: UIViewController) {
-        let originalOnExit = configuration.onExit
-        configuration.onExit = {
-            originalOnExit?()
-            viewController.dismiss(animated: true)
+        configuration.originalOnExit = configuration.onExit
+        configuration.onExit = { [self] in
+            showExitAlert()
         }
         let linkViewController = LinkWebViewViewController(configuration: configuration)
         linkViewController.modalPresentationStyle = .fullScreen
         viewController.present(linkViewController, animated: true)
+        configuration.linkViewController = linkViewController
     }
+    
+    func showExitAlert() {
+        let title = String(localized: "onExit_alert_title")
+        let message = String(localized: "onExit_alert_message")
+        let exit = String(localized: "onExit_alert_exit")
+        let cancel = String(localized: "onExit_alert_cancel")
+        
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: exit, style: .default) { [self] _ in
+            configuration.linkViewController?.dismiss(animated: true) { [self] in
+                configuration.originalOnExit?()
+            }
+        }
+        alert.addAction(okAction)
+        alert.addAction(UIAlertAction(title: cancel, style: .cancel))
+        configuration.linkViewController?.present(alert, animated: true, completion: nil)
+    }
+
 }

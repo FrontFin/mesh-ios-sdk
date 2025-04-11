@@ -102,6 +102,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             print("Event: \(payload ?? [:])")
         }
         let onExit: ()->() = {
+            print("Exit")
         }
         
         let configuration = LinkConfiguration(
