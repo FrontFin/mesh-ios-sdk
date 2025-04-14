@@ -70,6 +70,8 @@
 /* Begin PBXFileReference section */
 		112288BD2DA9264D007D65D5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		114F4A312CC95199007418CA /* LinkSDK.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = LinkSDK.xctestplan; sourceTree = "<group>"; };
+		119795022DAD35EB000AC5ED /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		119795032DAD362B000AC5ED /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkWebViewViewController.swift; sourceTree = "<group>"; };
 		11E114EA2CC0130800F08496 /* Payload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payload.swift; sourceTree = "<group>"; };
 		11E114EC2CC0130800F08496 /* LinkSDK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkSDK.swift; sourceTree = "<group>"; };
@@ -288,6 +290,8 @@
 			knownRegions = (
 				en,
 				Base,
+				es,
+				ru,
 			);
 			mainGroup = 11E114BD2CC012BC00F08496;
 			minimizedProjectReferenceProxies = 1;
@@ -383,6 +387,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				112288BD2DA9264D007D65D5 /* en */,
+				119795022DAD35EB000AC5ED /* es */,
+				119795032DAD362B000AC5ED /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -395,6 +401,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -459,6 +466,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";

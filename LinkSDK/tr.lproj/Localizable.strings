@@ -7,5 +7,5 @@
 
 "onExit_alert_title" = "Are you sure you want to exit?";
 "onExit_alert_message" = "Your progress will be lost.";
-"onExit_alert_exit" = "Yes, exit";
-"onExit_alert_cancel" = "No, continue";
+"onExit_alert_exit" = "Exit";
+"onExit_alert_cancel" = "Cancel";
