@@ -44,6 +44,13 @@ public class LinkConfiguration {
         return catalogLink
     }
     
+    var language: String? {
+        guard let linkTokenData = Data(base64Encoded: linkToken),
+              let catalogLink = String(data: linkTokenData, encoding: .utf8),
+              let language = getQueryStringParameter(url: catalogLink, param: "lng") else { return nil }
+        return language
+    }
+    
     public var isLinkTokenValid: Bool {
         catalogLink != nil
     }
@@ -103,10 +110,11 @@ public class LinkHandler {
     }
     
     func showExitAlert() {
-        let title = String(localized: "onExit_alert_title")
-        let message = String(localized: "onExit_alert_message")
-        let exit = String(localized: "onExit_alert_exit")
-        let cancel = String(localized: "onExit_alert_cancel")
+        let locale = Locale(identifier: configuration.language ?? "en")
+        let title = String(localized: "onExit_alert_title", locale: locale)
+        let message = String(localized: "onExit_alert_message", locale: locale)
+        let exit = String(localized: "onExit_alert_exit", locale: locale)
+        let cancel = String(localized: "onExit_alert_cancel", locale: locale)
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: exit, style: .default) { [self] _ in
