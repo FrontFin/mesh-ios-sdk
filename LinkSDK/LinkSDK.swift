@@ -13,13 +13,21 @@ public enum LinkResult {
     case success(LinkHandler)
 }
 
+public enum Language: String {
+    case en
+    case ru
+}
+
 public struct LinkSettings {
     public var accessTokens: [IntegrationAccessToken]?
     public var transferDestinationTokens: [IntegrationAccessToken]?
+    public var language: Language?
     public init(accessTokens: [IntegrationAccessToken]? = nil,
-                transferDestinationTokens: [IntegrationAccessToken]? = nil) {
+                transferDestinationTokens: [IntegrationAccessToken]? = nil,
+                language: Language? = nil) {
         self.accessTokens = accessTokens
         self.transferDestinationTokens = transferDestinationTokens
+        self.language = language
     }
 }
 
@@ -36,19 +44,15 @@ public class LinkConfiguration {
 
     var catalogLink: String? {
         guard let linkTokenData = Data(base64Encoded: linkToken),
-              let catalogLink = String(data: linkTokenData, encoding: .utf8),
+              var catalogLink = String(data: linkTokenData, encoding: .utf8),
               let url = URL(string: catalogLink),
               UIApplication.shared.canOpenURL(url) else {
             return nil
         }
+        if let language = settings?.language {
+            catalogLink += "\(catalogLink.contains("?") ? "&" : "?")lng=\(language)"
+        }
         return catalogLink
-    }
-    
-    var language: String? {
-        guard let linkTokenData = Data(base64Encoded: linkToken),
-              let catalogLink = String(data: linkTokenData, encoding: .utf8),
-              let language = getQueryStringParameter(url: catalogLink, param: "lng") else { return nil }
-        return language
     }
     
     public var isLinkTokenValid: Bool {
@@ -110,7 +114,7 @@ public class LinkHandler {
     }
     
     func showExitAlert() {
-        let locale = Locale(identifier: configuration.language ?? "en")
+        let locale = Locale(identifier: configuration.settings?.language?.rawValue ?? "en")
         let title = String(localized: "onExit_alert_title", locale: locale)
         let message = String(localized: "onExit_alert_message", locale: locale)
         let exit = String(localized: "onExit_alert_exit", locale: locale)
