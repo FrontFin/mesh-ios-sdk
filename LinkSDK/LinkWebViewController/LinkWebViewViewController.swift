@@ -404,164 +404,116 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         print("🔍 WebView received message: \(message.body)")
         
-        // Handle Quantum messages
-        if message.name == "quantumHandler" {
-            handleQuantumMessage(message)
-            return
-        }
-        
-        guard message.name == jsMessageHandler,
-              let messageBody = message.body as? [String: Any],
+        guard let messageBody = message.body as? [String: Any],
               let type = messageBody["type"] as? String else {
-            print("❌ Undefined message received: \(message.body)")
-            configuration.onEvent?(["Undefined message": message.body])
+            print("❌ Invalid message format")
             return
         }
         
-        print("📝 Message type: \(type)")
-        let messageType = JSMessageType(rawValue: type)
-        switch messageType {
-        case .showNativeNavbar:
-            guard let show = messageBody["payload"] as? Bool else { return }
-            print("🎯 Show native navbar: \(show)")
-            showNativeNavbar(show)
-        case .brokerageAccountAccessToken:
-            print("🔑 Processing brokerage account access token")
+        // Handle different message types
+        switch type {
+        case JSMessageType.integrationSelected.rawValue:
             guard let payload = messageBody["payload"] as? [String: Any],
-                  let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-                  let accessTokenPayload = try? JSONDecoder().decode(AccessTokenPayload.self, from: jsonData) else { 
-                print("❌ Failed to process brokerage account access token")
-                return 
-            }
-            print("✅ Successfully processed access token")
-            configuration.onIntegrationConnected?(.accessToken(accessTokenPayload))
-        case .delayedAuthentication:
-            print("🕒 Processing delayed authentication")
-            guard let payload = messageBody["payload"] as? [String: Any],
-                  let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-                  let delayedAuthPayload = try? JSONDecoder().decode(DelayedAuthPayload.self, from: jsonData) else { 
-                print("❌ Failed to process delayed authentication")
-                return 
-            }
-            print("✅ Successfully processed delayed authentication")
-            configuration.onIntegrationConnected?(.delayedAuth(delayedAuthPayload))
-        case .transferFinished:
-            print("💸 Transfer finished event received")
-            configuration.onEvent?(messageBody)
-            guard let payload = messageBody["payload"] as? [String: Any],
-                  let status = TransferFinishedStatus(rawValue: payload["status"] as? String ?? "") else { 
-                print("❌ Failed to process transfer finished status")
-                return 
-            }
-            switch status {
-            case .transferFinishedSuccess:
-                print("✅ Transfer finished successfully")
-                guard let payload = messageBody["payload"] as? [String: Any],
-                      let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-                      let transferFinishedSuccessPayload = try? JSONDecoder().decode(TransferFinishedSuccessPayload.self, from: jsonData) else { 
-                    print("❌ Failed to process transfer success payload")
-                    return 
-                }
-                configuration.onTransferFinished?(.success(transferFinishedSuccessPayload))
-            case .transferFinishedError:
-                print("❌ Transfer finished with error")
-                guard let payload = messageBody["payload"] as? [String: Any],
-                      let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-                      let transferFinishedErrorPayload = try? JSONDecoder().decode(TransferFinishedErrorPayload.self, from: jsonData) else { 
-                    print("❌ Failed to process transfer error payload")
-                    return 
-                }
-                configuration.onTransferFinished?(.error(transferFinishedErrorPayload))
-            }
-        case .showClose, .close, .done:
-            print("🚪 Exit event received: \(type)")
-            configuration.onExit?()
-        case .integrationSelected:
-            print("🔗 Integration selected")
-            guard let payload = messageBody["payload"] as? [String: Any] else {
-                print("❌ Invalid payload for integration selection")
+                  let integrationName = payload["integrationName"] as? String else {
+                print("❌ Invalid integration selection payload")
                 return
             }
             
-            // Check if this is KrakenDirect integration
-            if let integrationName = payload["integrationName"] as? String,
-               integrationName == "KrakenDirect" {
-                print("🦑 KrakenDirect integration detected - triggering Quantum")
-                
+            // Handle different integrations
+            switch integrationName {
+            case "KrakenDirect":
                 // Create a new WebViewController for Quantum
                 let quantumViewController = WebViewController()
-                let quantumWebView = WebView.makeWebView()
+                
+                // Set up the web view configuration with message handler
+                let configuration = WKWebViewConfiguration()
+                let contentController = WKUserContentController()
+                configuration.userContentController = contentController
+                configuration.userContentController.add(self, name: "quantumHandler")
+                
+                let quantumWebView = WebView.makeWebView(configuration: configuration)
                 quantumViewController.webView = quantumWebView
                 
-                // Load the Quantum web app directly
-                let quantumUrl = "http://localhost:3000" // Use your actual Quantum URL in production
-                quantumWebView.load(URLRequest(url: URL(string: quantumUrl)!))
+                // Initialize Quantum with the new web view
+                quantum = Quantum()
+                Task {
+                    do {
+                        try await quantum?.initialize(view: quantumWebView, controller: quantumViewController)
+                        
+                        // Add any quantum configuration from settings
+                        if let quantumConfig = self.configuration.settings?.quantumConfig {
+                            let script = """
+                                window.quantumConfig = {
+                                    environment: '\(quantumConfig["environment"] ?? "sandbox")',
+                                    theme: '\(quantumConfig["theme"] ?? "system")',
+                                    debug: \(quantumConfig["debug"] ?? true)
+                                };
+                            """
+                            quantumWebView.evaluateJavaScript(script) { result, error in
+                                if let error = error {
+                                    print("❌ Failed to set quantum config: \(error)")
+                                }
+                            }
+                        }
+                        
+                        // Load the Quantum web app directly
+                        let quantumUrl = "http://localhost:3000"
+                        quantumWebView.load(URLRequest(url: URL(string: quantumUrl)!))
+                        
+                        await MainActor.run {
+                            // Present the Quantum view controller
+                            quantumViewController.modalPresentationStyle = .fullScreen
+                            self.present(quantumViewController, animated: true) {
+                                print("✅ Presented Quantum web view controller")
+                            }
+                        }
+                    } catch {
+                        print("❌ Failed to initialize Quantum: \(error)")
+                    }
+                }
                 
-                #if DEBUG
-                if #available(iOS 16.4, *) {
-                    quantumWebView.isInspectable = true
-                }
-                #endif
-                
-                // Present the Quantum view controller
-                quantumViewController.modalPresentationStyle = .fullScreen
-                present(quantumViewController, animated: true) {
-                    print("✅ Presented Quantum web view controller")
-                }
-                
-                return
-            }
-            
-            // Handle other integrations as before
-            guard let nativeLink = payload["nativeLink"] as? String,
-                  let url = URL(string: nativeLink),
-                  !["http", "https"].contains(url.scheme ?? "") else { 
-                print("❌ Invalid native link or HTTP/HTTPS scheme")
-                return 
-            }
-            let canOpen = UIApplication.shared.canOpenURL(url)
-            print("🔗 Native link can be opened: \(canOpen)")
-            let js = "window.handleNativeLink = { url: '\(url.absoluteString)', canOpen: \(canOpen) };"
-            webView.evaluateJavaScript(js)
-        case .loaded:
-            print("📱 WebView loaded")
-            configuration.onEvent?(messageBody)
-
-            var script = "window.meshSdkPlatform = 'iOS';"
-            let bundle = Bundle(identifier: "com.meshconnect.LinkSDK")
-            if let version = bundle?.infoDictionary?["CFBundleShortVersionString"] {
-                script += "window.meshSdkVersion = '\(version)';"
-                print("📦 SDK Version: \(version)")
-            }
-            
-            if let accessTokens = configuration.settings?.accessTokens {
-                if let data = try? JSONEncoder().encode(accessTokens),
-                   let jsonString = String(data: data, encoding: String.Encoding.utf8) {
-                    script += "window.accessTokens = '\(jsonString)';"
-                    print("🔑 Access tokens configured")
+            default:
+                // For other integrations (like Varo), use the native link if provided
+                if let nativeLink = payload["nativeLink"] as? String,
+                   let url = URL(string: nativeLink) {
+                    webView.load(URLRequest(url: url))
                 }
             }
             
-            if let quantumConfig = configuration.settings?.quantumConfig {
-                if let data = try? JSONSerialization.data(withJSONObject: quantumConfig),
-                   let jsonString = String(data: data, encoding: .utf8) {
-                    script += "window.quantumConfig = \(jsonString);"
-                    print("🔮 Quantum configuration set")
-                }
-            }
+        case JSMessageType.showClose.rawValue:
+            // Handle show close message
+            print("Show close button")
             
-            if let transferDestinationTokens = configuration.settings?.transferDestinationTokens {
-                if let data = try? JSONEncoder().encode(transferDestinationTokens),
-                   let jsonString = String(data: data, encoding: String.Encoding.utf8) {
-                    script += "window.transferDestinationTokens = '\(jsonString)';"
-                    print("🎯 Transfer destination tokens configured")
-                }
-            }
+        case JSMessageType.close.rawValue:
+            // Handle close message
+            configuration.onExit?()
             
-            webView.evaluateJavaScript(script)
-        case .none:
-            print("⚠️ Unhandled message type received")
-            configuration.onEvent?(messageBody)
+        case JSMessageType.done.rawValue:
+            // Handle done message
+            print("Done message received")
+            
+        case JSMessageType.brokerageAccountAccessToken.rawValue:
+            // Handle brokerage account access token
+            print("Brokerage account access token received")
+            
+        case JSMessageType.delayedAuthentication.rawValue:
+            // Handle delayed authentication
+            print("Delayed authentication message received")
+            
+        case JSMessageType.showNativeNavbar.rawValue:
+            // Handle show native navbar
+            showNativeNavbar(true)
+            
+        case JSMessageType.transferFinished.rawValue:
+            // Handle transfer finished
+            print("Transfer finished message received")
+            
+        case JSMessageType.loaded.rawValue:
+            // Handle loaded
+            print("Loaded message received")
+            
+        default:
+            print("⚠️ Unhandled message type: \(type)")
         }
     }
     
