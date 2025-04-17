@@ -8,6 +8,7 @@
 import UIKit
 @preconcurrency import WebKit
 import SafariServices
+import QuantumIOS
 
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
@@ -64,13 +65,19 @@ public enum TransferFinishedStatus: String {
     case transferFinishedError = "error"
 }
 
-class LinkWebViewViewController: UIViewController {
-    private let webView: WKWebView = {
-        let wkWebView = WKWebView()
-        wkWebView.contentMode = .scaleToFill
-        wkWebView.translatesAutoresizingMaskIntoConstraints = false
-        wkWebView.backgroundColor = UIColor(cgColor: CGColor(genericGrayGamma2_2Gray: 1, alpha: 1))
-        return wkWebView
+public class LinkWebViewViewController: UIViewController {
+    internal let webView: WKWebView = {
+        let configuration = WKWebViewConfiguration()
+        let webView = WKWebView(frame: .zero, configuration: configuration)
+        webView.contentMode = .scaleToFill
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.backgroundColor = UIColor(cgColor: CGColor(genericGrayGamma2_2Gray: 1, alpha: 1))
+        #if DEBUG
+        if #available(iOS 16.4, *) {
+            webView.isInspectable = true
+        }
+        #endif
+        return webView
     }()
 
     private let topBar: UIView = {
@@ -124,7 +131,8 @@ class LinkWebViewViewController: UIViewController {
         return button
     }()
     
-    var configuration: LinkConfiguration
+    internal var quantum: Quantum?
+    public var configuration: LinkConfiguration
     
     private var safariViewController: SFSafariViewController?
     
@@ -151,7 +159,7 @@ class LinkWebViewViewController: UIViewController {
         safariViewController = nil
     }
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         
         let appearance = UINavigationBarAppearance()
@@ -165,9 +173,10 @@ class LinkWebViewViewController: UIViewController {
         
         setupGeneratedViews()
         setupWebView()
+        setupQuantum()
     }
     
-    func setupWebView() {
+    public func setupWebView() {
         guard let catalogLink = configuration.catalogLink,
         let url = URL(string: catalogLink) else { return }
         
@@ -207,7 +216,7 @@ class LinkWebViewViewController: UIViewController {
             : LIGHT_THEME_COLOR_BOTTOM
     }
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
         return isDarkTheme ? .lightContent : .darkContent
     }
     
@@ -219,9 +228,28 @@ class LinkWebViewViewController: UIViewController {
         webView.goBack()
     }
     
+    public func setupQuantum() {
+        // Initialize Quantum
+        quantum = Quantum()
+        
+        // Initialize with webView and controller
+        Task {
+            do {
+                try await quantum?.initialize(view: webView, controller: self)
+                print("✅ Quantum initialized successfully")
+                #if DEBUG
+                if #available(iOS 16.4, *) {
+                    webView.isInspectable = true
+                }
+                #endif
+            } catch {
+                print("❌ Failed to initialize Quantum: \(error)")
+            }
+        }
+    }
 }
 
-internal extension LinkWebViewViewController {
+public extension LinkWebViewViewController {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let keyUrl = change?[NSKeyValueChangeKey.newKey] as? URL {
             let key = keyUrl.absoluteString
@@ -301,7 +329,7 @@ internal extension LinkWebViewViewController {
 
 extension LinkWebViewViewController: WKNavigationDelegate {
     
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
             return
@@ -336,34 +364,34 @@ extension LinkWebViewViewController: WKNavigationDelegate {
         decisionHandler(.allow)
     }
     
-    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
 #if DEBUG
         configuration.onEvent?(["type": "webViewEvent", "payload": "didStartProvisionalNavigation"])
 #endif
     }
     
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+    public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         showNativeNavbar(true)
 #if DEBUG
         configuration.onEvent?(["type": "webViewEvent", "payload": "didFailProvisionalNavigation", "error": error.localizedDescription])
 #endif
     }
     
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         showNativeNavbar(true)
 #if DEBUG
         configuration.onEvent?(["type": "webViewEvent", "payload": "didFinish"])
 #endif
     }
     
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         showNativeNavbar(true)
 #if DEBUG
         configuration.onEvent?(["type": "webViewEvent", "payload": "didFail", "error": error.localizedDescription])
 #endif
     }
     
-    func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
         showNativeNavbar(true)
 #if DEBUG
         configuration.onEvent?(["type": "webViewEvent", "payload": "didReceiveServerRedirectForProvisionalNavigation"])
@@ -373,86 +401,151 @@ extension LinkWebViewViewController: WKNavigationDelegate {
 
 extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
 
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard message.name == jsMessageHandler,
-              let messageBody = message.body as? [String: Any],
+    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        print("🔍 WebView received message: \(message.body)")
+        
+        guard let messageBody = message.body as? [String: Any],
               let type = messageBody["type"] as? String else {
-            configuration.onEvent?(["Undefined message": message.body])
+            print("❌ Invalid message format")
             return
         }
-        let messageType = JSMessageType(rawValue: type)
-        switch messageType {
-        case .showNativeNavbar:
-            guard let show = messageBody["payload"] as? Bool else { return }
-            showNativeNavbar(show)
-        case .brokerageAccountAccessToken:
+        
+        // Handle different message types
+        switch type {
+        case JSMessageType.integrationSelected.rawValue:
             guard let payload = messageBody["payload"] as? [String: Any],
-                  let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-                  let accessTokenPayload = try? JSONDecoder().decode(AccessTokenPayload.self, from: jsonData) else { return }
-            configuration.onIntegrationConnected?(.accessToken(accessTokenPayload))
-        case .delayedAuthentication:
-            guard let payload = messageBody["payload"] as? [String: Any],
-                  let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-                  let delayedAuthPayload = try? JSONDecoder().decode(DelayedAuthPayload.self, from: jsonData) else { return }
-            configuration.onIntegrationConnected?(.delayedAuth(delayedAuthPayload))
-        case .transferFinished:
-            configuration.onEvent?(messageBody)
-            guard let payload = messageBody["payload"] as? [String: Any],
-                  let status = TransferFinishedStatus(rawValue: payload["status"] as? String ?? "") else { return }
-            switch status {
-            case .transferFinishedSuccess:
-                guard let payload = messageBody["payload"] as? [String: Any],
-                      let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-                      let transferFinishedSuccessPayload = try? JSONDecoder().decode(TransferFinishedSuccessPayload.self, from: jsonData) else { return }
-                configuration.onTransferFinished?(.success(transferFinishedSuccessPayload))
-            case .transferFinishedError:
-                guard let payload = messageBody["payload"] as? [String: Any],
-                      let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-                      let transferFinishedErrorPayload = try? JSONDecoder().decode(TransferFinishedErrorPayload.self, from: jsonData) else { return }
-                configuration.onTransferFinished?(.error(transferFinishedErrorPayload))
+                  let integrationName = payload["integrationName"] as? String else {
+                print("❌ Invalid integration selection payload")
+                return
             }
-        case .showClose, .close, .done:
+            
+            // Handle different integrations
+            switch integrationName {
+            case "KrakenDirect":
+                // Create a new WebViewController for Quantum
+                let quantumViewController = WebViewController()
+                
+                // Set up the web view configuration with message handler
+                let configuration = WKWebViewConfiguration()
+                let contentController = WKUserContentController()
+                configuration.userContentController = contentController
+                configuration.userContentController.add(self, name: "quantumHandler")
+                
+                let quantumWebView = WebView.makeWebView(configuration: configuration)
+                quantumViewController.webView = quantumWebView
+                
+                // Initialize Quantum with the new web view
+                quantum = Quantum()
+                Task {
+                    do {
+                        try await quantum?.initialize(view: quantumWebView, controller: quantumViewController)
+                        
+                        // Add any quantum configuration from settings
+                        if let quantumConfig = self.configuration.settings?.quantumConfig {
+                            let script = """
+                                window.quantumConfig = {
+                                    environment: '\(quantumConfig["environment"] ?? "sandbox")',
+                                    theme: '\(quantumConfig["theme"] ?? "system")',
+                                    debug: \(quantumConfig["debug"] ?? true)
+                                };
+                            """
+                            quantumWebView.evaluateJavaScript(script) { result, error in
+                                if let error = error {
+                                    print("❌ Failed to set quantum config: \(error)")
+                                }
+                            }
+                        }
+                        
+                        // Load the Quantum web app directly
+                        let quantumUrl = "http://localhost:3000"
+                        quantumWebView.load(URLRequest(url: URL(string: quantumUrl)!))
+                        
+                        await MainActor.run {
+                            // Present the Quantum view controller
+                            quantumViewController.modalPresentationStyle = .fullScreen
+                            self.present(quantumViewController, animated: true) {
+                                print("✅ Presented Quantum web view controller")
+                            }
+                        }
+                    } catch {
+                        print("❌ Failed to initialize Quantum: \(error)")
+                    }
+                }
+                
+            default:
+                // For other integrations (like Varo), use the native link if provided
+                if let nativeLink = payload["nativeLink"] as? String,
+                   let url = URL(string: nativeLink) {
+                    webView.load(URLRequest(url: url))
+                }
+            }
+            
+        case JSMessageType.showClose.rawValue:
+            // Handle show close message
+            print("Show close button")
+            
+        case JSMessageType.close.rawValue:
+            // Handle close message
             configuration.onExit?()
-        case .integrationSelected:
-            guard let payload = messageBody["payload"] as? [String: Any],
-                  let nativeLink = payload["nativeLink"] as? String,
-                  let url = URL(string: nativeLink),
-                  !["http", "https"].contains(url.scheme ?? "") else { return }
-            let canOpen = UIApplication.shared.canOpenURL(url)
-            let js = "window.handleNativeLink = { url: '\(url.absoluteString)', canOpen: \(canOpen) };"
-            webView.evaluateJavaScript(js)
-        case .loaded:
-            configuration.onEvent?(messageBody)
-
-            var script = "window.meshSdkPlatform = 'iOS';"
-            let bundle = Bundle(identifier: "com.meshconnect.LinkSDK")
-            if let version = bundle?.infoDictionary?["CFBundleShortVersionString"] {
-                script += "window.meshSdkVersion = '\(version)';"
-            }
             
-            if let accessTokens = configuration.settings?.accessTokens {
-                if let data = try? JSONEncoder().encode(accessTokens),
-                   let jsonString = String(data: data, encoding: String.Encoding.utf8) {
-                    script += "window.accessTokens = '\(jsonString)';"
-                }
-            }
-            if let transferDestinationTokens = configuration.settings?.transferDestinationTokens {
-                if let data = try? JSONEncoder().encode(transferDestinationTokens),
-                   let jsonString = String(data: data, encoding: String.Encoding.utf8) {
-                    script += "window.transferDestinationTokens = '\(jsonString)';"
-                }
-            }
+        case JSMessageType.done.rawValue:
+            // Handle done message
+            print("Done message received")
             
-            webView.evaluateJavaScript(script)
-        case .none:
-            configuration.onEvent?(messageBody)
+        case JSMessageType.brokerageAccountAccessToken.rawValue:
+            // Handle brokerage account access token
+            print("Brokerage account access token received")
+            
+        case JSMessageType.delayedAuthentication.rawValue:
+            // Handle delayed authentication
+            print("Delayed authentication message received")
+            
+        case JSMessageType.showNativeNavbar.rawValue:
+            // Handle show native navbar
+            showNativeNavbar(true)
+            
+        case JSMessageType.transferFinished.rawValue:
+            // Handle transfer finished
+            print("Transfer finished message received")
+            
+        case JSMessageType.loaded.rawValue:
+            // Handle loaded
+            print("Loaded message received")
+            
+        default:
+            print("⚠️ Unhandled message type: \(type)")
         }
     }
     
     @objc(webView:createWebViewWithConfiguration:forNavigationAction:windowFeatures:)
-    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         guard !(navigationAction.targetFrame?.isMainFrame ?? false) else { return nil }
         webView.load(navigationAction.request)
         return nil
+    }
+    
+    internal func handleQuantumMessage(_ message: WKScriptMessage) {
+        guard let messageBody = message.body as? [String: Any],
+              let type = messageBody["type"] as? String else {
+            print("❌ Invalid Quantum message format")
+            return
+        }
+        
+        switch type {
+        case "launchBrowser":
+            guard let url = messageBody["url"] as? String,
+                  let url = URL(string: url) else {
+                print("❌ Invalid URL in launchBrowser message")
+                return
+            }
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            
+        case "authenticate":
+            // Handle authentication if needed
+            print("🔐 Quantum authentication requested")
+            
+        default:
+            print("⚠️ Unhandled Quantum message type: \(type)")
+        }
     }
 }

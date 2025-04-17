@@ -6,18 +6,27 @@ import PackageDescription
 let package = Package(
     name: "LinkSDK",
     platforms: [
-      .iOS(.v13),
+        .iOS(.v13)
     ],
     products: [
         .library(
             name: "LinkSDK",
+            type: .dynamic,
             targets: ["LinkSDK"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/atomicfi/quantum-ios.git", branch: "main")
+    ],
     targets: [
-        .binaryTarget(
+        .target(
             name: "LinkSDK",
-            url: "https://github.com/FrontFin/mesh-ios-sdk/releases/download/3.0.10/LinkSDK.xcframework.zip",
-            checksum: "3be23a40ec3851d20d45c7795c250b7425faf9c1a36d37d8b07b262d6ec7f7aa"
+            dependencies: [
+                .product(name: "QuantumIOS", package: "quantum-ios")
+            ],
+            path: "LinkSDK",
+            linkerSettings: [
+                .linkedFramework("QuantumIOS")
+            ]
         )
     ]
 )

@@ -16,10 +16,14 @@ public enum LinkResult {
 public struct LinkSettings {
     public var accessTokens: [IntegrationAccessToken]?
     public var transferDestinationTokens: [IntegrationAccessToken]?
+    public var quantumConfig: [String: Any]?
+    
     public init(accessTokens: [IntegrationAccessToken]? = nil,
-                transferDestinationTokens: [IntegrationAccessToken]? = nil) {
+                transferDestinationTokens: [IntegrationAccessToken]? = nil,
+                quantumConfig: [String: Any]? = nil) {
         self.accessTokens = accessTokens
         self.transferDestinationTokens = transferDestinationTokens
+        self.quantumConfig = quantumConfig
     }
 }
 
