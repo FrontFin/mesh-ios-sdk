@@ -13,18 +13,13 @@ public enum LinkResult {
     case success(LinkHandler)
 }
 
-public enum Language: String {
-    case en
-    case ru
-}
-
 public struct LinkSettings {
     public var accessTokens: [IntegrationAccessToken]?
     public var transferDestinationTokens: [IntegrationAccessToken]?
-    public var language: Language?
+    public var language: String?
     public init(accessTokens: [IntegrationAccessToken]? = nil,
                 transferDestinationTokens: [IntegrationAccessToken]? = nil,
-                language: Language? = nil) {
+                language: String? = nil) {
         self.accessTokens = accessTokens
         self.transferDestinationTokens = transferDestinationTokens
         self.language = language
@@ -114,7 +109,7 @@ public class LinkHandler {
     }
     
     func showExitAlert() {
-        let locale = Locale(identifier: configuration.settings?.language?.rawValue ?? "en")
+        let locale = Locale(identifier: configuration.settings?.language ?? "en-US")
         let title = String(localized: "onExit_alert_title", locale: locale)
         let message = String(localized: "onExit_alert_message", locale: locale)
         let exit = String(localized: "onExit_alert_exit", locale: locale)

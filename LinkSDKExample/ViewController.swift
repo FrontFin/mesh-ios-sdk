@@ -65,7 +65,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        let settings = LinkSettings(language: .en)
+        let settings = LinkSettings(language: "en-US")
         
         let onIntegrationConnected: (LinkPayload)->() = { linkPayload in
             var message: String
