@@ -38,6 +38,7 @@ let configuration = LinkConfiguration(
 The `LinkSettings` class allows to configure the Link behaviour:
 - `accessTokens` - an array of `IntegrationAccessToken` objects that is used as an origin for crypto transfer flow;
 - `transferDestinationTokens` - an array of `IntegrationAccessToken` objects that is used as a destination for crypto transfer flow;
+- `language` - a locale identifier for Link UI
 
 The `disableDomainWhiteList` parameter is a boolean flag that allows to disable origin whitelisting. By default, the origin is whitelisted, with the predefined domains set
 
