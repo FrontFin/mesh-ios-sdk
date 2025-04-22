@@ -16,10 +16,13 @@ public enum LinkResult {
 public struct LinkSettings {
     public var accessTokens: [IntegrationAccessToken]?
     public var transferDestinationTokens: [IntegrationAccessToken]?
+    public var language: String?
     public init(accessTokens: [IntegrationAccessToken]? = nil,
-                transferDestinationTokens: [IntegrationAccessToken]? = nil) {
+                transferDestinationTokens: [IntegrationAccessToken]? = nil,
+                language: String? = nil) {
         self.accessTokens = accessTokens
         self.transferDestinationTokens = transferDestinationTokens
+        self.language = language
     }
 }
 
@@ -31,13 +34,18 @@ public class LinkConfiguration {
     var onTransferFinished: ((TransferFinishedPayload) -> Void)?
     var onEvent: (([String: Any]?) -> Void)?
     var onExit: (() -> Void)?
-    
+    var linkViewController: LinkWebViewViewController?
+    var originalOnExit: (() -> Void)?
+
     var catalogLink: String? {
         guard let linkTokenData = Data(base64Encoded: linkToken),
-              let catalogLink = String(data: linkTokenData, encoding: .utf8),
+              var catalogLink = String(data: linkTokenData, encoding: .utf8),
               let url = URL(string: catalogLink),
               UIApplication.shared.canOpenURL(url) else {
             return nil
+        }
+        if let language = settings?.language {
+            catalogLink += "\(catalogLink.contains("?") ? "&" : "?")lng=\(language)"
         }
         return catalogLink
     }
@@ -90,13 +98,32 @@ public class LinkHandler {
     }
     
     public func present(in viewController: UIViewController) {
-        let originalOnExit = configuration.onExit
-        configuration.onExit = {
-            originalOnExit?()
-            viewController.dismiss(animated: true)
+        configuration.originalOnExit = configuration.onExit
+        configuration.onExit = { [self] in
+            showExitAlert()
         }
         let linkViewController = LinkWebViewViewController(configuration: configuration)
         linkViewController.modalPresentationStyle = .fullScreen
         viewController.present(linkViewController, animated: true)
+        configuration.linkViewController = linkViewController
     }
+    
+    func showExitAlert() {
+        let locale = Locale(identifier: configuration.settings?.language ?? "en-US")
+        let title = String(localized: "onExit_alert_title", locale: locale)
+        let message = String(localized: "onExit_alert_message", locale: locale)
+        let exit = String(localized: "onExit_alert_exit", locale: locale)
+        let cancel = String(localized: "onExit_alert_cancel", locale: locale)
+        
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: exit, style: .default) { [self] _ in
+            configuration.linkViewController?.dismiss(animated: true) { [self] in
+                configuration.originalOnExit?()
+            }
+        }
+        alert.addAction(okAction)
+        alert.addAction(UIAlertAction(title: cancel, style: .cancel))
+        configuration.linkViewController?.present(alert, animated: true, completion: nil)
+    }
+
 }

@@ -1,0 +1,11 @@
+//
+//  Localizable.strings
+//  LinkSDK
+//
+//  Created by Mesh Connect, Inc
+//
+
+"onExit_alert_title" = "Вы уверены, что хотите выйти?";
+"onExit_alert_message" = "Ваш прогресс будет потерян.";
+"onExit_alert_exit" = "Да, выйти";
+"onExit_alert_cancel" = "Нет, продолжить";

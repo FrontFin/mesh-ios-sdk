@@ -21,16 +21,29 @@ class ViewController: UIViewController, UITextFieldDelegate {
         connectAccountButton.layer.borderColor = UIColor.black.cgColor
         connectAccountButton.layer.borderWidth = 1
         connectAccountButton.layer.cornerRadius = connectAccountButton.bounds.size.height * 0.5
+        
+        if let linkToken = UIPasteboard.general.string,
+           let linkTokenData = Data(base64Encoded: linkToken),
+           let catalogLink = String(data: linkTokenData, encoding: .utf8),
+           let _ = URL(string: catalogLink) {
+            linkTokenTextField.text = linkToken
+            validateLinkToken(linkToken)
+        }
     }
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        linkToken = linkTokenTextField.text
-        let configuration = LinkConfiguration(linkToken: linkToken ?? "")
+    @discardableResult func validateLinkToken(_ linkToken: String) -> Bool {
+        let configuration = LinkConfiguration(linkToken: linkToken)
         guard configuration.isLinkTokenValid else {
             connectAccountButton.isEnabled = false
             return false
         }
+        self.linkToken = linkToken
         connectAccountButton.isEnabled = true
+        return true
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        guard validateLinkToken(linkTokenTextField.text ?? "") else { return false }
         linkTokenTextField.resignFirstResponder()
         return true
     }
@@ -52,7 +65,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        let settings = LinkSettings()
+        let settings = LinkSettings(language: "en-US")
         
         let onIntegrationConnected: (LinkPayload)->() = { linkPayload in
             var message: String
@@ -102,6 +115,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             print("Event: \(payload ?? [:])")
         }
         let onExit: ()->() = {
+            print("Exit")
         }
         
         let configuration = LinkConfiguration(
