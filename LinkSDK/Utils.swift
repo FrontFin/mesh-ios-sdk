@@ -49,6 +49,21 @@ func decodeUrlSafeBase64(encodedString: String) -> Data? {
     return decodedData
 }
 
+func localizedString(forKey key: String, locale: Locale, tableName: String? = nil) -> String {
+    guard let languageCode = locale.languageCode else {
+        return NSLocalizedString(key, comment: "")
+    }
+    
+    // Try to find the path for the language bundle
+    if let path = Bundle.main.path(forResource: languageCode, ofType: "lproj"),
+       let bundle = Bundle(path: path) {
+        return NSLocalizedString(key, tableName: tableName, bundle: bundle, value: "", comment: "")
+    }
+    
+    // Fallback to the default localization
+    return NSLocalizedString(key, comment: "")
+}
+
 import CryptoKit
 
 extension String {

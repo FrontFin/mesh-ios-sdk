@@ -22,7 +22,7 @@ xcodebuild archive \
 -configuration Release \
 -destination 'generic/platform=iOS' \
 -archivePath "$BUILD_FOLDER"'/'"$SDK_FRAMEWORK_NAME"'.framework-iphoneos.xcarchive' \
-IPHONEOS_DEPLOYMENT_TARGET=15.0 \
+IPHONEOS_DEPLOYMENT_TARGET=13.0 \
 SKIP_INSTALL=NO \
 BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
 MARKETING_VERSION=$MARKETING_VERSION \
@@ -34,7 +34,7 @@ xcodebuild archive \
 -configuration Release \
 -destination 'generic/platform=iOS Simulator' \
 -archivePath "$BUILD_FOLDER"'/'"$SDK_FRAMEWORK_NAME"'.framework-iphonesimulator.xcarchive' \
-IPHONEOS_DEPLOYMENT_TARGET=15.0 \
+IPHONEOS_DEPLOYMENT_TARGET=13.0 \
 SKIP_INSTALL=NO \
 BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
 MARKETING_VERSION=$MARKETING_VERSION \

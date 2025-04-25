@@ -110,10 +110,10 @@ public class LinkHandler {
     
     func showExitAlert() {
         let locale = Locale(identifier: configuration.settings?.language ?? "en-US")
-        let title = String(localized: "onExit_alert_title", locale: locale)
-        let message = String(localized: "onExit_alert_message", locale: locale)
-        let exit = String(localized: "onExit_alert_exit", locale: locale)
-        let cancel = String(localized: "onExit_alert_cancel", locale: locale)
+        let title = localizedString(forKey: "onExit_alert_title", locale: locale)
+        let message = localizedString(forKey: "onExit_alert_message", locale: locale)
+        let exit = localizedString(forKey: "onExit_alert_exit", locale: locale)
+        let cancel = localizedString(forKey: "onExit_alert_cancel", locale: locale)
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: exit, style: .default) { [self] _ in
@@ -125,5 +125,5 @@ public class LinkHandler {
         alert.addAction(UIAlertAction(title: cancel, style: .cancel))
         configuration.linkViewController?.present(alert, animated: true, completion: nil)
     }
-
+    
 }
