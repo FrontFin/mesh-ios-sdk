@@ -187,6 +187,10 @@ class LinkWebViewViewController: UIViewController {
         webView.configuration.userContentController = contentController
         webView.configuration.userContentController.add(self, name: jsMessageHandler)
         webView.uiDelegate = self
+        
+        if #available(iOS 16.4, *) {
+            webView.isInspectable = true
+        }
     }
     
     private func updateThemeVars(linkUrl: String){
