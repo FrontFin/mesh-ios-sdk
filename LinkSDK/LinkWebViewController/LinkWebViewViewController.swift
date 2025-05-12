@@ -57,6 +57,7 @@ enum JSMessageType: String {
     case transferFinished
     case loaded
     case integrationSelected
+    case openTrueAuth
 }
 
 public enum TransferFinishedStatus: String {
@@ -375,6 +376,8 @@ extension LinkWebViewViewController: WKNavigationDelegate {
     }
 }
 
+
+
 extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -448,6 +451,9 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
             }
             
             webView.evaluateJavaScript(script)
+        case .openTrueAuth:
+            print("openTrueAuth")
+            break
         case .none:
             configuration.onEvent?(messageBody)
         }

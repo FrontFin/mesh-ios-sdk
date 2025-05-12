@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -89,6 +89,10 @@
 		11E1157E2CC1151900F08496 /* LinkSDKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LinkSDKTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		FAD903DD2DD22A360012F673 /* TrueAuthWebViewController */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TrueAuthWebViewController; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		11E115052CC0149D00F08496 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -156,6 +160,7 @@
 		11E114EF2CC0130800F08496 /* LinkSDK */ = {
 			isa = PBXGroup;
 			children = (
+				FAD903DD2DD22A360012F673 /* TrueAuthWebViewController */,
 				11E114E92CC0130800F08496 /* LinkWebViewController */,
 				11E114EB2CC0130800F08496 /* Models */,
 				11E114EC2CC0130800F08496 /* LinkSDK.swift */,
@@ -233,6 +238,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				FAD903DD2DD22A360012F673 /* TrueAuthWebViewController */,
+			);
 			name = LinkSDK;
 			packageProductDependencies = (
 			);
@@ -253,6 +261,9 @@
 			dependencies = (
 				11E115842CC1151900F08496 /* PBXTargetDependency */,
 				11F31F802CC125DE00CFB8C9 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FAD903DD2DD22A360012F673 /* TrueAuthWebViewController */,
 			);
 			name = LinkSDKTests;
 			packageProductDependencies = (
