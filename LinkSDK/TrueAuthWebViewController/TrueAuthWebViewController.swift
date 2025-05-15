@@ -75,7 +75,7 @@ class TrueAuthWebViewController: UIViewController {
                     view: webView,
                     controller: self
                 )
-                let it = try await quantum.goto(url: configuration.url)
+                _ = try await quantum.goto(url: configuration.url)
             } catch {
                 print("❌ Failed to initialize Quantum: \(error)")
             }
