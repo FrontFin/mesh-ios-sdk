@@ -1,0 +1,15 @@
+{
+  "originHash" : "64c0683614a823d40c5300f2b2c9c56b0f61e8fa7606a131ab075b27c1c2b6c6",
+  "pins" : [
+    {
+      "identity" : "quantum-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/atomicfi/quantum-ios.git",
+      "state" : {
+        "revision" : "599f9b4792003f59a86fdfe1edb87c48071639b6",
+        "version" : "3.12.0"
+      }
+    }
+  ],
+  "version" : 3
+}

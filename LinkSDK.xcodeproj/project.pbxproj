@@ -27,6 +27,7 @@
 		11E1158E2CC11D8800F08496 /* LinkSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114EC2CC0130800F08496 /* LinkSDK.swift */; };
 		11E1159B2CC1200800F08496 /* LinkWebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */; };
 		11E1159D2CC1201700F08496 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114EE2CC0130800F08496 /* Utils.swift */; };
+		FAD903EC2DD4C82A0012F673 /* QuantumIOS in Frameworks */ = {isa = PBXBuildFile; productRef = FAD903EB2DD4C82A0012F673 /* QuantumIOS */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +107,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAD903EC2DD4C82A0012F673 /* QuantumIOS in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +245,7 @@
 			);
 			name = LinkSDK;
 			packageProductDependencies = (
+				FAD903EB2DD4C82A0012F673 /* QuantumIOS */,
 			);
 			productName = LinkSDK;
 			productReference = 11E115222CC0158100F08496 /* LinkSDK.framework */;
@@ -306,6 +309,9 @@
 			);
 			mainGroup = 11E114BD2CC012BC00F08496;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FAD903EA2DD4C82A0012F673 /* XCRemoteSwiftPackageReference "quantum-ios" */,
+			);
 			productRefGroup = 11E114C72CC012BC00F08496 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -750,6 +756,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FAD903EA2DD4C82A0012F673 /* XCRemoteSwiftPackageReference "quantum-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/atomicfi/quantum-ios.git";
+			requirement = {
+				kind = exactVersion;
+				version = 3.12.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FAD903EB2DD4C82A0012F673 /* QuantumIOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAD903EA2DD4C82A0012F673 /* XCRemoteSwiftPackageReference "quantum-ios" */;
+			productName = QuantumIOS;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 11E114BE2CC012BC00F08496 /* Project object */;
 }
