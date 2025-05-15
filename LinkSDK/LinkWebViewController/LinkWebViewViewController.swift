@@ -454,16 +454,16 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
             
             webView.evaluateJavaScript(script)
         case .openTrueAuth:
-            print("openTrueAuth")
-            let url = messageBody["link"] as! String
-            let resultHandler: (String)->() = { result in
-                self.webView.evaluateJavaScript("window.trueAuthResult = '\(result)';")
+            if let url = messageBody["link"] as? String {
+                let resultHandler: (String)->() = { result in
+                    self.webView.evaluateJavaScript("window.trueAuthResult = '\(result)';")
+                }
+                let trueAuthViewController = TrueAuthWebViewController(
+                    configuration: TrueAuthConfiguration(url: url, resultHandler: resultHandler)
+                )
+                trueAuthViewController.modalPresentationStyle = .fullScreen
+                present(trueAuthViewController, animated: true)
             }
-            let trueAuthViewController = TrueAuthWebViewController(
-                configuration: TrueAuthConfiguration(url: url, resultHandler: resultHandler)
-            )
-            trueAuthViewController.modalPresentationStyle = .fullScreen
-            present(trueAuthViewController, animated: true)
         case .none:
             configuration.onEvent?(messageBody)
         }

@@ -29,20 +29,17 @@ class TrueAuthWebViewController: UIViewController {
     private let webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         let contentController = WKUserContentController()
-        let wkWebView = WKWebView(frame: .zero, configuration: configuration)
-        
-        wkWebView.contentMode = .scaleToFill
-        wkWebView.configuration.userContentController = contentController
-        wkWebView.translatesAutoresizingMaskIntoConstraints = false
-        wkWebView.backgroundColor = UIColor(
+        let webView = WKWebView(frame: .zero, configuration: configuration)
+        webView.contentMode = .scaleToFill
+        webView.configuration.userContentController = contentController
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.backgroundColor = UIColor(
             cgColor: CGColor(genericGrayGamma2_2Gray: 1, alpha: 1)
         )
-        #if DEBUG
-            if #available(iOS 16.4, *) {
-                wkWebView.isInspectable = true
-            }
-        #endif
-        return wkWebView
+        if #available(iOS 16.4, *) {
+            webView.isInspectable = true
+        }
+        return webView
     }()
 
     init(configuration: TrueAuthConfiguration) {
@@ -96,8 +93,9 @@ extension TrueAuthWebViewController: WKScriptMessageHandler {
             return
         }
         if type == "trueAuthResult" {
-            let result = messageBody["result"] as? String
-            result.map { configuration.resultHandler($0) }
+            if let result = messageBody["result"] as? String {
+                configuration.resultHandler(result)
+            }
             self.dismiss(animated: true)
         }
     }
