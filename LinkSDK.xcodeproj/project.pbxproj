@@ -760,7 +760,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		FAD903EA2DD4C82A0012F673 /* XCRemoteSwiftPackageReference "quantum-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/atomicfi/quantum-ios.git";
+			repositoryURL = "git@github.com:atomicfi/quantum-ios.git";
 			requirement = {
 				kind = exactVersion;
 				version = 3.12.0;
