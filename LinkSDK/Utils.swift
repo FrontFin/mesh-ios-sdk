@@ -55,14 +55,15 @@ func localizedString(forKey key: String, locale: Locale, tableName: String? = ni
     }
     
     // Try to find the path for the language bundle
-    let bundle = Bundle(for: LinkConfiguration.self)
-    print("bundle: \(bundle)")
-    if let path = bundle.path(forResource: languageCode, ofType: "lproj") {
-        print("path: \(path)")
-
-        if let langBundle = Bundle(path: path) {
-            print("langBundle: \(langBundle)")
-            return NSLocalizedString(key, tableName: tableName, bundle: langBundle, value: "", comment: "")
+    if let bundle = Bundle(identifier: "com.meshconnect.LinkSDK") {
+        print("bundle: \(bundle)")
+        if let path = bundle.path(forResource: languageCode, ofType: "lproj") {
+            print("path: \(path)")
+            
+            if let langBundle = Bundle(path: path) {
+                print("langBundle: \(langBundle)")
+                return NSLocalizedString(key, tableName: tableName, bundle: langBundle, value: "", comment: "")
+            }
         }
     }
     
