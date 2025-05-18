@@ -55,11 +55,18 @@ func localizedString(forKey key: String, locale: Locale, tableName: String? = ni
     }
     
     // Try to find the path for the language bundle
-    if let path = Bundle.main.path(forResource: languageCode, ofType: "lproj"),
-       let bundle = Bundle(path: path) {
-        return NSLocalizedString(key, tableName: tableName, bundle: bundle, value: "", comment: "")
+    let bundle = Bundle(for: LinkConfiguration.self)
+    print("bundle: \(bundle)")
+    if let path = bundle.path(forResource: languageCode, ofType: "lproj") {
+        print("path: \(path)")
+
+        if let langBundle = Bundle(path: path) {
+            print("langBundle: \(langBundle)")
+            return NSLocalizedString(key, tableName: tableName, bundle: langBundle, value: "", comment: "")
+        }
     }
     
+    print("fallback")
     // Fallback to the default localization
     return NSLocalizedString(key, comment: "")
 }
