@@ -6,18 +6,21 @@ import PackageDescription
 let package = Package(
     name: "LinkSDK",
     platforms: [
-      .iOS(.v15),
+      .iOS(.v13),
     ],
     products: [
         .library(
             name: "LinkSDK",
             targets: ["LinkSDK"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/FrontFin/mesh-ios-sdk/releases/download/3.0.16/LinkSDK.xcframework.zip")
+    ],
     targets: [
         .binaryTarget(
             name: "LinkSDK",
-            url: "https://github.com/FrontFin/mesh-ios-sdk/releases/download/3.0.15/LinkSDK.xcframework.zip",
-            checksum: "af37e6ef1f44b9fdda31689a23c35b8007cb14a61e3c2add4046d3ba83ddc406"
+            url: "https://github.com/FrontFin/mesh-ios-sdk/releases/download/3.0.16/LinkSDK.xcframework.zip",
+            checksum: "791858e6e75bb2d67140a0cc751d9201d1759610bfa5ab97facb0a5392db4366"
         )
     ]
 )
