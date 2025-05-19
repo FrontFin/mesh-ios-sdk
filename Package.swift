@@ -14,13 +14,13 @@ let package = Package(
             targets: ["LinkSDK"]),
     ],
     dependencies: [
-        .package(url: "git@github.com:atomicfi/quantum-ios.git", exact: "3.12.0")
+        .package(url: "git@github.com:atomicfi/quantum-ios.git", .exact("3.12.0"))
     ],
     targets: [
         .binaryTarget(
             name: "LinkSDK",
             url: "https://github.com/FrontFin/mesh-ios-sdk/releases/download/3.0.16/LinkSDK.xcframework.zip",
-            checksum: "47d3a279cc877d8c922806482a122110325504f75855c9760f4590a978bd2d0e"
+            checksum: "685fd85f1b1308175c6f09ca1c2f8c69a8eeee63c02e7dfbff7719f60414dea1"
         )
     ]
 )
