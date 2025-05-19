@@ -14,7 +14,7 @@ let package = Package(
             targets: ["LinkSDK"]),
     ],
     dependencies: [
-        .package(url: "git@github.com:atomicfi/quantum-ios.git", .exact("3.12.0"))
+        .package(url: "https://github.com/atomicfi/quantum-ios.git", .exact("3.12.0"))
     ],
     targets: [
         .binaryTarget(

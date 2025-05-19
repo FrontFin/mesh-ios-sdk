@@ -3,10 +3,10 @@
     {
       "identity" : "quantum-ios",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/atomicfi/quantum-ios.git",
+      "location" : "git@github.com:atomicfi/quantum-ios.git",
       "state" : {
-        "revision" : "b73f64eef25f0ae3c92fed64fe28d858f9eb8389",
-        "version" : "3.16.1"
+        "revision" : "599f9b4792003f59a86fdfe1edb87c48071639b6",
+        "version" : "3.12.0"
       }
     }
   ],
