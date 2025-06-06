@@ -44,7 +44,8 @@ let whitelistedOrigins = [
     //Revolut
     "https://ramp.revolut.codes",
     "https://sso.revolut.codes",
-    "https://ramp.revolut.com"
+    "https://ramp.revolut.com",
+    "http://localhost:3001"
 ]
 
 enum JSMessageType: String {
@@ -57,6 +58,7 @@ enum JSMessageType: String {
     case transferFinished
     case loaded
     case integrationSelected
+    case openTrueAuth
 }
 
 public enum TransferFinishedStatus: String {
@@ -448,6 +450,17 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
             }
             
             webView.evaluateJavaScript(script)
+        case .openTrueAuth:
+            if let url = messageBody["link"] as? String {
+                let resultHandler: (String)->() = { result in
+                    self.webView.evaluateJavaScript("window.trueAuthResult = '\(result)';")
+                }
+                let trueAuthViewController = TrueAuthWebViewController(
+                    configuration: TrueAuthConfiguration(url: url, resultHandler: resultHandler)
+                )
+                trueAuthViewController.modalPresentationStyle = .fullScreen
+                present(trueAuthViewController, animated: true)
+            }
         case .none:
             configuration.onEvent?(messageBody)
         }
