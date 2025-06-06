@@ -54,24 +54,34 @@ class TrueAuthWebViewController: UIViewController {
 
     override func viewDidLoad() {
         setupWebView()
-        setupQuantum()
     }
 
     private func setupWebView() {
+        // attach js message handler
         webView.configuration.userContentController.add(
             self,
             name: jsMessageHandler
         )
+        // add web view
         view.addSubview(webView)
+        
+        // clean session cookies before auth
+        let cookieStore = WKWebsiteDataStore.default().httpCookieStore
+        cookieStore.getAllCookies { cookies in
+            for cookie in cookies {
+                if cookie.isSessionOnly {
+                    cookieStore.delete(cookie)
+                }
+            }
+            // when done setup Quantum and open sign in page
+            self.setupQuantum()
+        }
     }
 
     private func setupQuantum() {
         Task {
             do {
-                try await quantum.initialize(
-                    view: webView,
-                    controller: self
-                )
+                try await quantum.initialize(view: webView, controller: self)
                 _ = try await quantum.goto(url: configuration.url)
             } catch {
                 print("❌ Failed to initialize Quantum: \(error)")
@@ -96,6 +106,7 @@ extension TrueAuthWebViewController: WKScriptMessageHandler {
             if let result = messageBody["result"] as? String {
                 configuration.resultHandler(result)
             }
+            quantum.cleanup()
             self.dismiss(animated: true)
         }
     }

@@ -377,12 +377,9 @@ extension LinkWebViewViewController: WKNavigationDelegate {
     }
 }
 
-
-
 extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        print(message)
         guard message.name == jsMessageHandler,
               let messageBody = message.body as? [String: Any],
               let type = messageBody["type"] as? String else {
