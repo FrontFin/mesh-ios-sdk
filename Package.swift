@@ -22,8 +22,10 @@ let package = Package(
         )
     ],
     targets: [
-        .target(
+        .binaryTarget(
             name: "LinkSDK",
+            url: "https://github.com/FrontFin/mesh-ios-sdk/releases/download/3.0.19/LinkSDK.xcframework.zip",
+            checksum: "bd59c8eeea22278bbf3a17832c05e8e3160a7a8c6f05d2f4a4f8e80ca5e0aa14",
             dependencies: [
                 .product(name: "QuantumIOS", package: "quantum-ios")
             ],
