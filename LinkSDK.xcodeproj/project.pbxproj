@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		112288BE2DA9264D007D65D5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 112288BC2DA9264D007D65D5 /* Localizable.strings */; };
 		112288BF2DA9264D007D65D5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 112288BC2DA9264D007D65D5 /* Localizable.strings */; };
+		118517E32DDB8021005C48CF /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 112288BC2DA9264D007D65D5 /* Localizable.strings */; };
 		11E1152A2CC0158100F08496 /* LinkSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11E115222CC0158100F08496 /* LinkSDK.framework */; };
 		11E1152B2CC0158100F08496 /* LinkSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 11E115222CC0158100F08496 /* LinkSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		11E115602CC018DD00F08496 /* LinkWebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */; };
@@ -235,6 +236,7 @@
 				11E1151D2CC0158100F08496 /* Headers */,
 				11E1151E2CC0158100F08496 /* Sources */,
 				11E1151F2CC0158100F08496 /* Frameworks */,
+				118517E22DDB801C005C48CF /* Resources */,
 			);
 			buildRules = (
 			);
@@ -324,6 +326,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		118517E22DDB801C005C48CF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				118517E32DDB8021005C48CF /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		11E115062CC0149D00F08496 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
