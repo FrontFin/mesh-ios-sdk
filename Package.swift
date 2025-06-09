@@ -26,7 +26,7 @@ let package = Package(
             dependencies: [
                 .product(name: "QuantumIOS", package: "quantum-ios")
             ],
-            path: "Sources",
+            path: "LinkSDK",
             linkerSettings: [
                 .linkedFramework("QuantumIOS")
             ]
