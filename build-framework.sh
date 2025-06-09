@@ -59,5 +59,5 @@ SDK_URL="https://github.com/FrontFin/mesh-ios-sdk/releases/download/$MARKETING_V
 
 # Update Package.swift
 sed -i '' "s|checksum: \".*\"|checksum: \"$CHECKSUM\"|g" Package.swift
-sed -i '' "s|url: \".*mesh-ios-sdk.*\"|url: \"$SDK_URL\"|g" Package.swift
+sed -i '' "s|url: \".*\"|url: \"$SDK_URL\"|g" Package.swift
 rm -r $SDK_FRAMEWORK_FILENAME
