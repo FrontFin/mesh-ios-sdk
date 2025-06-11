@@ -53,21 +53,17 @@ func localizedString(forKey key: String, locale: Locale, tableName: String? = ni
     guard let languageCode = locale.languageCode else {
         return NSLocalizedString(key, comment: "")
     }
-    
-    // Try to find the path for the language bundle
-    if let bundle = Bundle(identifier: "com.meshconnect.LinkSDK") {
-        if let path = bundle.path(forResource: languageCode, ofType: "lproj") {
-            if let langBundle = Bundle(path: path) {
-                return NSLocalizedString(key, tableName: tableName, bundle: langBundle, value: "", comment: "")
-            }
-        }
-    } else if let path = Bundle.main.path(forResource: languageCode, ofType: "lproj", inDirectory: "Frameworks/LinkSDK.framework"),
-              let langBundle = Bundle(path: path) {
+            
+    var path = Bundle.main.path(forResource: languageCode, ofType: "lproj", inDirectory: "LinkSDK_LinkSDK.bundle")
+    if path == nil {
+        path = Bundle.main.path(forResource: "en", ofType: "lproj", inDirectory: "LinkSDK_LinkSDK.bundle")
+    }
+    if let path, let langBundle = Bundle(path: path) {
         return NSLocalizedString(key, tableName: tableName, bundle: langBundle, value: "", comment: "")
     }
 
-    // Fallback to the default localization
-    return NSLocalizedString(key, comment: "")
+    let bundle = Bundle(for: LinkConfiguration.self)
+    return NSLocalizedString(key, bundle: bundle, comment: "")
 }
 
 import CryptoKit
