@@ -7,7 +7,7 @@ let package = Package(
     name: "LinkSDK",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v15)
+        .iOS(.v13)
     ],
     products: [
         .library(
