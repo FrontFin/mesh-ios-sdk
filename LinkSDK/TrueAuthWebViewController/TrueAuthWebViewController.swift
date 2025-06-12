@@ -13,10 +13,12 @@ import UIKit
 internal class TrueAuthConfiguration {
     let url: String
     let resultHandler: (String) -> Void
+    let userAgent: String?
 
-    init(url: String, resultHandler: @escaping (String) -> Void) {
+    init(url: String,  userAgent: String, resultHandler: @escaping (String) -> Void) {
         self.url = url
         self.resultHandler = resultHandler
+        self.userAgent = userAgent
     }
 }
 
@@ -26,9 +28,17 @@ class TrueAuthWebViewController: UIViewController {
     private var configuration: TrueAuthConfiguration
     private var jsMessageHandler = "jsMessageHandler"
 
-    private let webView: WKWebView = {
+    private lazy var webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         let contentController = WKUserContentController()
+        // ✅ Inject user agent before page load
+        if let ua = self.configuration.userAgent {
+                let escapedUserAgent = ua.replacingOccurrences(of: "'", with: "\\'")
+                let script = "window.nativeUserAgent = '\(escapedUserAgent)';"
+                let userScript = WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+                contentController.addUserScript(userScript)
+            }
+        
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.contentMode = .scaleToFill
         webView.configuration.userContentController = contentController
@@ -39,6 +49,7 @@ class TrueAuthWebViewController: UIViewController {
         if #available(iOS 16.4, *) {
             webView.isInspectable = true
         }
+        
         return webView
     }()
 
@@ -50,6 +61,30 @@ class TrueAuthWebViewController: UIViewController {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.getNativeUserAgent { userAgent in
+            guard let userAgent = userAgent else {
+                print("❌ Could not retrieve native user agent")
+                return
+            }
+
+            // Step 3: Inject user agent into JS context
+            let escapedUserAgent = userAgent.replacingOccurrences(of: "'", with: "\\'")
+            let script = "window.nativeUserAgent = '\(escapedUserAgent)';"
+            DispatchQueue.main.async {
+                self.webView.evaluateJavaScript(script)
+                let userScript = WKUserScript(
+                    source: script,
+                    injectionTime: .atDocumentStart,
+                    forMainFrameOnly: false
+                )
+                self.webView.configuration.userContentController.addUserScript(userScript)
+            }
+        }
     }
 
     override func viewDidLoad() {
@@ -73,10 +108,48 @@ class TrueAuthWebViewController: UIViewController {
                     cookieStore.delete(cookie)
                 }
             }
-            // when done setup Quantum and open sign in page
-            self.setupQuantum()
+            // After cookie cleanup, fetch native User-Agent
+            // Clean cookies
+            let cookieStore = WKWebsiteDataStore.default().httpCookieStore
+            cookieStore.getAllCookies { cookies in
+                for cookie in cookies where cookie.isSessionOnly {
+                    cookieStore.delete(cookie)
+                }
+                    // ✅ Now safe to initialize and load page
+                    DispatchQueue.main.async {
+                        self.setupQuantum()
+                    }
+                
+            }
         }
     }
+        
+    private func getNativeUserAgent(completion: @escaping (String?) -> Void) {
+        let config = URLSessionConfiguration.default
+        config.httpAdditionalHeaders = nil
+        let session = URLSession(configuration: config)
+
+        var request = URLRequest(url: URL(string: "https://httpbin.org/headers")!)
+        request.httpMethod = "GET"
+
+        let task = session.dataTask(with: request) { data, _, error in
+            guard let data = data, error == nil else {
+                completion(nil)
+                return
+            }
+
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let headers = json["headers"] as? [String: Any],
+               let userAgent = headers["User-Agent"] as? String {
+                completion(userAgent)
+            } else {
+                completion(nil)
+            }
+        }
+
+        task.resume()
+    }
+
 
     private func setupQuantum() {
         Task {
