@@ -454,15 +454,48 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
                 let resultHandler: (String)->() = { result in
                     self.webView.evaluateJavaScript("window.trueAuthResult = '\(result)';")
                 }
-                let trueAuthViewController = TrueAuthWebViewController(
-                    configuration: TrueAuthConfiguration(url: url, resultHandler: resultHandler)
-                )
-                trueAuthViewController.modalPresentationStyle = .fullScreen
-                present(trueAuthViewController, animated: true)
+                getNativeUserAgent { userAgent in
+                    if let userAgent = userAgent {
+                        DispatchQueue.main.async {
+                            let trueAuthViewController = TrueAuthWebViewController(
+                                configuration: TrueAuthConfiguration(url: url, userAgent: userAgent, resultHandler: resultHandler)
+                            )
+                            trueAuthViewController.modalPresentationStyle = .fullScreen
+                            self.present(trueAuthViewController, animated: true)
+                        }
+                    }
+                }
+                
             }
         case .none:
             configuration.onEvent?(messageBody)
         }
+    }
+    
+    private func getNativeUserAgent(completion: @escaping (String?) -> Void) {
+        let config = URLSessionConfiguration.default
+        config.httpAdditionalHeaders = nil
+        let session = URLSession(configuration: config)
+
+        var request = URLRequest(url: URL(string: "https://httpbin.org/headers")!)
+        request.httpMethod = "GET"
+
+        let task = session.dataTask(with: request) { data, _, error in
+            guard let data = data, error == nil else {
+                completion(nil)
+                return
+            }
+
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let headers = json["headers"] as? [String: Any],
+               let userAgent = headers["User-Agent"] as? String {
+                completion(userAgent)
+            } else {
+                completion(nil)
+            }
+        }
+
+        task.resume()
     }
     
     @objc(webView:createWebViewWithConfiguration:forNavigationAction:windowFeatures:)
