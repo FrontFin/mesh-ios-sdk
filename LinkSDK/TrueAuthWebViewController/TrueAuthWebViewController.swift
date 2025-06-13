@@ -149,17 +149,48 @@ class TrueAuthWebViewController: UIViewController {
 
         task.resume()
     }
+    
+    func traverseWindows() {
+        for window in UIApplication.shared.windows {
+            print("Window: \(window), Frame: \(window.frame)")
+            let tempWindow = window.rootViewController?.view
+            if let rootView = window.rootViewController?.view {
+                traverseSubviews(of: rootView)
+            }
+        }
+
+    }
+    
+    func traverseSubviews(of view: UIView) {
+        print("View: \(view), Frame: \(view.frame)")
+        for subView in view.subviews {
+            traverseSubviews(of: subView)
+        }
+
+    }
+
 
 
     private func setupQuantum() {
-        Task {
-            do {
-                try await quantum.initialize(view: webView, controller: self)
-                _ = try await quantum.goto(url: configuration.url)
-            } catch {
-                print("❌ Failed to initialize Quantum: \(error)")
+        self.getNativeUserAgent { userAgent in
+            guard let userAgent = userAgent else {
+                print("❌ Could not retrieve native user agent")
+                return
+            }
+            
+            // Step 3: Inject user agent into JS context
+            guard let urlEncoded = userAgent.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {return}
+            Task {
+                do {
+                    try await self.quantum.initialize(view: self.webView, controller: self)
+                    
+                    _ = try await self.quantum.goto(url: self.configuration.url + urlEncoded)
+                } catch {
+                    print("❌ Failed to initialize Quantum: \(error)")
+                }
             }
         }
+        
     }
 
 }
