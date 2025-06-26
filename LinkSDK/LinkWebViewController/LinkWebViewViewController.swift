@@ -16,7 +16,9 @@ let LIGHT_THEME_COLOR_BOTTOM : UInt = 0xFBFBFB
 
 let allowedUrls = [
     "https://link.trustwallet.com",
-    "https://appopener.meshconnect.com"
+    "https://appopener.meshconnect.com",
+    "https://www.coinbase.com",
+    "https://api.cb-device-intelligence.com"
 ]
 
 let whitelistedOrigins = [
@@ -24,7 +26,6 @@ let whitelistedOrigins = [
     ".walletconnect.com",
     ".walletconnect.org",
     ".walletlink.org",
-    ".coinbase.com",
     ".okx.com",
     ".gemini.com",
     ".hcaptcha.com",
@@ -36,8 +37,6 @@ let whitelistedOrigins = [
     "https://m.stripe.network",
     "https://js.stripe.com",
     "https://app.usercentrics.eu",
-    //Coinbase
-    "https://api.cb-device-intelligence.com",
     //Okx
     "https://contentmx.okcoin.com",
     "https://www.recaptcha.net",

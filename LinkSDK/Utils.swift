@@ -58,6 +58,9 @@ func localizedString(forKey key: String, locale: Locale, tableName: String? = ni
     if path == nil {
         path = Bundle.main.path(forResource: "en", ofType: "lproj", inDirectory: "LinkSDK_LinkSDK.bundle")
     }
+    if path == nil {
+        path = Bundle.main.path(forResource: "en", ofType: "lproj", inDirectory: "Frameworks/LinkSDK.framework")
+    }
     if let path, let langBundle = Bundle(path: path) {
         return NSLocalizedString(key, tableName: tableName, bundle: langBundle, value: "", comment: "")
     }
