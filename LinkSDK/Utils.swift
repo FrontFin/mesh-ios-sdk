@@ -71,6 +71,17 @@ func localizedString(forKey key: String, locale: Locale, tableName: String? = ni
 
 import CryptoKit
 
+// This function will return the git version that was embedded at build time
+func getEmbeddedGitVersion() -> String? {
+    // Try to get the git version from a generated file
+    if let path = Bundle(for: LinkConfiguration.self).path(forResource: "GitVersion", ofType: "txt"),
+       let version = try? String(contentsOfFile: path).trimmingCharacters(in: .whitespacesAndNewlines),
+       !version.isEmpty {
+        return version
+    }
+    return nil
+}
+
 extension String {
     var MD5: String {
         let digest = Insecure.MD5.hash(data: self.data(using: .utf8) ?? Data())

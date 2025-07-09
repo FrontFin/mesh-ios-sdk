@@ -1,5 +1,12 @@
-﻿.swiftpm
+.swiftpm
 
 ## User settings
 xcuserdata/
 *.xcworkspace/xcshareddata/swiftpm/
+
+## Generated files
+LinkSDK/GitVersion.txt
+
+## System files
+.DS_Store
+.idea/ 

@@ -429,8 +429,9 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
             configuration.onEvent?(messageBody)
 
             var script = "window.meshSdkPlatform = 'iOS';"
-            let bundle = Bundle(identifier: "com.meshconnect.LinkSDK")
-            if let version = bundle?.infoDictionary?["CFBundleShortVersionString"] {
+            
+            // Always use git version
+            if let version = getEmbeddedGitVersion() {
                 script += "window.meshSdkVersion = '\(version)';"
             }
             

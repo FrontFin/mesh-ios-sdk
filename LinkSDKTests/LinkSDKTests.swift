@@ -60,4 +60,61 @@ final class LinkSDKTests: XCTestCase {
         }
     }
 
+    // MARK: - Version Retrieval Tests
+    
+    func testEmbeddedGitVersionExists() throws {
+        // Test that getEmbeddedGitVersion() returns a valid version string
+        let gitVersion = getEmbeddedGitVersion()
+        XCTAssertNotNil(gitVersion, "Git version should be available")
+        
+        if let version = gitVersion {
+            XCTAssertFalse(version.isEmpty, "Git version should not be empty")
+            XCTAssertFalse(version == "unknown", "Git version should not be 'unknown' in normal circumstances")
+            
+            // Test that version follows semantic versioning pattern (e.g., "3.1.3")
+            let versionRegex = try NSRegularExpression(pattern: "^\\d+\\.\\d+\\.\\d+", options: [])
+            let range = NSRange(location: 0, length: version.utf16.count)
+            let matches = versionRegex.matches(in: version, options: [], range: range)
+            XCTAssertGreaterThan(matches.count, 0, "Version should follow semantic versioning pattern (x.y.z)")
+        }
+    }
+    
+    func testVersionConsistency() throws {
+        // Test that getEmbeddedGitVersion() returns consistent results
+        let version1 = getEmbeddedGitVersion()
+        let version2 = getEmbeddedGitVersion()
+        
+        XCTAssertEqual(version1, version2, "Git version should be consistent across calls")
+    }
+    
+    func testVersionInWebViewScript() throws {
+        // Test that version gets properly included in the JavaScript
+        let gitVersion = getEmbeddedGitVersion()
+        XCTAssertNotNil(gitVersion, "Git version should be available for script injection")
+        
+        if let version = gitVersion {
+            let expectedScript = "window.meshSdkVersion = '\(version)';"
+            
+            // Verify the script format is correct
+            XCTAssertTrue(expectedScript.contains("window.meshSdkVersion"), "Script should set window.meshSdkVersion")
+            XCTAssertTrue(expectedScript.contains(version), "Script should contain the actual version")
+        }
+    }
+    
+    func testVersionRetrievalMatchesImplementation() throws {
+        // Test that the version retrieval matches the actual implementation in LinkWebViewViewController
+        // Since we now use pure git version approach, this should always return git version
+        let version = getEmbeddedGitVersion()
+        
+        XCTAssertNotNil(version, "Version should be available")
+        
+        if let actualVersion = version {
+            XCTAssertFalse(actualVersion.isEmpty, "Version should not be empty")
+            XCTAssertNotEqual(actualVersion, "1.0", "Should not return default bundle version")
+            
+            // Verify it matches the current git tag
+            XCTAssertEqual(actualVersion, "3.1.3", "Should return the current git tag version")
+        }
+    }
+
 }

@@ -10,6 +10,11 @@ CURRENT_PROJECT_VERSION=`echo ${MARKETING_VERSION%%.*}`
 
 echo 'Building '"$SDK_FRAMEWORK_NAME"' v.'"$MARKETING_VERSION"
 
+# Generate GitVersion.txt with the current git tag
+GIT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "unknown")
+echo "$GIT_VERSION" > LinkSDK/GitVersion.txt
+echo "Generated GitVersion.txt with version: $GIT_VERSION"
+
 BUILD_FOLDER='./build'
 SDK_FRAMEWORK_FILENAME="$SDK_FRAMEWORK_NAME"'.xcframework'
 SDK_FOLDER="$BUILD_FOLDER"'/'"$SDK_FRAMEWORK_FILENAME"
@@ -51,6 +56,9 @@ xcodebuild -create-xcframework \
 
 cp -R $SDK_FOLDER $FRAMEWORK_FINAL_PATH
 rm -r $BUILD_FOLDER
+
+# Clean up the GitVersion.txt file
+rm -f LinkSDK/GitVersion.txt
 
 # Compress and compute checksum
 zip -r "$SDK_FRAMEWORK_FILENAME.zip" "$SDK_FRAMEWORK_FILENAME"
