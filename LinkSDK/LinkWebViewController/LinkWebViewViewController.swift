@@ -9,6 +9,8 @@ import UIKit
 @preconcurrency import WebKit
 import SafariServices
 
+let meshSDKVersion = "3.1.4"
+
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
 let DARK_THEME_COLOR_BOTTOM : UInt = 0x0E0D0D
@@ -428,11 +430,7 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
         case .loaded:
             configuration.onEvent?(messageBody)
 
-            var script = "window.meshSdkPlatform = 'iOS';"
-            let bundle = Bundle(identifier: "com.meshconnect.LinkSDK")
-            if let version = bundle?.infoDictionary?["CFBundleShortVersionString"] {
-                script += "window.meshSdkVersion = '\(version)';"
-            }
+            var script = "window.meshSdkPlatform = 'iOS';window.meshSdkVersion = '\(meshSDKVersion)';"
             
             if let accessTokens = configuration.settings?.accessTokens {
                 if let data = try? JSONEncoder().encode(accessTokens),
