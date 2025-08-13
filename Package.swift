@@ -18,7 +18,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/atomicfi/quantum-ios.git",
-            exact: "3.12.0"
+            exact: "3.17.0"
         )
     ],
     targets: [

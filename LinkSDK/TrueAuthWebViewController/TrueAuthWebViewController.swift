@@ -25,7 +25,7 @@ class TrueAuthWebViewController: UIViewController {
     private var quantum: Quantum
     private var configuration: TrueAuthConfiguration
     private var jsMessageHandler = "jsMessageHandler"
-
+    private var atomicToken: String = ""
     private let webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         let contentController = WKUserContentController()
@@ -74,14 +74,27 @@ class TrueAuthWebViewController: UIViewController {
                 }
             }
             // when done setup Quantum and open sign in page
+            self.atomicToken = self.extractAtomicToken(from: self.configuration.url)
             self.setupQuantum()
         }
+    }
+    private func extractAtomicToken(from urlString: String) -> String {
+        guard let url = URL(string: urlString),
+            let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+            let authValue = components.queryItems?.first(where: { $0.name == "auth" })?.value,
+            let decodedData = Data(base64Encoded: authValue),
+            let json = try? JSONSerialization.jsonObject(with: decodedData) as? [String: Any],
+            let token = json["atomicToken"] as? String else {
+            print("❌ Failed to extract atomicToken")
+            return ""
+        }
+        return token
     }
 
     private func setupQuantum() {
         Task {
             do {
-                try await quantum.initialize(view: webView, controller: self)
+                try await quantum.initialize(token: self.atomicToken,view: webView, controller: self)
                 _ = try await quantum.goto(url: configuration.url)
             } catch {
                 print("❌ Failed to initialize Quantum: \(error)")
