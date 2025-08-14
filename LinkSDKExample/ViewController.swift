@@ -121,7 +121,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         let configuration = LinkConfiguration(
             linkToken: linkToken,
             settings: settings,
-            disableDomainWhiteList: false,
+            disableDomainWhiteList: true,
             onIntegrationConnected: onIntegrationConnected,
             onTransferFinished: onTransferFinished,
             onEvent: onEvent,
