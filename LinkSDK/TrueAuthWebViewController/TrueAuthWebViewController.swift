@@ -27,7 +27,6 @@ class TrueAuthWebViewController: UIViewController {
     private var quantum: Quantum
     private var configuration: TrueAuthConfiguration
     private var jsMessageHandler = "jsMessageHandler"
-    private var atomicToken: String = ""
     private let webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         let contentController = WKUserContentController()
