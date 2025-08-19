@@ -13,10 +13,12 @@ import UIKit
 internal class TrueAuthConfiguration {
     let url: String
     let resultHandler: (String) -> Void
+    let atomicToken: String
 
     init(url: String, resultHandler: @escaping (String) -> Void) {
         self.url = url
         self.resultHandler = resultHandler
+        self.atomicToken= atomicToken
     }
 }
 
@@ -74,22 +76,10 @@ class TrueAuthWebViewController: UIViewController {
                 }
             }
             // when done setup Quantum and open sign in page
-            self.atomicToken = self.extractAtomicToken(from: self.configuration.url)
             self.setupQuantum()
         }
     }
-    private func extractAtomicToken(from urlString: String) -> String {
-        guard let url = URL(string: urlString),
-            let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-            let authValue = components.queryItems?.first(where: { $0.name == "auth" })?.value,
-            let decodedData = Data(base64Encoded: authValue),
-            let json = try? JSONSerialization.jsonObject(with: decodedData) as? [String: Any],
-            let token = json["atomicToken"] as? String else {
-            print("❌ Failed to extract atomicToken")
-            return ""
-        }
-        return token
-    }
+
 
     private func setupQuantum() {
         Task {
