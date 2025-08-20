@@ -45,7 +45,8 @@ let whitelistedOrigins = [
     //Revolut
     "https://ramp.revolut.codes",
     "https://sso.revolut.codes",
-    "https://ramp.revolut.com"
+    "https://ramp.revolut.com",
+    "http://localhost:3001"
 ]
 
 enum JSMessageType: String {
