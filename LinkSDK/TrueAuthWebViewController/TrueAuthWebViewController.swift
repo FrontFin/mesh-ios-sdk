@@ -13,10 +13,12 @@ import UIKit
 internal class TrueAuthConfiguration {
     let url: String
     let resultHandler: (String) -> Void
+    let atomicToken: String
 
-    init(url: String, resultHandler: @escaping (String) -> Void) {
+    init(url: String,atomicToken:String, resultHandler: @escaping (String) -> Void) {
         self.url = url
         self.resultHandler = resultHandler
+        self.atomicToken = atomicToken
     }
 }
 
@@ -25,7 +27,6 @@ class TrueAuthWebViewController: UIViewController {
     private var quantum: Quantum
     private var configuration: TrueAuthConfiguration
     private var jsMessageHandler = "jsMessageHandler"
-
     private let webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         let contentController = WKUserContentController()
@@ -78,10 +79,11 @@ class TrueAuthWebViewController: UIViewController {
         }
     }
 
+
     private func setupQuantum() {
         Task {
             do {
-                try await quantum.initialize(view: webView, controller: self)
+                try await quantum.initialize(token: configuration.atomicToken,view: webView, controller: self)
                 _ = try await quantum.goto(url: configuration.url)
             } catch {
                 print("❌ Failed to initialize Quantum: \(error)")

@@ -771,7 +771,7 @@
 			repositoryURL = "git@github.com:atomicfi/quantum-ios.git";
 			requirement = {
 				kind = exactVersion;
-				version = 3.12.0;
+				version = 3.17.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
