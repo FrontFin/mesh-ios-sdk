@@ -1,5 +1,8 @@
-﻿.swiftpm
+.swiftpm
 
 ## User settings
 xcuserdata/
 *.xcworkspace/xcshareddata/swiftpm/
+
+# misc
+.DS_Store
