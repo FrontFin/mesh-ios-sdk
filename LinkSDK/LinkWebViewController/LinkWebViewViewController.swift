@@ -9,7 +9,7 @@ import UIKit
 @preconcurrency import WebKit
 import SafariServices
 
-let meshSDKVersion = "3.1.6"
+let meshSDKVersion = "3.1.7"
 
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
@@ -19,6 +19,10 @@ let LIGHT_THEME_COLOR_BOTTOM : UInt = 0xFBFBFB
 let allowedUrls = [
     "https://link.trustwallet.com",
     "https://appopener.meshconnect.com",
+    "https://integration-api.meshconnect.com",
+    "https://sandbox-integration-api.meshconnect.com",
+    "https://dev-integration-api.meshconnect.com",
+    "https://dev-sandbox-integration-api.meshconnect.com",
     "https://www.coinbase.com",
     "https://api.cb-device-intelligence.com"
 ]
