@@ -13,16 +13,25 @@ public enum LinkResult {
     case success(LinkHandler)
 }
 
+public enum LinkTheme: String {
+    case dark
+    case light
+    case system
+}
+
 public struct LinkSettings {
     public var accessTokens: [IntegrationAccessToken]?
-    public var transferDestinationTokens: [IntegrationAccessToken]?
     public var language: String?
+    public var displayFiatCurrency: String?
+    public var theme: LinkTheme?
     public init(accessTokens: [IntegrationAccessToken]? = nil,
-                transferDestinationTokens: [IntegrationAccessToken]? = nil,
-                language: String? = nil) {
+                language: String? = nil,
+                displayFiatCurrency: String? = nil,
+                theme: LinkTheme? = nil) {
         self.accessTokens = accessTokens
-        self.transferDestinationTokens = transferDestinationTokens
         self.language = language
+        self.displayFiatCurrency = displayFiatCurrency
+        self.theme = theme
     }
 }
 
@@ -33,9 +42,8 @@ public class LinkConfiguration {
     var onIntegrationConnected: ((LinkPayload) -> Void)?
     var onTransferFinished: ((TransferFinishedPayload) -> Void)?
     var onEvent: (([String: Any]?) -> Void)?
-    var onExit: (() -> Void)?
+    var onExit: ((Bool?) -> Void)?
     var linkViewController: LinkWebViewViewController?
-    var originalOnExit: (() -> Void)?
 
     var catalogLink: String? {
         guard let linkTokenData = Data(base64Encoded: linkToken),
@@ -44,8 +52,20 @@ public class LinkConfiguration {
               UIApplication.shared.canOpenURL(url) else {
             return nil
         }
+        let addURLParam: ((String, String) -> Void) = { key, value in
+            catalogLink += "\(catalogLink.contains("?") ? "&" : "?")\(key)=\(value)"
+        }
         if let language = settings?.language {
-            catalogLink += "\(catalogLink.contains("?") ? "&" : "?")lng=\(language)"
+            addURLParam("lng", language)
+        }
+        if let displayFiatCurrency = settings?.displayFiatCurrency {
+            addURLParam("fiatCur", displayFiatCurrency)
+        }
+        if var theme = settings?.theme {
+            if theme == .system {
+                theme = UIScreen.main.traitCollection.userInterfaceStyle == .dark ? .dark : .light
+            }
+            addURLParam("th", theme.rawValue)
         }
         return catalogLink
     }
@@ -64,7 +84,7 @@ public class LinkConfiguration {
                 onIntegrationConnected: ((LinkPayload) -> Void)? = nil,
                 onTransferFinished: ((TransferFinishedPayload) -> Void)? = nil,
                 onEvent: (([String: Any]?) -> Void)? = nil,
-                onExit: (() -> Void)? = nil) {
+                onExit: ((Bool?) -> Void)? = nil) {
         self.linkToken = linkToken
         self.settings = settings
         self.disableDomainWhiteList = disableDomainWhiteList
@@ -98,17 +118,26 @@ public class LinkHandler {
     }
     
     public func present(in viewController: UIViewController) {
-        configuration.originalOnExit = configuration.onExit
-        configuration.onExit = { [self] in
-            showExitAlert()
+        if configuration.onExit == nil {
+            configuration.onExit = { [self] showAlert in
+                if showAlert ?? false {
+                    showExitAlert()
+                } else {
+                    configuration.linkViewController?.dismiss(animated: true)
+                }
+            }
         }
         let linkViewController = LinkWebViewViewController(configuration: configuration)
         linkViewController.modalPresentationStyle = .fullScreen
         viewController.present(linkViewController, animated: true)
         configuration.linkViewController = linkViewController
     }
-    
-    func showExitAlert() {
+        
+    public func closeLink() -> Void {
+        configuration.linkViewController?.dismiss(animated: true)
+    }
+
+    public func showExitAlert() {
         let locale = Locale(identifier: configuration.settings?.language ?? "en-US")
         let title = localizedString(forKey: "onExit_alert_title", locale: locale)
         let message = localizedString(forKey: "onExit_alert_message", locale: locale)
@@ -117,13 +146,13 @@ public class LinkHandler {
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: exit, style: .default) { [self] _ in
-            configuration.linkViewController?.dismiss(animated: true) { [self] in
-                configuration.originalOnExit?()
-            }
+            configuration.linkViewController?.dismiss(animated: true)
         }
         alert.addAction(okAction)
         alert.addAction(UIAlertAction(title: cancel, style: .cancel))
-        configuration.linkViewController?.present(alert, animated: true, completion: nil)
+        configuration.linkViewController?.present(alert, animated: true, completion: {
+            alert.view.tintColor = UIColor.systemBlue
+        })
     }
     
 }

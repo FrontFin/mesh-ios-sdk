@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		112288BE2DA9264D007D65D5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 112288BC2DA9264D007D65D5 /* Localizable.strings */; };
+		11BB28BB2EF3EDDF006D3856 /* QuantumIOS in Frameworks */ = {isa = PBXBuildFile; productRef = 11BB28BA2EF3EDDF006D3856 /* QuantumIOS */; };
 		11E1152A2CC0158100F08496 /* LinkSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11E115222CC0158100F08496 /* LinkSDK.framework */; };
 		11E1152B2CC0158100F08496 /* LinkSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 11E115222CC0158100F08496 /* LinkSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		11E115602CC018DD00F08496 /* LinkWebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E114E72CC0130800F08496 /* LinkWebViewViewController.swift */; };
@@ -99,6 +100,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11BB28BB2EF3EDDF006D3856 /* QuantumIOS in Frameworks */,
 				11E1152A2CC0158100F08496 /* LinkSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -122,6 +124,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		11BB28B92EF3EDDF006D3856 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		11E114BD2CC012BC00F08496 = {
 			isa = PBXGroup;
 			children = (
@@ -129,6 +138,7 @@
 				11E114FD2CC013E700F08496 /* LinkSDKExample */,
 				11E114EF2CC0130800F08496 /* LinkSDK */,
 				11E114F22CC0130800F08496 /* LinkSDKTests */,
+				11BB28B92EF3EDDF006D3856 /* Frameworks */,
 				11E114C72CC012BC00F08496 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -223,6 +233,7 @@
 			);
 			name = LinkSDKExample;
 			packageProductDependencies = (
+				11BB28BA2EF3EDDF006D3856 /* QuantumIOS */,
 			);
 			productName = LinkSDKExample;
 			productReference = 11E115082CC0149D00F08496 /* LinkSDKExample.app */;
@@ -777,6 +788,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		11BB28BA2EF3EDDF006D3856 /* QuantumIOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAD903EA2DD4C82A0012F673 /* XCRemoteSwiftPackageReference "quantum-ios" */;
+			productName = QuantumIOS;
+		};
 		FAD903EB2DD4C82A0012F673 /* QuantumIOS */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FAD903EA2DD4C82A0012F673 /* XCRemoteSwiftPackageReference "quantum-ios" */;

@@ -81,6 +81,13 @@ public struct TransferFinishedErrorPayload: Codable {
 }
 
 public struct IntegrationAccessToken: Codable {
+    public init(accountId: String, accountName: String, accessToken: String, brokerType: String, brokerName: String) {
+        self.accountId = accountId
+        self.accountName = accountName
+        self.accessToken = accessToken
+        self.brokerType = brokerType
+        self.brokerName = brokerName
+    }
     public var accountId: String
     public var accountName: String
     public var accessToken: String
