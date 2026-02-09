@@ -9,7 +9,7 @@ import UIKit
 @preconcurrency import WebKit
 import SafariServices
 
-let meshSDKVersion = "3.1.7"
+let meshSDKVersion = "3.2.0"
 
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
@@ -222,7 +222,7 @@ class LinkWebViewViewController: UIViewController {
     }
     
     @objc func closeTapped() {
-        configuration.onExit?()
+        configuration.onExit?(true)
     }
     
     @objc func backTapped() {
@@ -422,7 +422,7 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
                 configuration.onTransferFinished?(.error(transferFinishedErrorPayload))
             }
         case .showClose, .close, .done:
-            configuration.onExit?()
+            configuration.onExit?(messageType == .showClose)
         case .integrationSelected:
             guard let payload = messageBody["payload"] as? [String: Any],
                   let nativeLink = payload["nativeLink"] as? String,
@@ -442,13 +442,7 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
                     script += "window.accessTokens = '\(jsonString)';"
                 }
             }
-            if let transferDestinationTokens = configuration.settings?.transferDestinationTokens {
-                if let data = try? JSONEncoder().encode(transferDestinationTokens),
-                   let jsonString = String(data: data, encoding: String.Encoding.utf8) {
-                    script += "window.transferDestinationTokens = '\(jsonString)';"
-                }
-            }
-            
+
             webView.evaluateJavaScript(script)
         case .openTrueAuth:
                 guard let link = messageBody["link"] as? String else { return }

@@ -65,7 +65,9 @@ class ViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        let settings = LinkSettings(language: "en-US")
+        let settings = LinkSettings(language: "en-US",          // optional, locale identifier
+                                    displayFiatCurrency: "USD", // optional, preferred display fiat currency
+                                    theme: .system)             // optional, preferred Link theme [light|dark|system]
         
         let onIntegrationConnected: (LinkPayload)->() = { linkPayload in
             var message: String
@@ -84,6 +86,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             }
             self.statusLabel.text = message
         }
+        var linkHandler: LinkHandler?
         let onTransferFinished: (TransferFinishedPayload)->() = { transferFinishedPayload in
             var message: String
             switch transferFinishedPayload {
@@ -114,8 +117,15 @@ class ViewController: UIViewController, UITextFieldDelegate {
         let onEvent: ([String: Any]?)->() = { payload in
             print("Event: \(payload ?? [:])")
         }
-        let onExit: ()->() = {
-            print("Exit")
+        let onExit: (Bool?)->() = { showAlert in
+            // showAlert is true when 'x' button is tapped
+            // showAlert is false when 'Done' button is tapped on a Transfer Success screen
+            if showAlert ?? false {
+                // in case a custom alert is implemented, linkHandler?.closeLink() must be called to close Link
+                linkHandler?.showExitAlert() // default Exit alert
+            } else {
+                linkHandler?.closeLink()
+            }
         }
         
         let configuration = LinkConfiguration(
@@ -125,12 +135,14 @@ class ViewController: UIViewController, UITextFieldDelegate {
             onIntegrationConnected: onIntegrationConnected,
             onTransferFinished: onTransferFinished,
             onEvent: onEvent,
+            // onExit is optional, a default alert is shown in case onExit is omitted
             onExit: onExit)
         let result = configuration.createHandler()
         switch result {
         case .failure(let error):
             self.statusLabel.text = error
         case .success(let handler):
+            linkHandler = handler
             handler.present(in: self)
         @unknown default:
             print("unknown LinkResult value")
