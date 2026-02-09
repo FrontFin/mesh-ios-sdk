@@ -146,7 +146,10 @@ public class LinkHandler {
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: exit, style: .default) { [self] _ in
-            configuration.linkViewController?.dismiss(animated: true)
+            configuration.linkViewController?.dismiss(animated: true) { [self] in
+                configuration.linkViewController = nil
+                configuration.onExit?(false)
+            }
         }
         alert.addAction(okAction)
         alert.addAction(UIAlertAction(title: cancel, style: .cancel))
