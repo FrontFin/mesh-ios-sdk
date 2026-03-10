@@ -60,4 +60,44 @@ final class LinkSDKTests: XCTestCase {
         }
     }
 
+    func testCreateHandlerReturnsUsableHandler() throws {
+        let validAccessToken = "aHR0cHM6Ly93ZWIuZ2V0ZnJvbnQuY29tL2IyYi1pZnJhbWUvYjY5NDZhN2YtZGQyNC00ZjNlLTgwODktMDhkYWZkYzc5MmUzL2Jyb2tlci1jb25uZWN0P2F1dGhfY29kZT02MXE2ZllucmRJUWVFcVUtX1FscjhvRkxIR0hWSnVJVGRNLTUtRHZrSnhMeGxCa2ZqY0RWUWNsbnROLVN4SmdLdGh3SmVmTDdhbGVIb1V4ZjZOWDRwUQ=="
+        let onIntegrationConnected: (LinkPayload)->() = {_ in }
+        let configuration = LinkConfiguration(linkToken: validAccessToken, onIntegrationConnected: onIntegrationConnected)
+        let result = configuration.createHandler()
+        switch result {
+        case .failure(let error):
+            XCTFail("Expected success but got failure: \(error)")
+        case .success(let handler):
+            let viewController = handler.create()
+            XCTAssertNotNil(viewController, "Handler should create a non-nil view controller")
+        }
+    }
+
+    func testConfigurationWithTransferCallback() throws {
+        let validAccessToken = "aHR0cHM6Ly93ZWIuZ2V0ZnJvbnQuY29tL2IyYi1pZnJhbWUvYjY5NDZhN2YtZGQyNC00ZjNlLTgwODktMDhkYWZkYzc5MmUzL2Jyb2tlci1jb25uZWN0P2F1dGhfY29kZT02MXE2ZllucmRJUWVFcVUtX1FscjhvRkxIR0hWSnVJVGRNLTUtRHZrSnhMeGxCa2ZqY0RWUWNsbnROLVN4SmdLdGh3SmVmTDdhbGVIb1V4ZjZOWDRwUQ=="
+        let onTransferFinished: (TransferFinishedPayload)->() = {_ in }
+        let configuration = LinkConfiguration(linkToken: validAccessToken, onTransferFinished: onTransferFinished)
+        let result = configuration.createHandler()
+        switch result {
+        case .failure(let error):
+            XCTFail("Expected success but got failure: \(error)")
+        case .success(let handler):
+            let viewController = handler.create()
+            XCTAssertNotNil(viewController, "Handler should create a non-nil view controller")
+        }
+    }
+
+    func testConfigurationWithSettings() throws {
+        let validAccessToken = "aHR0cHM6Ly93ZWIuZ2V0ZnJvbnQuY29tL2IyYi1pZnJhbWUvYjY5NDZhN2YtZGQyNC00ZjNlLTgwODktMDhkYWZkYzc5MmUzL2Jyb2tlci1jb25uZWN0P2F1dGhfY29kZT02MXE2ZllucmRJUWVFcVUtX1FscjhvRkxIR0hWSnVJVGRNLTUtRHZrSnhMeGxCa2ZqY0RWUWNsbnROLVN4SmdLdGh3SmVmTDdhbGVIb1V4ZjZOWDRwUQ=="
+        let settings = LinkSettings(language: "es", theme: .dark)
+        let onIntegrationConnected: (LinkPayload)->() = {_ in }
+        let configuration = LinkConfiguration(
+            linkToken: validAccessToken,
+            settings: settings,
+            onIntegrationConnected: onIntegrationConnected
+        )
+        XCTAssertTrue(configuration.isLinkTokenValid, "Configuration with valid token should be valid")
+    }
+
 }
