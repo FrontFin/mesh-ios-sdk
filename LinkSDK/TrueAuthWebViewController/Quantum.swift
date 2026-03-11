@@ -7,7 +7,7 @@
 
 // import QuantumIOS // disabled — placeholder below replaces this dependency
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 
 /// Placeholder that replaces QuantumIOS.Quantum.
 /// Re-enable the real import above and remove this class to restore Quantum functionality.
