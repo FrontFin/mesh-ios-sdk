@@ -5,7 +5,6 @@
 //  Created by Mesh Connect, Inc
 //
 
-import QuantumIOS
 import SafariServices
 import UIKit
 @preconcurrency import WebKit
