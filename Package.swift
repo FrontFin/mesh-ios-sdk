@@ -16,20 +16,17 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(
-            url: "https://github.com/atomicfi/quantum-ios.git",
-            exact: "3.17.0"
-        )
+        // .package(url: "https://github.com/atomicfi/quantum-ios.git", exact: "3.17.0") // disabled
     ],
     targets: [
         .target(
             name: "LinkSDK",
             dependencies: [
-                .product(name: "QuantumIOS", package: "quantum-ios")
+                // .product(name: "QuantumIOS", package: "quantum-ios") // disabled
             ],
             path: "LinkSDK",
             linkerSettings: [
-                .linkedFramework("QuantumIOS")
+                // .linkedFramework("QuantumIOS") // disabled
             ]
         )
     ]

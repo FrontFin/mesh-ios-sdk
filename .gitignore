@@ -6,3 +6,6 @@ xcuserdata/
 
 # misc
 .DS_Store
+
+.build/
+.claude/
