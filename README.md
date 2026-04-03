@@ -4,8 +4,10 @@ iOS library for integrating with Mesh Connect.
 
 ## Installation
 
-Add package [LinkSDK](https://github.com/FrontFin/mesh-ios-sdk) in your project's Package Dependencies
-or download [LinkSDK.xcframework](https://github.com/FrontFin/mesh-ios-sdk/tree/main/LinkSDK.xcframework).
+[Add package dependency](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app#Add-a-package-dependency) using source control repository URL to your Xcode project:
+```
+https://github.com/FrontFin/mesh-ios-sdk
+```
 
 ## Get Link token
 
