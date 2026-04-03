@@ -4,7 +4,7 @@ iOS library for integrating with Mesh Connect.
 
 ## Installation
 
-[Add package dependency](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app#Add-a-package-dependency) using source control repository URL to your Xcode project:
+Add a [package dependency](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app#Add-a-package-dependency) to your Xcode project using the source control repository URL:
 ```
 https://github.com/FrontFin/mesh-ios-sdk
 ```
