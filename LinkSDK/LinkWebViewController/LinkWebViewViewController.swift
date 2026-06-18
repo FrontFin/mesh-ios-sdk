@@ -18,7 +18,6 @@ let LIGHT_THEME_COLOR_BOTTOM : UInt = 0xFBFBFB
 
 let allowedUrls = [
     "https://link.trustwallet.com",
-    "https://appopener.meshconnect.com",
     "https://integration-api.meshconnect.com",
     "https://sandbox-integration-api.meshconnect.com",
     "https://dev-integration-api.meshconnect.com",
