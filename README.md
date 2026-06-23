@@ -11,7 +11,7 @@ https://github.com/FrontFin/mesh-ios-sdk
 
 ## Get Link token
 
-Link token should be obtained from the POST `/api/v1/linktoken` endpoint. API reference for this request is available [here](https://docs.meshconnect.com/reference/post_api-v1-linktoken). The request must be performed from the server side because it requires the client's secret. You will get the response in the following format:
+Link token should be obtained from the POST `/api/v1/linktoken` endpoint. API reference for this request is available [here](https://docs.meshconnect.com/api-reference/managed-account-authentication/get-link-token-with-parameters). The request must be performed from the server side because it requires the client's secret. You will get the response in the following format:
 ```json
 {
     "content": {
