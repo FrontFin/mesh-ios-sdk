@@ -52,16 +52,54 @@ let whitelistedOrigins = [
 ]
 
 enum JSMessageType: String {
+    // Internal / UI control
     case showClose
     case close
     case done
     case brokerageAccountAccessToken
     case delayedAuthentication
     case showNativeNavbar
-    case transferFinished
     case loaded
-    case integrationSelected
     case openTrueAuth
+    // Integration events
+    case integrationConnectionError
+    case integrationSelected
+    case integrationConnected
+    case credentialsEntered
+    case integrationMfaRequired
+    case integrationMfaEntered
+    case integrationOAuthStarted
+    case integrationAccountSelectionRequired
+    // Transfer events
+    case transferStarted
+    case transferPreviewed
+    case transferPreviewError
+    case transferAssetSelected
+    case transferNetworkSelected
+    case transferAmountEntered
+    case transferInitiated
+    case transferMfaRequired
+    case transferMfaEntered
+    case transferKycRequired
+    case transferExecuted
+    case transferFinished
+    case transferExecutionError
+    case transferConfigureError
+    case transferDeclined
+    case transferNoEligibleAssets
+    // Connection events
+    case connectionUnavailable
+    case connectionDeclined
+    // Wallet / DeFi events
+    case walletMessageSigned
+    case defiWalletError
+    // Other events
+    case paypalComplianceDeclined
+    case linkTransferQRGenerated
+    case methodSelected
+    case homePageLoaded
+    case verifyDonePage
+    case verifyWalletRejected
 }
 
 public enum TransferFinishedStatus: String {
@@ -454,6 +492,39 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
                 )
                 trueAuthViewController.modalPresentationStyle = .fullScreen
                 present(trueAuthViewController, animated: true)
+        case .integrationConnectionError,
+             .integrationConnected,
+             .credentialsEntered,
+             .integrationMfaRequired,
+             .integrationMfaEntered,
+             .integrationOAuthStarted,
+             .integrationAccountSelectionRequired,
+             .transferStarted,
+             .transferPreviewed,
+             .transferPreviewError,
+             .transferAssetSelected,
+             .transferNetworkSelected,
+             .transferAmountEntered,
+             .transferInitiated,
+             .transferMfaRequired,
+             .transferMfaEntered,
+             .transferKycRequired,
+             .transferExecuted,
+             .transferExecutionError,
+             .transferConfigureError,
+             .transferDeclined,
+             .transferNoEligibleAssets,
+             .connectionUnavailable,
+             .connectionDeclined,
+             .walletMessageSigned,
+             .defiWalletError,
+             .paypalComplianceDeclined,
+             .linkTransferQRGenerated,
+             .methodSelected,
+             .homePageLoaded,
+             .verifyDonePage,
+             .verifyWalletRejected:
+            configuration.onEvent?(messageBody)
         case .none:
             configuration.onEvent?(messageBody)
         }
