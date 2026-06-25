@@ -461,10 +461,11 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
         case .showClose, .close, .done:
             configuration.onExit?(messageType == .showClose)
         case .integrationSelected:
-            guard let payload = messageBody["payload"] as? [String: Any],
-                  let nativeLink = payload["nativeLink"] as? String,
+            configuration.onEvent?(messageBody)
+            let integrationPayload = messageBody["payload"] as? [String: Any] ?? messageBody
+            guard let nativeLink = integrationPayload["nativeLink"] as? String,
                   let url = URL(string: nativeLink),
-                  !["http", "https"].contains(url.scheme ?? "") else { return }
+                  !["http", "https"].contains(url.scheme ?? "") else { break }
             let canOpen = UIApplication.shared.canOpenURL(url)
             let js = "window.handleNativeLink = { url: '\(url.absoluteString)', canOpen: \(canOpen) };"
             webView.evaluateJavaScript(js)
