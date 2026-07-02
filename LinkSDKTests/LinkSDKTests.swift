@@ -6,7 +6,7 @@
 //
 
 import XCTest
-import LinkSDK
+@testable import LinkSDK
 
 extension UIApplication {
     public func canOpenURL(_ url: URL) -> Bool {
@@ -58,6 +58,17 @@ final class LinkSDKTests: XCTestCase {
         case .success(_):
             break
         }
+    }
+
+    func testCatalogLinkContainsPlatformParam() throws {
+        let validAccessToken = "aHR0cHM6Ly93ZWIuZ2V0ZnJvbnQuY29tL2IyYi1pZnJhbWUvYjY5NDZhN2YtZGQyNC00ZjNlLTgwODktMDhkYWZkYzc5MmUzL2Jyb2tlci1jb25uZWN0P2F1dGhfY29kZT02MXE2ZllucmRJUWVFcVUtX1FscjhvRkxIR0hWSnVJVGRNLTUtRHZrSnhMeGxCa2ZqY0RWUWNsbnROLVN4SmdLdGh3SmVmTDdhbGVIb1V4ZjZOWDRwUQ=="
+        let onIntegrationConnected: (LinkPayload)->() = { _ in /* required by LinkConfiguration, not under test */ }
+        let configuration = LinkConfiguration(linkToken: validAccessToken, onIntegrationConnected: onIntegrationConnected)
+        guard let catalogLink = configuration.catalogLink else {
+            XCTFail("catalogLink should not be nil for a valid token")
+            return
+        }
+        XCTAssertTrue(catalogLink.contains("platform=iOS"), "catalogLink should contain platform=iOS param")
     }
 
 }

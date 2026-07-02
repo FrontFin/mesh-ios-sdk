@@ -9,7 +9,7 @@ import UIKit
 @preconcurrency import WebKit
 import SafariServices
 
-let meshSDKVersion = "3.3.0"
+let meshSDKVersion = "3.3.1"
 
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
@@ -423,6 +423,7 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
         case .showClose, .close, .done:
             configuration.onExit?(messageType == .showClose)
         case .integrationSelected:
+            configuration.onEvent?(messageBody)
             guard let payload = messageBody["payload"] as? [String: Any],
                   let nativeLink = payload["nativeLink"] as? String,
                   let url = URL(string: nativeLink),

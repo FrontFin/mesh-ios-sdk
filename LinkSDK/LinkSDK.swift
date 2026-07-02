@@ -67,6 +67,7 @@ public class LinkConfiguration {
             }
             addURLParam("th", theme.rawValue)
         }
+        addURLParam("platform", "iOS")
         return catalogLink
     }
     
