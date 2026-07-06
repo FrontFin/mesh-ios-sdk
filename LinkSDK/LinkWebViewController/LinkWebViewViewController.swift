@@ -44,11 +44,7 @@ let whitelistedOrigins = [
     "https://app.usercentrics.eu",
     //Okx
     "https://contentmx.okcoin.com",
-    "https://www.recaptcha.net",
-    //Revolut
-    "https://ramp.revolut.codes",
-    "https://sso.revolut.codes",
-    "https://ramp.revolut.com"
+    "https://www.recaptcha.net"
 ]
 
 enum JSMessageType: String {
