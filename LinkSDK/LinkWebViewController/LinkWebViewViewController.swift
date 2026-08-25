@@ -28,6 +28,10 @@ let allowedUrls = [
 
 let whitelistedOrigins = [
     ".meshconnect.com",
+    // MFS / Link v3. Without this a migrated client's link.meshpay.com URL is
+    // treated as non-allowlisted and opened in Safari instead of the WebView,
+    // so Link leaves the host app and the SDK receives no events.
+    ".meshpay.com",
     ".walletconnect.com",
     ".walletconnect.org",
     ".walletlink.org",
