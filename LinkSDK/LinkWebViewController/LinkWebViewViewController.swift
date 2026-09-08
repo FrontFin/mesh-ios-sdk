@@ -9,7 +9,7 @@ import UIKit
 @preconcurrency import WebKit
 import SafariServices
 
-let meshSDKVersion = "3.3.2"
+let meshSDKVersion = "3.3.3"
 
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
@@ -28,6 +28,10 @@ let allowedUrls = [
 
 let whitelistedOrigins = [
     ".meshconnect.com",
+    // MFS / Link v3. Without this a migrated client's link.meshpay.com URL is
+    // treated as non-allowlisted and opened in Safari instead of the WebView,
+    // so Link leaves the host app and the SDK receives no events.
+    ".meshpay.com",
     ".walletconnect.com",
     ".walletconnect.org",
     ".walletlink.org",
@@ -304,8 +308,31 @@ internal extension LinkWebViewViewController {
     }
 }
 
+/// True for Link v3's OAuth child-session redirect, which must leave the WebView.
+///
+/// The MFS API host is under `.meshpay.com` and therefore allowlisted, so
+/// without this the redirect renders in place, unloads Link, and loses the
+/// in-flight OAuth session. v1/v2 already avoid that because their counterpart,
+/// `integration-api.meshconnect.com`, sits in `allowedUrls`.
+///
+/// Matched on structure rather than a prefix so that a path such as
+/// `...:redirectevil` cannot pass: `/v2/sessions/{id}/child-sessions/{id}:redirect`.
+func isMfsOAuthRedirect(_ url: URL) -> Bool {
+    guard url.scheme == "https",
+          let host = url.host,
+          host.hasPrefix("api."), host.hasSuffix(".meshpay.com") else {
+        return false
+    }
+    let parts = url.path.split(separator: "/").map(String.init)
+    return parts.count == 5
+        && parts[0] == "v2"
+        && parts[1] == "sessions"
+        && parts[3] == "child-sessions"
+        && parts[4].hasSuffix(":redirect")
+}
+
 extension LinkWebViewViewController: WKNavigationDelegate {
-    
+
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
@@ -316,6 +343,7 @@ extension LinkWebViewViewController: WKNavigationDelegate {
         if ["http", "https"].contains(url.scheme) {
             // if a url is in allowedUrls open it inSafari
             if allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) ||
+                isMfsOAuthRedirect(url) ||
                 // or if domain whitelisting is not disable and url is not included in the list, open it inSafari
                 (!(configuration.disableDomainWhiteList ?? false) &&
                  !whitelistedOrigins.contains(where: { url.absoluteString.hasPrefix($0) || url.host?.hasSuffix($0) ?? false })) {
