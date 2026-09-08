@@ -205,4 +205,94 @@ final class MfsParityTests: XCTestCase {
         )
         XCTAssertEqual(payload.errorMessage, "insufficient funds")
     }
+
+    // MARK: - P5  the MFS-native session entry point
+    //
+    // Flutter and RN keep these in their own file (mesh_session_configuration_test,
+    // sessionLinkToken.test). iOS keeps them here so a new test file does not have
+    // to be registered in the Xcode project.
+
+    private func decodedUrl(fromLinkToken token: String) throws -> String {
+        let data = try XCTUnwrap(Data(base64Encoded: token))
+        return try XCTUnwrap(String(data: data, encoding: .utf8))
+    }
+
+    func testP5_1_sessionTokenBecomesALinkTokenForTheChosenEnvironment() throws {
+        let cases: [(MeshLinkEnvironment, String)] = [
+            (.prod, "https://link.meshpay.com/?token=ory_ac_abc"),
+            (.sbx, "https://link.sbx.meshpay.com/?token=ory_ac_abc"),
+            (.dev, "https://link.dev.meshpay.com/?token=ory_ac_abc")
+        ]
+        for (environment, expected) in cases {
+            let token = LinkConfiguration.linkToken(sessionToken: "ory_ac_abc", environment: environment)
+            XCTAssertEqual(try decodedUrl(fromLinkToken: token), expected)
+        }
+    }
+
+    func testP5_2_reservedCharactersAreEncodedRatherThanTruncatingTheUrl() throws {
+        // Interpolating raw would cut the URL at `&` and lose the rest.
+        let token = LinkConfiguration.linkToken(sessionToken: "abc&x=1#frag", environment: .prod)
+        let url = try decodedUrl(fromLinkToken: token)
+        XCTAssertEqual(url, "https://link.meshpay.com/?token=abc%26x%3D1%23frag")
+        let parsed = try XCTUnwrap(URLComponents(string: url))
+        let value = parsed.queryItems?.first { $0.name == "token" }?.value
+        XCTAssertEqual(value, "abc&x=1#frag", "the token must survive a round trip intact")
+    }
+
+    func testP5_3_theSessionInitialiserProducesAUsableConfiguration() throws {
+        let configuration = LinkConfiguration(
+            sessionToken: "ory_ac_abc",
+            environment: .prod,
+            onIntegrationConnected: { _ in }
+        )
+        XCTAssertTrue(configuration.isLinkTokenValid)
+        let link = try XCTUnwrap(configuration.catalogLink)
+        XCTAssertTrue(link.hasPrefix("https://link.meshpay.com/?token=ory_ac_abc"))
+    }
+
+    func testP5_4_anEmptySessionTokenIsRejectedRatherThanOpeningLinkWithNoToken() {
+        let configuration = LinkConfiguration(
+            sessionToken: "",
+            environment: .prod,
+            onIntegrationConnected: { _ in }
+        )
+        XCTAssertFalse(configuration.isLinkTokenValid)
+        if case .failure = configuration.createHandler() {} else {
+            XCTFail("an empty session token must not produce a handler")
+        }
+    }
+
+    // MARK: - P6  Link v3's OAuth redirect must leave the WebView
+
+    func testP6_1_theChildSessionRedirectIsOpenedExternally() {
+        for host in ["api.meshpay.com", "api.sbx.meshpay.com", "api.dev.meshpay.com"] {
+            let url = URL(string: "https://\(host)/v2/sessions/s1/child-sessions/c1:redirect?code=x")!
+            XCTAssertTrue(isMfsOAuthRedirect(url), "\(host) should open externally")
+        }
+    }
+
+    func testP6_2_theRedirectHostIsStillAllowlistedForTheWebView() {
+        // Both must hold: the host is trusted, and this one path leaves anyway.
+        XCTAssertTrue(isAllowlisted("https://api.meshpay.com/v2/sessions"))
+    }
+
+    func testP6_3_lookalikePathsAndHostsAreNotTreatedAsTheRedirect() {
+        let notRedirects = [
+            "https://api.meshpay.com/v2/sessions/s1/child-sessions/c1:redirectevil",
+            "https://api.meshpay.com/v2/sessions/s1/child-sessions",
+            "https://api.meshpay.com/v2/sessions/s1",
+            "https://apievil.meshpay.com/v2/sessions/s1/child-sessions/c1:redirect",
+            "https://api.meshpay.com.evil.com/v2/sessions/s1/child-sessions/c1:redirect",
+            "http://api.meshpay.com/v2/sessions/s1/child-sessions/c1:redirect"
+        ]
+        for urlString in notRedirects {
+            let url = URL(string: urlString)!
+            XCTAssertFalse(isMfsOAuthRedirect(url), "\(urlString) must not match")
+        }
+    }
+
+    func testP6_4_ordinaryLinkNavigationIsUnaffected() {
+        let url = URL(string: "https://link.meshpay.com/?token=ory_ac_abc")!
+        XCTAssertFalse(isMfsOAuthRedirect(url))
+    }
 }
