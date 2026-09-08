@@ -113,7 +113,12 @@ public class LinkConfiguration {
         // `createHandler()` already reports an unusable token as `.failure`.
         guard !sessionToken.isEmpty else { return "" }
         let unreserved = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-._~"))
-        let encoded = sessionToken.addingPercentEncoding(withAllowedCharacters: unreserved) ?? sessionToken
+        // An encoding failure is an invalid token, not a reason to fall back to
+        // the raw value: doing that would reintroduce the truncation this
+        // encoding exists to prevent.
+        guard let encoded = sessionToken.addingPercentEncoding(withAllowedCharacters: unreserved) else {
+            return ""
+        }
         return Data("\(environment.linkUrl)/?token=\(encoded)".utf8).base64EncodedString()
     }
 

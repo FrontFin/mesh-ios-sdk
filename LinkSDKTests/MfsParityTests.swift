@@ -38,6 +38,8 @@ final class MfsParityTests: XCTestCase {
     private func catalogLink(for url: String) -> String? {
         let configuration = LinkConfiguration(
             linkToken: tokenFor(url),
+            // Required by createHandler(), which rejects a configuration
+            // with neither connection callback. Never invoked here.
             onIntegrationConnected: { _ in }
         )
         return configuration.catalogLink
@@ -81,6 +83,8 @@ final class MfsParityTests: XCTestCase {
     func testP1_5_malformedTokenDoesNotYieldALoadableURL() {
         let configuration = LinkConfiguration(
             linkToken: "===",
+            // Required by createHandler(), which rejects a configuration
+            // with neither connection callback. Never invoked here.
             onIntegrationConnected: { _ in }
         )
         XCTAssertNil(configuration.catalogLink)
@@ -243,6 +247,8 @@ final class MfsParityTests: XCTestCase {
         let configuration = LinkConfiguration(
             sessionToken: "ory_ac_abc",
             environment: .prod,
+            // Required by createHandler(), which rejects a configuration
+            // with neither connection callback. Never invoked here.
             onIntegrationConnected: { _ in }
         )
         XCTAssertTrue(configuration.isLinkTokenValid)
@@ -254,6 +260,8 @@ final class MfsParityTests: XCTestCase {
         let configuration = LinkConfiguration(
             sessionToken: "",
             environment: .prod,
+            // Required by createHandler(), which rejects a configuration
+            // with neither connection callback. Never invoked here.
             onIntegrationConnected: { _ in }
         )
         XCTAssertFalse(configuration.isLinkTokenValid)

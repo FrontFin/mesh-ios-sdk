@@ -60,10 +60,13 @@ class ViewController: UIViewController, UITextFieldDelegate {
     private func resolvedLinkToken(from input: String) -> String {
         let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return "" }
+        // http(s) only. Accepting any scheme would let a blob that decodes to
+        // something like `someapp://` be classed as a link token and handed to
+        // the SDK, which routes custom schemes to an external app launch.
         if let data = Data(base64Encoded: trimmed),
            let decoded = String(data: data, encoding: .utf8),
-           let url = URL(string: decoded),
-           url.scheme != nil {
+           let scheme = URL(string: decoded)?.scheme?.lowercased(),
+           scheme == "http" || scheme == "https" {
             return trimmed
         }
         return LinkConfiguration.linkToken(sessionToken: trimmed, environment: selectedEnvironment)
