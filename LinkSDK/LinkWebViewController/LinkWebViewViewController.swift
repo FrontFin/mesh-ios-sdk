@@ -9,7 +9,7 @@ import UIKit
 @preconcurrency import WebKit
 import SafariServices
 
-let meshSDKVersion = "3.3.2"
+let meshSDKVersion = "3.3.3"
 
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
@@ -47,6 +47,22 @@ let whitelistedOrigins = [
     "https://www.recaptcha.net"
 ]
 
+/// Hosts that match a whitelisted origin above by suffix but are actually a
+/// different product than the one that entry is for, so they should NOT be
+/// loaded in our own webview. `web3.okx.com` is OKX Wallet's connect/deep-link
+/// host, not OKX Exchange (why `.okx.com` is whitelisted in the first place),
+/// and needs to be handed to iOS like any other wallet link.
+let whitelistedOriginExceptions = [
+    "web3.okx.com"
+]
+
+func isWhitelistedOrigin(_ url: URL) -> Bool {
+    if let host = url.host, whitelistedOriginExceptions.contains(host) {
+        return false
+    }
+    return whitelistedOrigins.contains(where: { url.absoluteString.hasPrefix($0) || url.host?.hasSuffix($0) ?? false })
+}
+
 enum JSMessageType: String {
     case showClose
     case close
@@ -66,8 +82,23 @@ public enum TransferFinishedStatus: String {
 }
 
 class LinkWebViewViewController: UIViewController {
+    /// Schemes never handed to the OS from web content. `javascript:`/`data:`
+    /// execute in whatever context receives them, `file:` reaches local
+    /// storage, `about:`/`blob:` are inert but meaningless to launch.
+    /// Everything else non-http(s) is treated as a wallet deep link.
+    static let blockedSchemes: Set<String> = [
+        "javascript", "data", "file", "about", "blob"
+    ]
+
     private let webView: WKWebView = {
-        let wkWebView = WKWebView()
+        // Without this, WebKit silently blocks any `window.open()` that isn't
+        // inside a live user gesture (e.g. an auto-open fired from an async
+        // event) and never even calls createWebViewWith below - so wallet
+        // deep links and OAuth handoffs that should open automatically just
+        // dead-end instead.
+        let configuration = WKWebViewConfiguration()
+        configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
+        let wkWebView = WKWebView(frame: .zero, configuration: configuration)
         wkWebView.contentMode = .scaleToFill
         wkWebView.translatesAutoresizingMaskIntoConstraints = false
         wkWebView.backgroundColor = UIColor(cgColor: CGColor(genericGrayGamma2_2Gray: 1, alpha: 1))
@@ -318,7 +349,7 @@ extension LinkWebViewViewController: WKNavigationDelegate {
             if allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) ||
                 // or if domain whitelisting is not disable and url is not included in the list, open it inSafari
                 (!(configuration.disableDomainWhiteList ?? false) &&
-                 !whitelistedOrigins.contains(where: { url.absoluteString.hasPrefix($0) || url.host?.hasSuffix($0) ?? false })) {
+                 !isWhitelistedOrigin(url)) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 decisionHandler(.cancel) // Cancel WebView navigation
                 return
@@ -327,14 +358,23 @@ extension LinkWebViewViewController: WKNavigationDelegate {
 
         // Handle custom schemes (e.g., wallet://)
         if !["http", "https"].contains(url.scheme) {
-            // Open in external app if the scheme is supported
-            if UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                decisionHandler(.cancel) // Cancel WebView navigation
+            // Deliberately NOT gated on `canOpenURL`: it answers false for any
+            // scheme the integrator's Info.plist omits, installed or not, and iOS
+            // caps that list at 50 against a 900+ wallet catalog. `open` needs no
+            // declaration and reports the real result.
+            if Self.blockedSchemes.contains((url.scheme ?? "").lowercased()) {
+                decisionHandler(.cancel)
                 return
-            } else {
-                print("Unsupported URL scheme: \(url.scheme ?? "unknown")")
             }
+            UIApplication.shared.open(url, options: [:]) { opened in
+                if !opened {
+#if DEBUG
+                    print("Could not open URL scheme: \(url.scheme ?? "unknown")")
+#endif
+                }
+            }
+            decisionHandler(.cancel) // Cancel WebView navigation
+            return
         }
 
         // Allow other http/https URLs to load in WebView
@@ -424,7 +464,10 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
                   let nativeLink = payload["nativeLink"] as? String,
                   let url = URL(string: nativeLink),
                   !["http", "https"].contains(url.scheme ?? "") else { return }
-            let canOpen = UIApplication.shared.canOpenURL(url)
+            // Reports what this SDK will actually do, not what `canOpenURL` says.
+            // Otherwise the web UI falls back to the universal link for every
+            // scheme the integrator's Info.plist omits, which we now open fine.
+            let canOpen = !Self.blockedSchemes.contains((url.scheme ?? "").lowercased())
             let js = "window.handleNativeLink = { url: '\(url.absoluteString)', canOpen: \(canOpen) };"
             webView.evaluateJavaScript(js)
         case .loaded:
