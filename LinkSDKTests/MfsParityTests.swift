@@ -45,13 +45,12 @@ final class MfsParityTests: XCTestCase {
         return configuration.catalogLink
     }
 
-    /// Mirrors the host check in `decidePolicyFor`: a URL is kept in the WebView
-    /// when it matches an entry by prefix or its host by suffix.
+    /// Calls the SDK's own check rather than reimplementing it. An earlier copy
+    /// of the matching logic here silently stopped mirroring production when
+    /// `whitelistedOriginExceptions` was introduced on main.
     private func isAllowlisted(_ urlString: String) -> Bool {
         guard let url = URL(string: urlString) else { return false }
-        return whitelistedOrigins.contains {
-            url.absoluteString.hasPrefix($0) || (url.host?.hasSuffix($0) ?? false)
-        }
+        return isWhitelistedOrigin(url)
     }
 
     // MARK: - P1  token resolution: the token decides which Link loads
