@@ -34,9 +34,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
 
-      - uses: maxim-lobanov/setup-xcode@v1
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
           xcode-version: 'latest-stable'
         
@@ -46,6 +46,7 @@ jobs:
 #          brew install xcodegen
 
       - name: Install the Apple certificate
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
@@ -84,21 +85,22 @@ jobs:
 #      - name: Test
 #        run: xcodebuild -scheme LinkSDK -destination 'platform=iOS Simulator,name=iPhone 14' test
 
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
         id: app
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Setup git config
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
-        uses: qoomon/actions--setup-git@v1
+        uses: qoomon/actions--setup-git@8e6bd30ac05e17a81b61169daae62cb6b7e61294 # v1.1.1
         with:
           user: GitHub Actions <noreply@github.com>
 
       - name: Checkout mesh-ios-sdk Repository
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
         with:
           fetch-depth: 0
           repository: ${{ env.REMOTE_REPOSITORY }}
@@ -112,7 +114,7 @@ jobs:
       - name: Create GitHub Release
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1.1.4
         env:
           GITHUB_TOKEN: ${{ steps.app.outputs.token }}
         with:
@@ -123,7 +125,7 @@ jobs:
           
       - name: Upload Release Asset
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.execute_release == 'true' && github.event.inputs.MARKETING_VERSION != '' }}
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5 # v1.0.2
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./${{ env.XCFRAMEWORK_ZIP }}
