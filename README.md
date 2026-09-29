@@ -85,8 +85,9 @@ This is a list of possible event types, some of them may have additional paramet
 - `transferExecutionError`
 - `withdrawalRequested`
 
-When a user confirms a withdrawal, `onEvent` receives a `withdrawalRequested` event, followed by `onExit` as Link closes.
-Use it to continue the withdrawal in your app, for example to prompt for your own 2FA.
+When a user confirms a withdrawal, `onEvent` receives a `withdrawalRequested` event, then Link asks to close and calls `onExit`.
+Keep the `transferId` and continue the withdrawal once Link has been dismissed, for example with your own 2FA prompt: presenting a view controller while Link is still on screen conflicts with its dismissal.
+If you manage Link's life cycle with `LinkHandler.create()`, your `onExit` must close Link.
 The payload carries no address or amount: read the transfer details from the webhook or the transfer API.
 
 ```swift
