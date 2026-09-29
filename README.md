@@ -83,15 +83,29 @@ This is a list of possible event types, some of them may have additional paramet
 - `transferPreviewed`
 - `transferPreviewError`
 - `transferExecutionError`
+- `withdrawalRequested`
+
+When a user confirms a withdrawal, `onEvent` receives a `withdrawalRequested` event, followed by `onExit` as Link closes.
+Use it to continue the withdrawal in your app, for example to prompt for your own 2FA.
+The payload carries no address or amount: read the transfer details from the webhook or the transfer API.
+
+```swift
+let onEvent: ([String: Any]?)->() = { event in
+    guard event?["type"] as? String == "withdrawalRequested",
+          let payload = event?["payload"] as? [String: Any],
+          let transferId = payload["transferId"] as? String else { return }
+    let status = payload["status"] as? String // "pending" or "success"; treat any other value as pending
+}
+```
 
 The `onExit` callback is optional, it's called once a user exits the Link flow. It might be used to dismiss the Link view controller in case the app manages its life cycle (see `LinkHandler.create()`)
 
-Callback closures are optional, but either `onIntegrationConnected` or `onTransferFinished` must be provided.
+Callback closures are optional, but at least one of `onIntegrationConnected`, `onTransferFinished` or `onEvent` must be provided.
 
 Create a `LinkHandler` instance by calling `createHandler()` function, or handle an error.
 The following errors can be returned:
 - `Invalid linkToken`
-- `Either 'onIntegrationConnected' or 'onTransferFinished' callback must be provided`
+- `Either 'onIntegrationConnected', 'onTransferFinished' or 'onEvent' callback must be provided`
 
 ```swift
 let result = configuration.createHandler()

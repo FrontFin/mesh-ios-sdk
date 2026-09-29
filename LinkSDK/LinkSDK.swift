@@ -96,8 +96,8 @@ public class LinkConfiguration {
     }
     
     public func createHandler() -> LinkResult {
-        guard onIntegrationConnected != nil || onTransferFinished != nil else {
-            return .failure("Either 'onIntegrationConnected' or 'onTransferFinished' callback must be provided")
+        guard onIntegrationConnected != nil || onTransferFinished != nil || onEvent != nil else {
+            return .failure("Either 'onIntegrationConnected', 'onTransferFinished' or 'onEvent' callback must be provided")
         }
         let handler = LinkHandler(configuration: self)
         guard handler.configuration.isLinkTokenValid else {
