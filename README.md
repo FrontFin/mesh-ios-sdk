@@ -86,8 +86,10 @@ This is a list of possible event types, some of them may have additional paramet
 - `withdrawalRequested`
 
 When a user confirms a withdrawal, `onEvent` receives a `withdrawalRequested` event, then Link asks to close and calls `onExit`.
-Keep the `transferId` and continue the withdrawal once Link has been dismissed, for example with your own 2FA prompt: presenting a view controller while Link is still on screen conflicts with its dismissal.
-If you manage Link's life cycle with `LinkHandler.create()`, your `onExit` must close Link.
+If you provide `onExit`, Link does not dismiss itself: dismiss it there with a completion, from the view controller you passed to `present(in:)` or from your own after `create()`.
+With `create()`, Link never dismisses itself, so provide an `onExit` that does.
+Keep the `transferId` and continue the withdrawal in that completion, for example with your own 2FA prompt: presenting a view controller while Link is still on screen conflicts with its dismissal.
+Treat the event, not `onExit`, as confirmation of the withdrawal.
 The payload carries no address or amount: read the transfer details from the webhook or the transfer API.
 
 ```swift
@@ -99,7 +101,8 @@ let onEvent: ([String: Any]?)->() = { event in
 }
 ```
 
-The `onExit` callback is optional, it's called once a user exits the Link flow. It might be used to dismiss the Link view controller in case the app manages its life cycle (see `LinkHandler.create()`)
+The `onExit` callback is optional, it's called once a user exits the Link flow.
+If you provide it, it must dismiss the Link view controller: `present(in:)` dismisses Link itself only when `onExit` is not provided.
 
 Callback closures are optional, but at least one of `onIntegrationConnected`, `onTransferFinished` or `onEvent` must be provided.
 
@@ -118,7 +121,7 @@ case .success(let handler):
 }
 ```
 
-In case of success, you can call `LinkHandler.present(in viewController)` function to let `LinkSDK` modally present the Link view controller and dismiss it on exit, or get the reference to a view controller by calling `LinkHandler.create()` if you prefer your app to manage its life cycle.
+In case of success, you can call `LinkHandler.present(in viewController)` function to let `LinkSDK` modally present the Link view controller and dismiss it on exit (when no `onExit` is provided), or get the reference to a view controller by calling `LinkHandler.create()` if you prefer your app to manage its life cycle.
 
 ## Returning to your app with deep links
 
