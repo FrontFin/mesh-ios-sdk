@@ -107,7 +107,7 @@ In case of success, you can call `LinkHandler.present(in viewController)` functi
 
 ## Returning to your app with deep links
 
-Some integrations cannot complete inside the Link web view and are handed off to the device's external browser. When the provider finishes, it redirects to a **return URL** that must bring your app back to the foreground so the in-progress Link flow can resume. There are a few approaches that make it happen.
+Some integrations complete in the device's external browser, then redirect to a **return URL** that must bring your app back to the foreground so the flow can resume.
 
 ### Native deep link
 
