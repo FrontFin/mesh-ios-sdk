@@ -111,80 +111,8 @@ Some integrations complete in the device's external browser, then redirect to a 
 
 ### Native deep link
 
-A custom URL scheme (for example `yourapp://`) is the quickest option and works without any web hosting.
+A custom URL scheme (e.g. `yourapp://`) is the quickest option. Register the scheme under `CFBundleURLTypes` in your app's `Info.plist` and handle the incoming URL in your scene delegate. iOS shows an `Open in "YourApp"?` confirmation prompt on every redirect from web content, and this prompt can't be suppressed. See [Defining a custom URL scheme for your app](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app) for details.
 
-1. Register the scheme in your app's `Info.plist` under `CFBundleURLTypes`:
+### Universal Link (recommended)
 
-```xml
-<key>CFBundleURLTypes</key>
-<array>
-    <dict>
-        <key>CFBundleURLName</key>
-        <string>com.yourcompany.yourapp</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-            <string>yourapp</string>
-        </array>
-    </dict>
-</array>
-```
-
-2. Handle the incoming URL in your `UIWindowSceneDelegate`. Handle both the running-app case (`openURLContexts`) and the cold-launch case (`connectionOptions.urlContexts` in `willConnectTo`):
-
-```swift
-func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    guard URLContexts.contains(where: { $0.url.scheme?.caseInsensitiveCompare("yourapp") == .orderedSame })
-    else { return }
-    // No action needed beyond returning focus: iOS foregrounds the existing
-    // scene and the presented Link view controller resumes automatically.
-}
-```
-
-> **iOS shows a confirmation prompt** — `Open in "YourApp"?` (Cancel / Open) — on every custom-scheme redirect from web content. It **cannot be suppressed**; use a Universal Link if you need the app to open without it.
-
-### Universal Link (recommended, opens the app with no prompt)
-
-A Universal Link is a regular `https://` URL that iOS routes straight to your app — with **no confirmation prompt** — as long as the app has a verified association with the website that serves it.
-
-1. In Xcode, add the *Associated Domains* capability and declare the host that serves your return URL:
-
-```xml
-<key>com.apple.developer.associated-domains</key>
-<array>
-    <string>applinks:links.yourcompany.com</string>
-</array>
-```
-
-2. Add an **`apple-app-site-association` (AASA) file** hosted on that domain at `https://links.yourcompany.com/.well-known/apple-app-site-association`, served over HTTPS with no redirect. `appID` is `<TeamID>.<BundleID>`:
-
-```json
-{
-  "applinks": {
-    "details": [
-      {
-        "appID": "ABCDE12345.com.yourcompany.yourapp",
-        "components": [{ "/": "/link/return*" }]
-      }
-    ]
-  }
-}
-```
-
-3. **Handle the link** in your scene delegate. Universal Links are delivered as an `NSUserActivity` (not a URL context), via `scene(_:continue:)` while running and `connectionOptions.userActivities` on cold launch:
-
-```swift
-func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-    guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-          let url = userActivity.webpageURL,
-          url.scheme?.caseInsensitiveCompare("https") == .orderedSame,
-          url.host?.caseInsensitiveCompare("links.yourcompany.com") == .orderedSame
-    else { return }
-    // As with the custom scheme, no action is needed beyond returning focus.
-}
-```
-
-Official references:
-- [Allowing apps and websites to link to your content](https://developer.apple.com/documentation/xcode/allowing-apps-and-websites-to-link-to-your-content)
-- [Supporting associated domains](https://developer.apple.com/documentation/xcode/supporting-associated-domains)
-- [Defining a custom URL scheme for your app](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)
-- [Debugging universal links (TN3155)](https://developer.apple.com/documentation/technotes/tn3155-debugging-universal-links)
+A verified `https://` URL that iOS opens directly in your app, without a confirmation prompt. Add the *Associated Domains* capability with an `applinks:` entry for your host, and associate your website with the app by hosting an `apple-app-site-association` file. See [Supporting associated domains](https://developer.apple.com/documentation/xcode/supporting-associated-domains) for details.
