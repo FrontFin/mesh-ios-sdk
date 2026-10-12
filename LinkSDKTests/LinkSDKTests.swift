@@ -73,7 +73,7 @@ final class LinkSDKTests: XCTestCase {
     }
 
     func testOnEventAloneCreatesHandler() throws {
-        let configuration = LinkConfiguration(linkToken: validLinkToken, onEvent: { _ in })
+        let configuration = LinkConfiguration(linkToken: validLinkToken, onEvent: { _ in /* the handler's existence is under test, not its calls */ })
         guard case .success = configuration.createHandler() else {
             XCTFail("onEvent alone should create a handler")
             return
@@ -99,6 +99,8 @@ final class LinkSDKTests: XCTestCase {
         let controller = LinkWebViewViewController(configuration: configuration)
         let window = UIWindow(frame: UIScreen.main.bounds)
         let webView = WKWebView(frame: window.bounds)
+        let navigation = OnlyInjectedPage()
+        webView.navigationDelegate = navigation
         window.addSubview(webView)
         window.makeKeyAndVisible()
         webView.configuration.userContentController.add(controller, name: controller.jsMessageHandler)
@@ -111,7 +113,7 @@ final class LinkSDKTests: XCTestCase {
             </script>
             """, baseURL: nil)
 
-        wait(for: [received], timeout: 30)
+        withExtendedLifetime(navigation) { wait(for: [received], timeout: 30) }
         XCTAssertEqual(calls, ["onEvent", "onExit"])
         XCTAssertEqual(event?["type"] as? String, "withdrawalRequested")
         let payload = event?["payload"] as? [String: Any]
@@ -155,6 +157,13 @@ final class LinkSDKTests: XCTestCase {
     }
 
     private let validLinkToken = "aHR0cHM6Ly93ZWIuZ2V0ZnJvbnQuY29tL2IyYi1pZnJhbWUvYjY5NDZhN2YtZGQyNC00ZjNlLTgwODktMDhkYWZkYzc5MmUzL2Jyb2tlci1jb25uZWN0P2F1dGhfY29kZT02MXE2ZllucmRJUWVFcVUtX1FscjhvRkxIR0hWSnVJVGRNLTUtRHZrSnhMeGxCa2ZqY0RWUWNsbnROLVN4SmdLdGh3SmVmTDdhbGVIb1V4ZjZOWDRwUQ=="
+}
+
+/// Keeps the test web view on the injected page; the test never navigates.
+private final class OnlyInjectedPage: NSObject, WKNavigationDelegate {
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        decisionHandler(navigationAction.request.url?.absoluteString == "about:blank" ? .allow : .cancel)
+    }
 }
 
 private final class FakeScriptMessage: WKScriptMessage {
