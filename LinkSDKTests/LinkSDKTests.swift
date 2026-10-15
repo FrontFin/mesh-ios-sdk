@@ -119,4 +119,20 @@ final class LinkSDKTests: XCTestCase {
         }
     }
 
+    func testNativeLinkScriptKeepsUrlAsString() throws {
+        let links = [
+            "wallet://open?x=';alert(1);'",
+            "wallet://open?x=%27);alert(1);(%27",
+            "wallet://a'+alert(1)+'",
+            "metamask://dapp/link.meshconnect.com?a=1&b=2",
+        ]
+        for link in links {
+            guard let url = URL(string: link) else { XCTFail("not a URL: \(link)"); continue }
+            let context = evaluate(LinkWebViewViewController.nativeLinkScript(url: url, canOpen: true))
+            let handle = context.objectForKeyedSubscript("handleNativeLink")
+            XCTAssertEqual(handle?.objectForKeyedSubscript("url").toString(), url.absoluteString)
+            XCTAssertTrue(handle?.objectForKeyedSubscript("canOpen").toBool() ?? false)
+        }
+    }
+
 }

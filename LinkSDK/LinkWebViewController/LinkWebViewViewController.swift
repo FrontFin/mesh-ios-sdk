@@ -102,6 +102,12 @@ class LinkWebViewViewController: UIViewController {
         return script
     }
 
+    /// Script answering `integrationSelected`. The link comes from web content,
+    /// and `'` is legal in a URL, so it is passed as an escaped string.
+    static func nativeLinkScript(url: URL, canOpen: Bool) -> String {
+        return "window.handleNativeLink = { url: \(jsStringLiteral(url.absoluteString)), canOpen: \(canOpen) };"
+    }
+
     private let webView: WKWebView = {
         // Without this, WebKit silently blocks any `window.open()` that isn't
         // inside a live user gesture (e.g. an auto-open fired from an async
@@ -480,8 +486,7 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
             // Otherwise the web UI falls back to the universal link for every
             // scheme the integrator's Info.plist omits, which we now open fine.
             let canOpen = !Self.blockedSchemes.contains((url.scheme ?? "").lowercased())
-            let js = "window.handleNativeLink = { url: '\(url.absoluteString)', canOpen: \(canOpen) };"
-            webView.evaluateJavaScript(js)
+            webView.evaluateJavaScript(Self.nativeLinkScript(url: url, canOpen: canOpen))
         case .loaded:
             configuration.onEvent?(messageBody)
 
