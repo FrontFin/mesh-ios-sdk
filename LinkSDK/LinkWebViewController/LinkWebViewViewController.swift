@@ -90,6 +90,18 @@ class LinkWebViewViewController: UIViewController {
         "javascript", "data", "file", "about", "blob"
     ]
 
+    /// Script run on `loaded`. Link reads `window.accessTokens` as a JSON
+    /// string, so the tokens are encoded to JSON and then passed as a string.
+    static func loadedScript(accessTokens: [IntegrationAccessToken]?) -> String {
+        var script = "window.meshSdkPlatform = 'iOS';window.meshSdkVersion = '\(meshSDKVersion)';"
+        if let accessTokens = accessTokens,
+           let data = try? JSONEncoder().encode(accessTokens),
+           let jsonString = String(data: data, encoding: .utf8) {
+            script += "window.accessTokens = \(jsStringLiteral(jsonString));"
+        }
+        return script
+    }
+
     private let webView: WKWebView = {
         // Without this, WebKit silently blocks any `window.open()` that isn't
         // inside a live user gesture (e.g. an auto-open fired from an async
@@ -473,21 +485,12 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
         case .loaded:
             configuration.onEvent?(messageBody)
 
-            var script = "window.meshSdkPlatform = 'iOS';window.meshSdkVersion = '\(meshSDKVersion)';"
-            
-            if let accessTokens = configuration.settings?.accessTokens {
-                if let data = try? JSONEncoder().encode(accessTokens),
-                   let jsonString = String(data: data, encoding: String.Encoding.utf8) {
-                    script += "window.accessTokens = '\(jsonString)';"
-                }
-            }
-
-            webView.evaluateJavaScript(script)
+            webView.evaluateJavaScript(Self.loadedScript(accessTokens: configuration.settings?.accessTokens))
         case .openTrueAuth:
                 guard let link = messageBody["link"] as? String else { return }
                 guard let atomicToken = messageBody["atomicToken"] as? String else { return }
                 let resultHandler: (String)->() = { result in
-                    self.webView.evaluateJavaScript("window.trueAuthResult = '\(result)';")
+                    self.webView.evaluateJavaScript("window.trueAuthResult = \(jsStringLiteral(result));")
                 }
                 let trueAuthViewController = TrueAuthWebViewController(
                     configuration: TrueAuthConfiguration(url: link, atomicToken: atomicToken, resultHandler: resultHandler)

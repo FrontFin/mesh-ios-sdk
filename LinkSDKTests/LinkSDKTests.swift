@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import JavaScriptCore
 @testable import LinkSDK
 
 extension UIApplication {
@@ -69,6 +70,53 @@ final class LinkSDKTests: XCTestCase {
             return
         }
         XCTAssertTrue(catalogLink.contains("platform=iOS"), "catalogLink should contain platform=iOS param")
+    }
+
+    // MARK: - Injected scripts
+
+    /// Runs `script` in a fresh JS context with `window` and an `alert` that
+    /// records whether anything injected actually executed.
+    private func evaluate(_ script: String) -> JSContext {
+        let context = JSContext()!
+        context.evaluateScript("var window = this; var executed = false; function alert() { executed = true; }")
+        context.evaluateScript(script)
+        XCTAssertNil(context.exception, "script threw: \(String(describing: context.exception))")
+        XCTAssertFalse(context.objectForKeyedSubscript("executed").toBool(), "injected code executed")
+        return context
+    }
+
+    private let hostileValues = [
+        "';alert(1);'",
+        "\";alert(1);\"",
+        "`${alert(1)}`",
+        "\\';alert(1);//",
+        "line\nbreak\u{2028}\u{2029}</script>",
+    ]
+
+    func testLoadedScriptKeepsAccessTokensAsJsonString() throws {
+        for value in hostileValues {
+            let tokens = [IntegrationAccessToken(accountId: value, accountName: value, accessToken: value, brokerType: value, brokerName: value)]
+            let context = evaluate(LinkWebViewViewController.loadedScript(accessTokens: tokens))
+            let injected = context.objectForKeyedSubscript("accessTokens")
+            XCTAssertTrue(injected?.isString ?? false, "window.accessTokens must stay a string")
+            let decoded = try JSONDecoder().decode([IntegrationAccessToken].self, from: Data(injected!.toString().utf8))
+            XCTAssertEqual(decoded.first?.accountName, value)
+            XCTAssertEqual(decoded.first?.accessToken, value)
+            XCTAssertEqual(context.objectForKeyedSubscript("meshSdkPlatform").toString(), "iOS")
+        }
+    }
+
+    func testLoadedScriptWithoutAccessTokens() throws {
+        let context = evaluate(LinkWebViewViewController.loadedScript(accessTokens: nil))
+        XCTAssertTrue(context.objectForKeyedSubscript("accessTokens").isUndefined)
+        XCTAssertEqual(context.objectForKeyedSubscript("meshSdkVersion").toString(), meshSDKVersion)
+    }
+
+    func testJsStringLiteralRoundTrips() throws {
+        for value in hostileValues + ["", "plain", "émoji 🦖"] {
+            let context = evaluate("window.value = \(jsStringLiteral(value));")
+            XCTAssertEqual(context.objectForKeyedSubscript("value").toString(), value)
+        }
     }
 
 }
