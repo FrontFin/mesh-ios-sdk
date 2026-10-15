@@ -9,7 +9,7 @@ import UIKit
 @preconcurrency import WebKit
 import SafariServices
 
-let meshSDKVersion = "3.3.3"
+let meshSDKVersion = "3.3.4"
 
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
@@ -57,10 +57,19 @@ let whitelistedOriginExceptions = [
 ]
 
 func isWhitelistedOrigin(_ url: URL) -> Bool {
-    if let host = url.host, whitelistedOriginExceptions.contains(host) {
+    guard let host = url.host?.lowercased() else { return false }
+    if whitelistedOriginExceptions.contains(host) {
         return false
     }
-    return whitelistedOrigins.contains(where: { url.absoluteString.hasPrefix($0) || url.host?.hasSuffix($0) ?? false })
+    return whitelistedOrigins.contains { entry in
+        if entry.hasPrefix(".") {
+            return host.hasSuffix(entry)
+        }
+        // Full origins match on scheme + exact host, never a raw string prefix,
+        // which `robinhood.com.evil.com` or `robinhood.com@evil.com` would pass.
+        guard let origin = URL(string: entry) else { return false }
+        return url.scheme?.lowercased() == origin.scheme && host == origin.host
+    }
 }
 
 enum JSMessageType: String {
@@ -89,6 +98,30 @@ class LinkWebViewViewController: UIViewController {
     static let blockedSchemes: Set<String> = [
         "javascript", "data", "file", "about", "blob"
     ]
+
+    /// Script run on `loaded`. Link reads `window.accessTokens` as a JSON
+    /// string, so the tokens are encoded to JSON and then passed as a string.
+    static func loadedScript(accessTokens: [IntegrationAccessToken]?) -> String {
+        var script = "window.meshSdkPlatform = 'iOS';window.meshSdkVersion = '\(meshSDKVersion)';"
+        if let accessTokens = accessTokens,
+           let data = try? JSONEncoder().encode(accessTokens),
+           let jsonString = String(data: data, encoding: .utf8) {
+            script += "window.accessTokens = \(jsStringLiteral(jsonString));"
+        }
+        return script
+    }
+
+    /// Script answering `integrationSelected`. The link comes from web content,
+    /// and `'` is legal in a URL, so it is passed as an escaped string.
+    static func nativeLinkScript(url: URL, canOpen: Bool) -> String {
+        return "window.handleNativeLink = { url: \(jsStringLiteral(url.absoluteString)), canOpen: \(canOpen) };"
+    }
+
+    /// Script handing the TrueAuth result to Link. The result comes from web
+    /// content in the TrueAuth webview, so it is passed as an escaped string.
+    static func trueAuthResultScript(_ result: String) -> String {
+        return "window.trueAuthResult = \(jsStringLiteral(result));"
+    }
 
     private let webView: WKWebView = {
         // Without this, WebKit silently blocks any `window.open()` that isn't
@@ -468,26 +501,16 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
             // Otherwise the web UI falls back to the universal link for every
             // scheme the integrator's Info.plist omits, which we now open fine.
             let canOpen = !Self.blockedSchemes.contains((url.scheme ?? "").lowercased())
-            let js = "window.handleNativeLink = { url: '\(url.absoluteString)', canOpen: \(canOpen) };"
-            webView.evaluateJavaScript(js)
+            webView.evaluateJavaScript(Self.nativeLinkScript(url: url, canOpen: canOpen))
         case .loaded:
             configuration.onEvent?(messageBody)
 
-            var script = "window.meshSdkPlatform = 'iOS';window.meshSdkVersion = '\(meshSDKVersion)';"
-            
-            if let accessTokens = configuration.settings?.accessTokens {
-                if let data = try? JSONEncoder().encode(accessTokens),
-                   let jsonString = String(data: data, encoding: String.Encoding.utf8) {
-                    script += "window.accessTokens = '\(jsonString)';"
-                }
-            }
-
-            webView.evaluateJavaScript(script)
+            webView.evaluateJavaScript(Self.loadedScript(accessTokens: configuration.settings?.accessTokens))
         case .openTrueAuth:
                 guard let link = messageBody["link"] as? String else { return }
                 guard let atomicToken = messageBody["atomicToken"] as? String else { return }
                 let resultHandler: (String)->() = { result in
-                    self.webView.evaluateJavaScript("window.trueAuthResult = '\(result)';")
+                    self.webView.evaluateJavaScript(Self.trueAuthResultScript(result))
                 }
                 let trueAuthViewController = TrueAuthWebViewController(
                     configuration: TrueAuthConfiguration(url: link, atomicToken: atomicToken, resultHandler: resultHandler)

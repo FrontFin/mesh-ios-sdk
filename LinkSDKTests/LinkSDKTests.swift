@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import JavaScriptCore
 @testable import LinkSDK
 
 extension UIApplication {
@@ -69,6 +70,115 @@ final class LinkSDKTests: XCTestCase {
             return
         }
         XCTAssertTrue(catalogLink.contains("platform=iOS"), "catalogLink should contain platform=iOS param")
+    }
+
+    // MARK: - Injected scripts
+
+    /// Runs `script` in a fresh JS context with `window` and an `alert` that
+    /// records whether anything injected actually executed.
+    private func evaluate(_ script: String) -> JSContext {
+        let context = JSContext()!
+        context.evaluateScript("var window = this; var executed = false; function alert() { executed = true; }")
+        context.evaluateScript(script)
+        XCTAssertNil(context.exception, "script threw: \(String(describing: context.exception))")
+        XCTAssertFalse(context.objectForKeyedSubscript("executed").toBool(), "injected code executed")
+        return context
+    }
+
+    private let hostileValues = [
+        "';alert(1);'",
+        "\";alert(1);\"",
+        "`${alert(1)}`",
+        "\\';alert(1);//",
+        "line\nbreak\u{2028}\u{2029}</script>",
+    ]
+
+    func testLoadedScriptKeepsAccessTokensAsJsonString() throws {
+        for value in hostileValues {
+            let tokens = [IntegrationAccessToken(accountId: value, accountName: value, accessToken: value, brokerType: value, brokerName: value)]
+            let context = evaluate(LinkWebViewViewController.loadedScript(accessTokens: tokens))
+            let injected = context.objectForKeyedSubscript("accessTokens")
+            XCTAssertTrue(injected?.isString ?? false, "window.accessTokens must stay a string")
+            let decoded = try JSONDecoder().decode([IntegrationAccessToken].self, from: Data(injected!.toString().utf8))
+            XCTAssertEqual(decoded.first?.accountName, value)
+            XCTAssertEqual(decoded.first?.accessToken, value)
+            XCTAssertEqual(context.objectForKeyedSubscript("meshSdkPlatform").toString(), "iOS")
+        }
+    }
+
+    func testLoadedScriptWithoutAccessTokens() throws {
+        let context = evaluate(LinkWebViewViewController.loadedScript(accessTokens: nil))
+        XCTAssertTrue(context.objectForKeyedSubscript("accessTokens").isUndefined)
+        XCTAssertEqual(context.objectForKeyedSubscript("meshSdkVersion").toString(), meshSDKVersion)
+    }
+
+    func testJsStringLiteralRoundTrips() throws {
+        for value in hostileValues + ["", "plain", "émoji 🦖"] {
+            let context = evaluate("window.value = \(jsStringLiteral(value));")
+            XCTAssertEqual(context.objectForKeyedSubscript("value").toString(), value)
+        }
+    }
+
+    func testTrueAuthResultScriptKeepsResultAsString() throws {
+        for value in hostileValues + ["", "eyJzdGF0dXMiOiJvayJ9"] {
+            let context = evaluate(LinkWebViewViewController.trueAuthResultScript(value))
+            let injected = context.objectForKeyedSubscript("trueAuthResult")
+            XCTAssertTrue(injected?.isString ?? false, "window.trueAuthResult must stay a string")
+            XCTAssertEqual(injected?.toString(), value)
+        }
+    }
+
+    func testNativeLinkScriptKeepsUrlAsString() throws {
+        let links = [
+            "wallet://open?x=';alert(1);'",
+            "wallet://open?x=%27);alert(1);(%27",
+            "wallet://a'+alert(1)+'",
+            "metamask://dapp/link.meshconnect.com?a=1&b=2",
+        ]
+        for link in links {
+            guard let url = URL(string: link) else { XCTFail("not a URL: \(link)"); continue }
+            let context = evaluate(LinkWebViewViewController.nativeLinkScript(url: url, canOpen: true))
+            let handle = context.objectForKeyedSubscript("handleNativeLink")
+            XCTAssertEqual(handle?.objectForKeyedSubscript("url").toString(), url.absoluteString)
+            XCTAssertTrue(handle?.objectForKeyedSubscript("canOpen").toBool() ?? false)
+        }
+    }
+
+    // MARK: - Origin whitelist
+
+    func testWhitelistAllowsKnownOrigins() throws {
+        let allowed = [
+            "https://robinhood.com/login",
+            "https://ROBINHOOD.com",
+            "https://js.stripe.com/v3/",
+            "https://m.stripe.network/inner.html",
+            "https://app.usercentrics.eu/session",
+            "https://contentmx.okcoin.com/x",
+            "https://www.recaptcha.net/recaptcha/api.js",
+            "https://web.meshconnect.com/b2b-iframe",
+            "https://applications.robinhood.com/x",
+            "https://www.google.com/recaptcha",
+        ]
+        for link in allowed {
+            XCTAssertTrue(isWhitelistedOrigin(URL(string: link)!), link)
+        }
+    }
+
+    func testWhitelistRejectsLookalikeOrigins() throws {
+        let rejected = [
+            "https://robinhood.com.attacker.example/",
+            "https://robinhood.com@attacker.example/",
+            "https://js.stripe.com.attacker.example/",
+            "https://www.recaptcha.net.attacker.example/",
+            "https://evilrobinhood.com/",
+            "https://evilmeshconnect.com/",
+            "https://attacker.example/?u=https://robinhood.com",
+            "http://robinhood.com/",
+            "https://web3.okx.com/",
+        ]
+        for link in rejected {
+            XCTAssertFalse(isWhitelistedOrigin(URL(string: link)!), link)
+        }
     }
 
 }

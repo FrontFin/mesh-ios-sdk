@@ -79,3 +79,15 @@ extension String {
         }.joined()
     }
 }
+
+/// Encodes `value` as a JavaScript string literal (quotes included) so a script
+/// can carry it as data. Nothing in `value` can end the literal or run as code.
+func jsStringLiteral(_ value: String) -> String {
+    // Encoded as a one-element array, then the brackets are stripped.
+    guard let data = try? JSONSerialization.data(withJSONObject: [value]),
+          let json = String(data: data, encoding: .utf8) else { return "\"\"" }
+    // Older JS engines treat U+2028/U+2029 as line breaks inside literals.
+    return String(json.dropFirst().dropLast())
+        .replacingOccurrences(of: "\u{2028}", with: "\\u2028")
+        .replacingOccurrences(of: "\u{2029}", with: "\\u2029")
+}
