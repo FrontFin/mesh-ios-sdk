@@ -117,6 +117,12 @@ class LinkWebViewViewController: UIViewController {
         return "window.handleNativeLink = { url: \(jsStringLiteral(url.absoluteString)), canOpen: \(canOpen) };"
     }
 
+    /// Script handing the TrueAuth result to Link. The result comes from web
+    /// content in the TrueAuth webview, so it is passed as an escaped string.
+    static func trueAuthResultScript(_ result: String) -> String {
+        return "window.trueAuthResult = \(jsStringLiteral(result));"
+    }
+
     private let webView: WKWebView = {
         // Without this, WebKit silently blocks any `window.open()` that isn't
         // inside a live user gesture (e.g. an auto-open fired from an async
@@ -504,7 +510,7 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
                 guard let link = messageBody["link"] as? String else { return }
                 guard let atomicToken = messageBody["atomicToken"] as? String else { return }
                 let resultHandler: (String)->() = { result in
-                    self.webView.evaluateJavaScript("window.trueAuthResult = \(jsStringLiteral(result));")
+                    self.webView.evaluateJavaScript(Self.trueAuthResultScript(result))
                 }
                 let trueAuthViewController = TrueAuthWebViewController(
                     configuration: TrueAuthConfiguration(url: link, atomicToken: atomicToken, resultHandler: resultHandler)

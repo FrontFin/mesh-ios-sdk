@@ -119,6 +119,15 @@ final class LinkSDKTests: XCTestCase {
         }
     }
 
+    func testTrueAuthResultScriptKeepsResultAsString() throws {
+        for value in hostileValues + ["", "eyJzdGF0dXMiOiJvayJ9"] {
+            let context = evaluate(LinkWebViewViewController.trueAuthResultScript(value))
+            let injected = context.objectForKeyedSubscript("trueAuthResult")
+            XCTAssertTrue(injected?.isString ?? false, "window.trueAuthResult must stay a string")
+            XCTAssertEqual(injected?.toString(), value)
+        }
+    }
+
     func testNativeLinkScriptKeepsUrlAsString() throws {
         let links = [
             "wallet://open?x=';alert(1);'",
