@@ -135,4 +135,41 @@ final class LinkSDKTests: XCTestCase {
         }
     }
 
+    // MARK: - Origin whitelist
+
+    func testWhitelistAllowsKnownOrigins() throws {
+        let allowed = [
+            "https://robinhood.com/login",
+            "https://ROBINHOOD.com",
+            "https://js.stripe.com/v3/",
+            "https://m.stripe.network/inner.html",
+            "https://app.usercentrics.eu/session",
+            "https://contentmx.okcoin.com/x",
+            "https://www.recaptcha.net/recaptcha/api.js",
+            "https://web.meshconnect.com/b2b-iframe",
+            "https://applications.robinhood.com/x",
+            "https://www.google.com/recaptcha",
+        ]
+        for link in allowed {
+            XCTAssertTrue(isWhitelistedOrigin(URL(string: link)!), link)
+        }
+    }
+
+    func testWhitelistRejectsLookalikeOrigins() throws {
+        let rejected = [
+            "https://robinhood.com.attacker.example/",
+            "https://robinhood.com@attacker.example/",
+            "https://js.stripe.com.attacker.example/",
+            "https://www.recaptcha.net.attacker.example/",
+            "https://evilrobinhood.com/",
+            "https://evilmeshconnect.com/",
+            "https://attacker.example/?u=https://robinhood.com",
+            "http://robinhood.com/",
+            "https://web3.okx.com/",
+        ]
+        for link in rejected {
+            XCTAssertFalse(isWhitelistedOrigin(URL(string: link)!), link)
+        }
+    }
+
 }

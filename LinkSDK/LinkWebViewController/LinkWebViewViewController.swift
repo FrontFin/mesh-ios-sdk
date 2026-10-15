@@ -57,10 +57,19 @@ let whitelistedOriginExceptions = [
 ]
 
 func isWhitelistedOrigin(_ url: URL) -> Bool {
-    if let host = url.host, whitelistedOriginExceptions.contains(host) {
+    guard let host = url.host?.lowercased() else { return false }
+    if whitelistedOriginExceptions.contains(host) {
         return false
     }
-    return whitelistedOrigins.contains(where: { url.absoluteString.hasPrefix($0) || url.host?.hasSuffix($0) ?? false })
+    return whitelistedOrigins.contains { entry in
+        if entry.hasPrefix(".") {
+            return host.hasSuffix(entry)
+        }
+        // Full origins match on scheme + exact host, never a raw string prefix,
+        // which `robinhood.com.evil.com` or `robinhood.com@evil.com` would pass.
+        guard let origin = URL(string: entry) else { return false }
+        return url.scheme?.lowercased() == origin.scheme && host == origin.host
+    }
 }
 
 enum JSMessageType: String {
