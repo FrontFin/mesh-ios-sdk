@@ -181,4 +181,31 @@ final class LinkSDKTests: XCTestCase {
         }
     }
 
+    // MARK: - Popups
+
+    func testPopupFromMainFrameLoadsInWebView() throws {
+        let links = ["https://web.meshconnect.com/oauth", "https://attacker.example/", "metamask://dapp"]
+        for link in links {
+            XCTAssertEqual(LinkWebViewViewController.popupAction(sourceIsMainFrame: true, url: URL(string: link)), .loadInWebView, link)
+        }
+    }
+
+    func testPopupFromSubframeNeverLoadsInWebView() throws {
+        let external = [
+            "https://web.meshconnect.com/b2b-iframe",
+            "https://www.google.com/recaptcha",
+            "https://attacker.example/",
+            "metamask://dapp",
+        ]
+        for link in external {
+            XCTAssertEqual(LinkWebViewViewController.popupAction(sourceIsMainFrame: false, url: URL(string: link)), .openExternally, link)
+        }
+
+        let ignored = ["javascript:alert(1)", "data:text/html,hi", "file:///etc/hosts", "about:blank", "blob:https://x/y"]
+        for link in ignored {
+            XCTAssertEqual(LinkWebViewViewController.popupAction(sourceIsMainFrame: false, url: URL(string: link)), .ignore, link)
+        }
+        XCTAssertEqual(LinkWebViewViewController.popupAction(sourceIsMainFrame: false, url: nil), .ignore)
+    }
+
 }
