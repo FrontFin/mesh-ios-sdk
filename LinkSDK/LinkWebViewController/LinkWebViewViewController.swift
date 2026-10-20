@@ -28,6 +28,7 @@ let allowedUrls = [
 
 let whitelistedOrigins = [
     ".meshconnect.com",
+    ".meshpay.com",
     ".walletconnect.com",
     ".walletconnect.org",
     ".walletlink.org",
