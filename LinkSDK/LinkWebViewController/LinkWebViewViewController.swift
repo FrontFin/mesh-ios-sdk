@@ -9,7 +9,7 @@ import UIKit
 @preconcurrency import WebKit
 import SafariServices
 
-let meshSDKVersion = "3.3.4"
+let meshSDKVersion = "3.3.5"
 
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
@@ -98,6 +98,26 @@ class LinkWebViewViewController: UIViewController {
     static let blockedSchemes: Set<String> = [
         "javascript", "data", "file", "about", "blob"
     ]
+
+    enum PopupAction: Equatable {
+        case loadInWebView
+        case openExternally
+        case ignore
+    }
+
+    /// Where a `window.open()` / `target=_blank` request goes. Only the top-level
+    /// page may load it in place: it can already navigate itself, but a subframe
+    /// doing so would replace the Mesh page with its own document. An unknown
+    /// source (`nil`) is treated as a subframe.
+    static func popupAction(sourceIsMainFrame: Bool?, url: URL?) -> PopupAction {
+        if sourceIsMainFrame == true {
+            return .loadInWebView
+        }
+        guard let scheme = url?.scheme?.lowercased(), !blockedSchemes.contains(scheme) else {
+            return .ignore
+        }
+        return .openExternally
+    }
 
     /// Script run on `loaded`. Link reads `window.accessTokens` as a JSON
     /// string, so the tokens are encoded to JSON and then passed as a string.
@@ -524,8 +544,20 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
     
     @objc(webView:createWebViewWithConfiguration:forNavigationAction:windowFeatures:)
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        guard !(navigationAction.targetFrame?.isMainFrame ?? false) else { return nil }
-        webView.load(navigationAction.request)
+        // Read via KVC: WebKit can hand back no source frame despite the
+        // non-optional Swift type, so it has to stay optional here.
+        let sourceFrame = navigationAction.value(forKey: "sourceFrame") as? WKFrameInfo
+        let url = navigationAction.request.url
+        switch Self.popupAction(sourceIsMainFrame: sourceFrame?.isMainFrame, url: url) {
+        case .loadInWebView:
+            webView.load(navigationAction.request)
+        case .openExternally:
+            if let url = url {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        case .ignore:
+            break
+        }
         return nil
     }
 }
