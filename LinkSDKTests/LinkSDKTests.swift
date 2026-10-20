@@ -156,6 +156,7 @@ final class LinkSDKTests: XCTestCase {
             "https://contentmx.okcoin.com/x",
             "https://www.recaptcha.net/recaptcha/api.js",
             "https://web.meshconnect.com/b2b-iframe",
+            "https://pay.meshpay.com/",
             "https://applications.robinhood.com/x",
             "https://www.google.com/recaptcha",
         ]
@@ -172,6 +173,7 @@ final class LinkSDKTests: XCTestCase {
             "https://www.recaptcha.net.attacker.example/",
             "https://evilrobinhood.com/",
             "https://evilmeshconnect.com/",
+            "https://evilmeshpay.com/",
             "https://attacker.example/?u=https://robinhood.com",
             "http://robinhood.com/",
             "https://web3.okx.com/",
