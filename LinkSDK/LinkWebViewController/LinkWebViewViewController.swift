@@ -107,9 +107,10 @@ class LinkWebViewViewController: UIViewController {
 
     /// Where a `window.open()` / `target=_blank` request goes. Only the top-level
     /// page may load it in place: it can already navigate itself, but a subframe
-    /// doing so would replace the Mesh page with its own document.
-    static func popupAction(sourceIsMainFrame: Bool, url: URL?) -> PopupAction {
-        if sourceIsMainFrame {
+    /// doing so would replace the Mesh page with its own document. An unknown
+    /// source (`nil`) is treated as a subframe.
+    static func popupAction(sourceIsMainFrame: Bool?, url: URL?) -> PopupAction {
+        if sourceIsMainFrame == true {
             return .loadInWebView
         }
         guard let scheme = url?.scheme?.lowercased(), !blockedSchemes.contains(scheme) else {
@@ -544,10 +545,10 @@ extension LinkWebViewViewController: WKUIDelegate, WKScriptMessageHandler {
     @objc(webView:createWebViewWithConfiguration:forNavigationAction:windowFeatures:)
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         // Read via KVC: WebKit can hand back no source frame despite the
-        // non-optional Swift type, and that must count as untrusted.
+        // non-optional Swift type, so it has to stay optional here.
         let sourceFrame = navigationAction.value(forKey: "sourceFrame") as? WKFrameInfo
         let url = navigationAction.request.url
-        switch Self.popupAction(sourceIsMainFrame: sourceFrame?.isMainFrame ?? false, url: url) {
+        switch Self.popupAction(sourceIsMainFrame: sourceFrame?.isMainFrame, url: url) {
         case .loadInWebView:
             webView.load(navigationAction.request)
         case .openExternally:

@@ -208,4 +208,9 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertEqual(LinkWebViewViewController.popupAction(sourceIsMainFrame: false, url: nil), .ignore)
     }
 
+    func testPopupFromUnknownSourceIsTreatedAsSubframe() throws {
+        XCTAssertEqual(LinkWebViewViewController.popupAction(sourceIsMainFrame: nil, url: URL(string: "https://www.google.com/")), .openExternally)
+        XCTAssertEqual(LinkWebViewViewController.popupAction(sourceIsMainFrame: nil, url: URL(string: "javascript:alert(1)")), .ignore)
+    }
+
 }
