@@ -349,7 +349,19 @@ internal extension LinkWebViewViewController {
         }
     }
     
+    /// Link v3 (`.meshpay.com`) draws its own back and close, and never sends
+    /// `showNativeNavbar(false)`, so the native bar is only for other pages.
+    static func allowsNativeNavbar(on url: URL?) -> Bool {
+        guard let host = url?.host?.lowercased() else { return true }
+        return host != "meshpay.com" && !host.hasSuffix(".meshpay.com")
+    }
+
     func showNativeNavbar(_ show: Bool) {
+        if show && !Self.allowsNativeNavbar(on: webView.url) {
+            topBar.isHidden = true
+            showNativeNavBarDelayed = false
+            return
+        }
         if show {
             if showNativeNavBarDelayed {
                 topBar.isHidden = false

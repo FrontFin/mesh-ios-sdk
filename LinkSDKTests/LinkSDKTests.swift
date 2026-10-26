@@ -249,4 +249,34 @@ final class LinkSDKTests: XCTestCase {
         }
     }
 
+    // MARK: - Native navbar
+
+    func testNativeNavbarNeverShowsOnMeshPayPages() throws {
+        let meshPay = [
+            "https://link.meshpay.com/",
+            "https://link.dev.meshpay.com/oauth-callback.html",
+            "https://api.meshpay.com/v2/sessions/s1/child-sessions/c1:redirect",
+            "https://LINK.MeshPay.com/",
+            "https://meshpay.com/",
+        ]
+        for link in meshPay {
+            XCTAssertFalse(LinkWebViewViewController.allowsNativeNavbar(on: URL(string: link)), link)
+        }
+    }
+
+    func testNativeNavbarStillAllowedForLegacyAndExchangePages() throws {
+        let allowed = [
+            "https://web.meshconnect.com/",
+            "https://link.meshconnect.com/",
+            "https://robinhood.com/login",
+            "https://exchange.gemini.com/signin",
+            "https://evilmeshpay.com/",
+            "https://meshpay.com.attacker.example/",
+        ]
+        for link in allowed {
+            XCTAssertTrue(LinkWebViewViewController.allowsNativeNavbar(on: URL(string: link)), link)
+        }
+        XCTAssertTrue(LinkWebViewViewController.allowsNativeNavbar(on: nil))
+    }
+
 }
