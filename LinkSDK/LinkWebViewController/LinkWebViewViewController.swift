@@ -362,11 +362,25 @@ internal extension LinkWebViewViewController {
         return host == site || host.hasSuffix("." + site)
     }
 
-    /// Page-load trigger for the native bar. Link draws its own controls on its
-    /// own site, so the bar stays hidden there; the load still counts towards the
-    /// next off-site page, as before.
-    func showNativeNavbarAfterPageLoad() {
-        guard Self.isLinkSite(webView.url?.host, linkHost: linkHost) else {
+    /// A navigation we stopped on purpose (e.g. a URL handed to Safari), not a failed load.
+    static func isCancellation(_ error: Error) -> Bool {
+        let error = error as NSError
+        return (error.domain == NSURLErrorDomain && error.code == NSURLErrorCancelled)
+            || (error.domain == "WebKitErrorDomain" && error.code == 102)
+    }
+
+    /// Link draws its own controls on its own site, so page loads there keep the
+    /// native bar hidden. A real load failure still gets it as a way out.
+    static func keepsNativeNavbarHidden(host: String?, linkHost: String?, error: Error?) -> Bool {
+        guard isLinkSite(host, linkHost: linkHost) else { return false }
+        guard let error = error else { return true }
+        return isCancellation(error)
+    }
+
+    /// Page-load trigger for the native bar. A hidden load still counts towards
+    /// the next off-site page, as before.
+    func showNativeNavbarAfterPageLoad(error: Error? = nil) {
+        guard Self.keepsNativeNavbarHidden(host: webView.url?.host, linkHost: linkHost, error: error) else {
             showNativeNavbar(true)
             return
         }
@@ -493,10 +507,14 @@ extension LinkWebViewViewController: WKNavigationDelegate {
         if linkHost == nil {
             linkHost = webView.url?.host?.lowercased()
         }
+        // Redirects before this commit may have shown the bar before Link's host was known.
+        if Self.isLinkSite(webView.url?.host, linkHost: linkHost) {
+            topBar.isHidden = true
+        }
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        showNativeNavbarAfterPageLoad()
+        showNativeNavbarAfterPageLoad(error: error)
 #if DEBUG
         configuration.onEvent?(["type": "webViewEvent", "payload": "didFailProvisionalNavigation", "error": error.localizedDescription])
 #endif
@@ -510,7 +528,7 @@ extension LinkWebViewViewController: WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        showNativeNavbarAfterPageLoad()
+        showNativeNavbarAfterPageLoad(error: error)
 #if DEBUG
         configuration.onEvent?(["type": "webViewEvent", "payload": "didFail", "error": error.localizedDescription])
 #endif

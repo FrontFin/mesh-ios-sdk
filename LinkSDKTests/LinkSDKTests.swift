@@ -285,4 +285,18 @@ final class LinkSDKTests: XCTestCase {
         }
     }
 
+    func testNativeNavbarStaysHiddenOnLinkSiteUnlessALoadReallyFails() throws {
+        let hidden = LinkWebViewViewController.keepsNativeNavbarHidden
+        let cancelled = NSError(domain: NSURLErrorDomain, code: NSURLErrorCancelled)
+        let interrupted = NSError(domain: "WebKitErrorDomain", code: 102)
+        let offline = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet)
+
+        XCTAssertTrue(hidden("link.meshpay.com", "link.meshpay.com", nil))
+        XCTAssertTrue(hidden("api.meshpay.com", "link.meshpay.com", cancelled))
+        XCTAssertTrue(hidden("link.meshpay.com", "link.meshpay.com", interrupted))
+        XCTAssertFalse(hidden("link.meshpay.com", "link.meshpay.com", offline))
+        XCTAssertFalse(hidden("robinhood.com", "link.meshconnect.com", nil))
+        XCTAssertFalse(hidden("link.meshpay.com", nil, nil))
+    }
+
 }
