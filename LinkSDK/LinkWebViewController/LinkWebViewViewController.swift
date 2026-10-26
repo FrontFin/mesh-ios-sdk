@@ -82,12 +82,17 @@ func isMfsOAuthRedirect(_ url: URL) -> Bool {
           host.hasPrefix("api."), host.hasSuffix(".meshpay.com") else {
         return false
     }
-    let parts = url.path.split(separator: "/").map(String.init)
-    return parts.count == 5
-        && parts[0] == "v2"
-        && parts[1] == "sessions"
-        && parts[3] == "child-sessions"
-        && parts[4].hasSuffix(":redirect")
+    // Keeps empty segments, so `//` or a missing ID can't still line up.
+    let parts = url.path.components(separatedBy: "/")
+    let suffix = ":redirect"
+    return parts.count == 6
+        && parts[0].isEmpty
+        && parts[1] == "v2"
+        && parts[2] == "sessions"
+        && !parts[3].isEmpty
+        && parts[4] == "child-sessions"
+        && parts[5].count > suffix.count
+        && parts[5].hasSuffix(suffix)
 }
 
 enum JSMessageType: String {
