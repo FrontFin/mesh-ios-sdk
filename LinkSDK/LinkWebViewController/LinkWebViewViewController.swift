@@ -9,7 +9,7 @@ import UIKit
 @preconcurrency import WebKit
 import SafariServices
 
-let meshSDKVersion = "3.4.0"
+let meshSDKVersion = "3.4.1"
 
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
@@ -71,6 +71,28 @@ func isWhitelistedOrigin(_ url: URL) -> Bool {
         guard let origin = URL(string: entry) else { return false }
         return url.scheme?.lowercased() == origin.scheme && host == origin.host
     }
+}
+
+/// Link v3's OAuth hand-off (`/v2/sessions/{id}/child-sessions/{id}:redirect`),
+/// which must leave the webview: its host is allowlisted, so loading it in place
+/// would unload Link and lose the session that finishes the connection.
+func isMfsOAuthRedirect(_ url: URL) -> Bool {
+    guard url.scheme?.lowercased() == "https",
+          let host = url.host?.lowercased(),
+          host.hasPrefix("api."), host.hasSuffix(".meshpay.com") else {
+        return false
+    }
+    // Keeps empty segments, so `//` or a missing ID can't still line up.
+    let parts = url.path.components(separatedBy: "/")
+    let suffix = ":redirect"
+    return parts.count == 6
+        && parts[0].isEmpty
+        && parts[1] == "v2"
+        && parts[2] == "sessions"
+        && !parts[3].isEmpty
+        && parts[4] == "child-sessions"
+        && parts[5].count > suffix.count
+        && parts[5].hasSuffix(suffix)
 }
 
 enum JSMessageType: String {
@@ -401,6 +423,7 @@ extension LinkWebViewViewController: WKNavigationDelegate {
         if ["http", "https"].contains(url.scheme) {
             // if a url is in allowedUrls open it inSafari
             if allowedUrls.contains(where: { url.absoluteString.starts(with: $0) }) ||
+                isMfsOAuthRedirect(url) ||
                 // or if domain whitelisting is not disable and url is not included in the list, open it inSafari
                 (!(configuration.disableDomainWhiteList ?? false) &&
                  !isWhitelistedOrigin(url)) {
