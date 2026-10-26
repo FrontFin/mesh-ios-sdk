@@ -215,21 +215,21 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertEqual(LinkWebViewViewController.popupAction(sourceIsMainFrame: nil, url: URL(string: "javascript:alert(1)")), .ignore)
     }
 
-    // MARK: - MFS OAuth redirect
+    // MARK: - Link OAuth redirect
 
-    func testMfsOAuthRedirectMatchesEveryEnvironment() throws {
+    func testLinkOAuthRedirectMatchesEveryEnvironment() throws {
         for host in ["api.meshpay.com", "api.sbx.meshpay.com", "api.dev.meshpay.com", "API.MeshPay.com"] {
             let url = URL(string: "https://\(host)/v2/sessions/s1/child-sessions/c1:redirect?access_token=x&integrationId=i&sessionType=oauth")!
-            XCTAssertTrue(isMfsOAuthRedirect(url), host)
+            XCTAssertTrue(isLinkOAuthRedirect(url), host)
         }
     }
 
-    func testMfsOAuthRedirectHostStaysAllowlisted() throws {
+    func testLinkOAuthRedirectHostStaysAllowlisted() throws {
         // Both hold: the host is trusted, and only this one path leaves the webview.
         XCTAssertTrue(isWhitelistedOrigin(URL(string: "https://api.meshpay.com/v2/sessions")!))
     }
 
-    func testMfsOAuthRedirectRejectsLookalikes() throws {
+    func testLinkOAuthRedirectRejectsLookalikes() throws {
         let rejected = [
             "https://api.meshpay.com/v2/sessions/s1/child-sessions/c1:redirectevil",
             "https://api.meshpay.com/v2/sessions/s1/child-sessions",
@@ -245,7 +245,7 @@ final class LinkSDKTests: XCTestCase {
             "https://link.meshpay.com/?token=abc",
         ]
         for link in rejected {
-            XCTAssertFalse(isMfsOAuthRedirect(URL(string: link)!), link)
+            XCTAssertFalse(isLinkOAuthRedirect(URL(string: link)!), link)
         }
     }
 
