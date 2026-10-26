@@ -215,4 +215,35 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertEqual(LinkWebViewViewController.popupAction(sourceIsMainFrame: nil, url: URL(string: "javascript:alert(1)")), .ignore)
     }
 
+    // MARK: - MFS OAuth redirect
+
+    func testMfsOAuthRedirectMatchesEveryEnvironment() throws {
+        for host in ["api.meshpay.com", "api.sbx.meshpay.com", "api.dev.meshpay.com", "API.MeshPay.com"] {
+            let url = URL(string: "https://\(host)/v2/sessions/s1/child-sessions/c1:redirect?access_token=x&integrationId=i&sessionType=oauth")!
+            XCTAssertTrue(isMfsOAuthRedirect(url), host)
+        }
+    }
+
+    func testMfsOAuthRedirectHostStaysAllowlisted() throws {
+        // Both hold: the host is trusted, and only this one path leaves the webview.
+        XCTAssertTrue(isWhitelistedOrigin(URL(string: "https://api.meshpay.com/v2/sessions")!))
+    }
+
+    func testMfsOAuthRedirectRejectsLookalikes() throws {
+        let rejected = [
+            "https://api.meshpay.com/v2/sessions/s1/child-sessions/c1:redirectevil",
+            "https://api.meshpay.com/v2/sessions/s1/child-sessions",
+            "https://api.meshpay.com/v2/sessions/s1",
+            "https://api.meshpay.com/v2/sessions/s1/child-sessions/c1/x:redirect",
+            "https://apievil.meshpay.com/v2/sessions/s1/child-sessions/c1:redirect",
+            "https://api.meshpay.com.evil.com/v2/sessions/s1/child-sessions/c1:redirect",
+            "https://api.evilmeshpay.com/v2/sessions/s1/child-sessions/c1:redirect",
+            "http://api.meshpay.com/v2/sessions/s1/child-sessions/c1:redirect",
+            "https://link.meshpay.com/?token=abc",
+        ]
+        for link in rejected {
+            XCTAssertFalse(isMfsOAuthRedirect(URL(string: link)!), link)
+        }
+    }
+
 }
