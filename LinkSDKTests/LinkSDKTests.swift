@@ -251,32 +251,38 @@ final class LinkSDKTests: XCTestCase {
 
     // MARK: - Native navbar
 
-    func testNativeNavbarNeverShowsOnMeshPayPages() throws {
-        let meshPay = [
-            "https://link.meshpay.com/",
-            "https://link.dev.meshpay.com/oauth-callback.html",
-            "https://api.meshpay.com/v2/sessions/s1/child-sessions/c1:redirect",
-            "https://LINK.MeshPay.com/",
-            "https://meshpay.com/",
+    func testLinkSiteCoversLinkHostAndItsSiblings() throws {
+        let cases: [(host: String, linkHost: String)] = [
+            ("link.meshpay.com", "link.meshpay.com"),
+            ("api.meshpay.com", "link.meshpay.com"),
+            ("meshpay.com", "link.meshpay.com"),
+            ("API.MeshPay.com", "link.meshpay.com"),
+            ("api.dev.meshpay.com", "link.dev.meshpay.com"),
+            ("integration-api.meshconnect.com", "link.meshconnect.com"),
+            ("web.meshconnect.com", "link.meshconnect.com"),
+            ("192.168.1.5", "192.168.1.5"),
         ]
-        for link in meshPay {
-            XCTAssertFalse(LinkWebViewViewController.allowsNativeNavbar(on: URL(string: link)), link)
+        for (host, linkHost) in cases {
+            XCTAssertTrue(LinkWebViewViewController.isLinkSite(host, linkHost: linkHost), "\(host) on \(linkHost)")
         }
     }
 
-    func testNativeNavbarStillAllowedForLegacyAndExchangePages() throws {
-        let allowed = [
-            "https://web.meshconnect.com/",
-            "https://link.meshconnect.com/",
-            "https://robinhood.com/login",
-            "https://exchange.gemini.com/signin",
-            "https://evilmeshpay.com/",
-            "https://meshpay.com.attacker.example/",
+    func testLinkSiteExcludesOtherSites() throws {
+        let cases: [(host: String?, linkHost: String?)] = [
+            ("robinhood.com", "link.meshconnect.com"),
+            ("exchange.gemini.com", "link.meshpay.com"),
+            ("link.meshconnect.com", "link.meshpay.com"),
+            ("evilmeshpay.com", "link.meshpay.com"),
+            ("meshpay.com.attacker.example", "link.meshpay.com"),
+            ("api.meshpay.com", "link.dev.meshpay.com"),
+            ("api.other.com", "localhost"),
+            ("10.168.1.5", "192.168.1.5"),
+            (nil, "link.meshpay.com"),
+            ("link.meshpay.com", nil),
         ]
-        for link in allowed {
-            XCTAssertTrue(LinkWebViewViewController.allowsNativeNavbar(on: URL(string: link)), link)
+        for (host, linkHost) in cases {
+            XCTAssertFalse(LinkWebViewViewController.isLinkSite(host, linkHost: linkHost), "\(host ?? "nil") on \(linkHost ?? "nil")")
         }
-        XCTAssertTrue(LinkWebViewViewController.allowsNativeNavbar(on: nil))
     }
 
 }

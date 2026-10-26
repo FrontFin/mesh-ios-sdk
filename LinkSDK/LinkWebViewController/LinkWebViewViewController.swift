@@ -73,7 +73,7 @@ func isWhitelistedOrigin(_ url: URL) -> Bool {
     }
 }
 
-/// Link v3's OAuth hand-off (`/v2/sessions/{id}/child-sessions/{id}:redirect`),
+/// MFS's OAuth hand-off (`/v2/sessions/{id}/child-sessions/{id}:redirect`),
 /// which must leave the webview: its host is allowlisted, so loading it in place
 /// would unload Link and lose the session that finishes the connection.
 func isMfsOAuthRedirect(_ url: URL) -> Bool {
@@ -237,6 +237,8 @@ class LinkWebViewViewController: UIViewController {
     private var safariViewController: SFSafariViewController?
     
     private var showNativeNavBarDelayed = false
+    /// Host of the first page Link committed, after any redirects.
+    private var linkHost: String?
     private var isDarkTheme = false
     private var themeColorTop = LIGHT_THEME_COLOR_TOP
     private var themeColorBottom = LIGHT_THEME_COLOR_BOTTOM
@@ -349,19 +351,30 @@ internal extension LinkWebViewViewController {
         }
     }
     
-    /// Link v3 (`.meshpay.com`) draws its own back and close, and never sends
-    /// `showNativeNavbar(false)`, so the native bar is only for other pages.
-    static func allowsNativeNavbar(on url: URL?) -> Bool {
-        guard let host = url?.host?.lowercased() else { return true }
-        return host != "meshpay.com" && !host.hasSuffix(".meshpay.com")
+    /// True when `host` is Link's own site: `linkHost` itself or a sibling under
+    /// its parent domain (`link.x.com` covers `api.x.com`). An IP has no siblings.
+    static func isLinkSite(_ host: String?, linkHost: String?) -> Bool {
+        guard let host = host?.lowercased(), let linkHost = linkHost?.lowercased() else { return false }
+        if host == linkHost { return true }
+        let labels = linkHost.split(separator: ".")
+        guard labels.count > 2, !labels.allSatisfy({ Int($0) != nil }) else { return false }
+        let site = labels.dropFirst().joined(separator: ".")
+        return host == site || host.hasSuffix("." + site)
+    }
+
+    /// Page-load trigger for the native bar. Link draws its own controls on its
+    /// own site, so the bar stays hidden there; the load still counts towards the
+    /// next off-site page, as before.
+    func showNativeNavbarAfterPageLoad() {
+        guard Self.isLinkSite(webView.url?.host, linkHost: linkHost) else {
+            showNativeNavbar(true)
+            return
+        }
+        topBar.isHidden = true
+        showNativeNavBarDelayed = true
     }
 
     func showNativeNavbar(_ show: Bool) {
-        if show && !Self.allowsNativeNavbar(on: webView.url) {
-            topBar.isHidden = true
-            showNativeNavBarDelayed = false
-            return
-        }
         if show {
             if showNativeNavBarDelayed {
                 topBar.isHidden = false
@@ -475,30 +488,36 @@ extension LinkWebViewViewController: WKNavigationDelegate {
         configuration.onEvent?(["type": "webViewEvent", "payload": "didStartProvisionalNavigation"])
 #endif
     }
-    
+
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        if linkHost == nil {
+            linkHost = webView.url?.host?.lowercased()
+        }
+    }
+
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        showNativeNavbar(true)
+        showNativeNavbarAfterPageLoad()
 #if DEBUG
         configuration.onEvent?(["type": "webViewEvent", "payload": "didFailProvisionalNavigation", "error": error.localizedDescription])
 #endif
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        showNativeNavbar(true)
+        showNativeNavbarAfterPageLoad()
 #if DEBUG
         configuration.onEvent?(["type": "webViewEvent", "payload": "didFinish"])
 #endif
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        showNativeNavbar(true)
+        showNativeNavbarAfterPageLoad()
 #if DEBUG
         configuration.onEvent?(["type": "webViewEvent", "payload": "didFail", "error": error.localizedDescription])
 #endif
     }
     
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        showNativeNavbar(true)
+        showNativeNavbarAfterPageLoad()
 #if DEBUG
         configuration.onEvent?(["type": "webViewEvent", "payload": "didReceiveServerRedirectForProvisionalNavigation"])
 #endif
