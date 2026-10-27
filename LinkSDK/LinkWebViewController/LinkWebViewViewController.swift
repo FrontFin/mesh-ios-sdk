@@ -244,7 +244,6 @@ class LinkWebViewViewController: UIViewController {
     /// Host of the first page Link committed, after any redirects.
     private var linkHost: String?
     private var isDarkTheme = false
-    private var themeLinkUrl: String?
     private var themeColorTop = LIGHT_THEME_COLOR_TOP
     private var themeColorBottom = LIGHT_THEME_COLOR_BOTTOM
     
@@ -286,7 +285,6 @@ class LinkWebViewViewController: UIViewController {
         guard let catalogLink = configuration.catalogLink,
         let url = URL(string: catalogLink) else { return }
         
-        themeLinkUrl = catalogLink
         updateThemeVars(linkUrl: catalogLink)
         applyThemeColors()
         
@@ -308,6 +306,8 @@ class LinkWebViewViewController: UIViewController {
         }
     }
     
+    // Resolved once, like the page: Link reads the device theme only when it loads,
+    // so following a mid-session switch here would split the native side from it.
     private func updateThemeVars(linkUrl: String){
         // Not in a window yet during viewDidLoad, so the style can still be unspecified.
         var style = webView.traitCollection.userInterfaceStyle
@@ -338,15 +338,6 @@ class LinkWebViewViewController: UIViewController {
         // follows the device theme, not Link's.
         webView.scrollView.backgroundColor = UIColorFromRGB(rgbValue: themeColorBottom)
         setNeedsStatusBarAppearanceUpdate()
-    }
-
-    // A Link page that follows the device switches live, so the native colors follow too.
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        guard let themeLinkUrl,
-              traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle else { return }
-        updateThemeVars(linkUrl: themeLinkUrl)
-        applyThemeColors()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
