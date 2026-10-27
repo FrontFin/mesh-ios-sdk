@@ -62,6 +62,9 @@ public class LinkConfiguration {
             addURLParam("fiatCur", displayFiatCurrency)
         }
         if var theme = settings?.theme {
+            // The token can already carry a th (MFS silent migration adds th=dark);
+            // the app's theme replaces it.
+            catalogLink = removingQueryParam(url: catalogLink, name: "th")
             if theme == .system {
                 theme = UIScreen.main.traitCollection.userInterfaceStyle == .dark ? .dark : .light
             }

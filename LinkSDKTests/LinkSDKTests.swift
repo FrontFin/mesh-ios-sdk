@@ -301,6 +301,40 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertFalse(isDarkLinkTheme(linkUrl: "https://link.meshpay.com/?token=\(base64Url("{\"v\":1,\"c\":\"\"}"))", systemIsDark: true))
     }
 
+    private func catalogLink(for url: String, theme: LinkTheme?) -> String? {
+        let token = Data(url.utf8).base64EncodedString()
+        let settings = LinkSettings(theme: theme)
+        return LinkConfiguration(linkToken: token, settings: settings, onIntegrationConnected: { _ in }).catalogLink
+    }
+
+    func testAppThemeReplacesTokenTheme() throws {
+        let url = mfsLink(theme: nil, extra: "&flow=%7B%22flow%22%3A%22login%22%7D&th=dark")
+        let link = try XCTUnwrap(catalogLink(for: url, theme: .light))
+        XCTAssertEqual(URLComponents(string: link)?.queryItems?.filter { $0.name == "th" }.map(\.value), ["light"])
+        // Everything else in the token URL is kept byte for byte.
+        XCTAssertTrue(link.hasPrefix(mfsLink(theme: nil, extra: "&flow=%7B%22flow%22%3A%22login%22%7D&")))
+        XCTAssertFalse(isDarkLinkTheme(linkUrl: link, systemIsDark: true))
+    }
+
+    func testLegacyLinkUrlUnchanged() throws {
+        // Legacy tokens carry the theme only inside link_style, so nothing is removed.
+        let url = "https://link.meshconnect.com/?clientId=c&auth_code=a-b_c&link_style=\(base64Url("{\"th\":\"system\"}"))"
+        XCTAssertEqual(catalogLink(for: url, theme: .dark), url + "&th=dark&platform=iOS")
+        XCTAssertEqual(catalogLink(for: url, theme: nil), url + "&platform=iOS")
+    }
+
+    func testTokenThemeKeptWithoutAppTheme() throws {
+        let url = mfsLink(theme: nil, extra: "&th=dark")
+        let link = try XCTUnwrap(catalogLink(for: url, theme: nil))
+        XCTAssertTrue(link.contains("th=dark"))
+    }
+
+    func testRemovingQueryParam() throws {
+        XCTAssertEqual(removingQueryParam(url: "https://a.com/?th=dark", name: "th"), "https://a.com/")
+        XCTAssertEqual(removingQueryParam(url: "https://a.com/?x=1&th=dark&thx=2&th=light#f", name: "th"), "https://a.com/?x=1&thx=2#f")
+        XCTAssertEqual(removingQueryParam(url: "https://a.com/path", name: "th"), "https://a.com/path")
+    }
+
     func testDetectsMfsLinks() throws {
         XCTAssertTrue(isMfsLinkUrl(linkUrl: mfsLink(theme: nil, extra: "&th=dark")))
         XCTAssertFalse(isMfsLinkUrl(linkUrl: "https://web.meshconnect.com/b2b-iframe/abc/broker-connect?th=dark"))

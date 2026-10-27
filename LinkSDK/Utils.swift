@@ -62,6 +62,23 @@ private func mfsTokenEnvelope(linkUrl: String) -> [String: Any]? {
     return envelope
 }
 
+/// Removes every `name` param from the query, leaving the rest of the URL byte for byte
+/// (rebuilding it with URLComponents could re-encode other params).
+func removingQueryParam(url: String, name: String) -> String {
+    guard let queryStart = url.firstIndex(of: "?") else { return url }
+    let base = url[..<queryStart]
+    var query = url[url.index(after: queryStart)...]
+    var fragment = Substring("")
+    if let hash = query.firstIndex(of: "#") {
+        fragment = query[hash...]
+        query = query[..<hash]
+    }
+    let kept = query.split(separator: "&", omittingEmptySubsequences: false).filter {
+        $0.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false).first.map(String.init) != name
+    }
+    return base + (kept.isEmpty ? "" : "?" + kept.joined(separator: "&")) + fragment
+}
+
 func decodeUrlSafeBase64Json(encodedString: String) -> [String: Any]? {
     guard let data = decodeUrlSafeBase64(encodedString: encodedString) else { return nil }
     return (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any]
