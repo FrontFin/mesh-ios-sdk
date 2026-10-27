@@ -39,7 +39,7 @@ let configuration = LinkConfiguration(
 
 The `LinkSettings` class allows to configure the Link behaviour:
 - `accessTokens` - an array of `IntegrationAccessToken` objects that is used as an origin for crypto transfer flow;
-- `language` - a locale identifier for Link UI
+- `language` - a locale identifier for Link UI, or `"system"` to use the device language
 - `displayFiatCurrency` - a preferred display fiat currency
 - `theme` - a preferred Link theme [dark|light|system]
 

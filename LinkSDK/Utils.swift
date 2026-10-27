@@ -19,16 +19,85 @@ func UIColorFromRGB(rgbValue: UInt) -> UIColor {
 
 func getThemeFromLinkUrl(linkUrl: String) -> String? {
     guard let encodedStyle = getQueryStringParameter(url: linkUrl, param: "link_style") else { return nil }
-    
-    guard let styleData = decodeUrlSafeBase64(encodedString: encodedStyle) else { return nil}
-    
-    do {
-        if let jsonObject = try JSONSerialization.jsonObject(with: styleData, options: []) as? [String: Any] {
-            if let thField = jsonObject["th"] as? String { return thField }
-        }
-    } catch { }
-    
-    return nil
+    return decodeUrlSafeBase64Json(encodedString: encodedStyle)?["th"] as? String
+}
+
+/// Whether Link will render dark, resolved the way the page does so the native
+/// background matches it: the first `th` param wins, then legacy `link_style`,
+/// then the MFS token's theme. An MFS token without a theme follows the device;
+/// legacy links default to light.
+func isDarkLinkTheme(linkUrl: String, systemIsDark: Bool) -> Bool {
+    switch getQueryStringParameter(url: linkUrl, param: "th") {
+    case "dark": return true
+    case "light": return false
+    default: break
+    }
+
+    switch getThemeFromLinkUrl(linkUrl: linkUrl) {
+    case "dark": return true
+    case "light": return false
+    case "system": return systemIsDark
+    default: break
+    }
+
+    guard let envelope = mfsTokenEnvelope(linkUrl: linkUrl) else { return false }
+
+    switch envelope["th"] as? String {
+    case "LINK_THEME_DARK": return true
+    case "LINK_THEME_LIGHT": return false
+    default: return systemIsDark
+    }
+}
+
+func isMfsLinkUrl(linkUrl: String) -> Bool {
+    mfsTokenEnvelope(linkUrl: linkUrl) != nil
+}
+
+/// The decoded MFS `token` param, validated the way MFS Link does; nil for legacy links.
+private func mfsTokenEnvelope(linkUrl: String) -> [String: Any]? {
+    guard let encodedToken = getQueryStringParameter(url: linkUrl, param: "token"),
+          let envelope = decodeUrlSafeBase64Json(encodedString: encodedToken),
+          envelope["v"] is NSNumber,
+          let clientId = envelope["c"] as? String, !clientId.isEmpty else { return nil }
+    return envelope
+}
+
+/// Appends `name=value` to the query, before any fragment so Link still sees it.
+func addingQueryParam(url: String, name: String, value: String) -> String {
+    let hash = url.firstIndex(of: "#") ?? url.endIndex
+    let beforeFragment = url[..<hash]
+    let separator = beforeFragment.contains("?") ? "&" : "?"
+    return beforeFragment + separator + name + "=" + value + url[hash...]
+}
+
+/// Removes every `name` param from the query, leaving the rest of the URL byte for byte
+/// (rebuilding it with URLComponents could re-encode other params).
+func removingQueryParam(url: String, name: String) -> String {
+    let hash = url.firstIndex(of: "#") ?? url.endIndex
+    let fragment = url[hash...]
+    guard let queryStart = url[..<hash].firstIndex(of: "?") else { return url }
+    let base = url[..<queryStart]
+    let query = url[url.index(after: queryStart)..<hash]
+    let kept = query.split(separator: "&", omittingEmptySubsequences: false).filter {
+        // Decoded like URLComponents does, so this agrees with getQueryStringParameter.
+        $0.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
+            .first.map(String.init)?.removingPercentEncoding != name
+    }
+    return base + (kept.isEmpty ? "" : "?" + kept.joined(separator: "&")) + fragment
+}
+
+/// "system" becomes the device language as a BCP-47 tag (e.g. de-DE), like the RN SDK,
+/// falling back to "en". Any other value is passed through.
+func resolveLanguage(_ language: String?, preferredLanguages: [String] = Locale.preferredLanguages) -> String? {
+    guard language == "system" else { return language }
+    guard let tag = preferredLanguages.first else { return "en" }
+    return tag.replacingOccurrences(of: "_", with: "-")
+        .replacingOccurrences(of: "-u-.*$", with: "", options: [.regularExpression, .caseInsensitive])
+}
+
+func decodeUrlSafeBase64Json(encodedString: String) -> [String: Any]? {
+    guard let data = decodeUrlSafeBase64(encodedString: encodedString) else { return nil }
+    return (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any]
 }
 
 func getQueryStringParameter(url: String, param: String) -> String? {
