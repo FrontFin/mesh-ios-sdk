@@ -73,14 +73,11 @@ func addingQueryParam(url: String, name: String, value: String) -> String {
 /// Removes every `name` param from the query, leaving the rest of the URL byte for byte
 /// (rebuilding it with URLComponents could re-encode other params).
 func removingQueryParam(url: String, name: String) -> String {
-    guard let queryStart = url.firstIndex(of: "?") else { return url }
+    let hash = url.firstIndex(of: "#") ?? url.endIndex
+    let fragment = url[hash...]
+    guard let queryStart = url[..<hash].firstIndex(of: "?") else { return url }
     let base = url[..<queryStart]
-    var query = url[url.index(after: queryStart)...]
-    var fragment = Substring("")
-    if let hash = query.firstIndex(of: "#") {
-        fragment = query[hash...]
-        query = query[..<hash]
-    }
+    let query = url[url.index(after: queryStart)..<hash]
     let kept = query.split(separator: "&", omittingEmptySubsequences: false).filter {
         // Decoded like URLComponents does, so this agrees with getQueryStringParameter.
         $0.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
