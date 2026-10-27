@@ -62,6 +62,14 @@ private func mfsTokenEnvelope(linkUrl: String) -> [String: Any]? {
     return envelope
 }
 
+/// Appends `name=value` to the query, before any fragment so Link still sees it.
+func addingQueryParam(url: String, name: String, value: String) -> String {
+    let hash = url.firstIndex(of: "#") ?? url.endIndex
+    let beforeFragment = url[..<hash]
+    let separator = beforeFragment.contains("?") ? "&" : "?"
+    return beforeFragment + separator + name + "=" + value + url[hash...]
+}
+
 /// Removes every `name` param from the query, leaving the rest of the URL byte for byte
 /// (rebuilding it with URLComponents could re-encode other params).
 func removingQueryParam(url: String, name: String) -> String {

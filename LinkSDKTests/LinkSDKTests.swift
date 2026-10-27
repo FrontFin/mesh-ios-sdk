@@ -409,6 +409,18 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertTrue(link.contains("lng="))
     }
 
+    func testAddingQueryParamKeepsFragmentLast() throws {
+        XCTAssertEqual(addingQueryParam(url: "https://a.com/?x=1#f", name: "th", value: "light"), "https://a.com/?x=1&th=light#f")
+        XCTAssertEqual(addingQueryParam(url: "https://a.com/#f", name: "th", value: "light"), "https://a.com/?th=light#f")
+        XCTAssertEqual(addingQueryParam(url: "https://a.com/", name: "th", value: "light"), "https://a.com/?th=light")
+    }
+
+    func testAppThemeReplacesTokenThemeBeforeFragment() throws {
+        let link = try XCTUnwrap(catalogLink(for: "https://link.meshpay.com/?x=1&th=dark#f", theme: .light))
+        XCTAssertEqual(link, "https://link.meshpay.com/?x=1&th=light&platform=iOS#f")
+        XCTAssertFalse(isDarkLinkTheme(linkUrl: link, systemIsDark: true))
+    }
+
     func testRemovingQueryParam() throws {
         XCTAssertEqual(removingQueryParam(url: "https://a.com/?th=dark", name: "th"), "https://a.com/")
         XCTAssertEqual(removingQueryParam(url: "https://a.com/?x=1&th=dark&thx=2&th=light#f", name: "th"), "https://a.com/?x=1&thx=2#f")

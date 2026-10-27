@@ -53,7 +53,7 @@ public class LinkConfiguration {
             return nil
         }
         let addURLParam: ((String, String) -> Void) = { key, value in
-            catalogLink += "\(catalogLink.contains("?") ? "&" : "?")\(key)=\(value)"
+            catalogLink = addingQueryParam(url: catalogLink, name: key, value: value)
         }
         if let language = resolveLanguage(settings?.language) {
             addURLParam("lng", language)
