@@ -74,7 +74,9 @@ func removingQueryParam(url: String, name: String) -> String {
         query = query[..<hash]
     }
     let kept = query.split(separator: "&", omittingEmptySubsequences: false).filter {
-        $0.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false).first.map(String.init) != name
+        // Decoded like URLComponents does, so this agrees with getQueryStringParameter.
+        $0.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
+            .first.map(String.init)?.removingPercentEncoding != name
     }
     return base + (kept.isEmpty ? "" : "?" + kept.joined(separator: "&")) + fragment
 }

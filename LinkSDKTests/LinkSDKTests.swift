@@ -398,6 +398,7 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertEqual(removingQueryParam(url: "https://a.com/?th=dark", name: "th"), "https://a.com/")
         XCTAssertEqual(removingQueryParam(url: "https://a.com/?x=1&th=dark&thx=2&th=light#f", name: "th"), "https://a.com/?x=1&thx=2#f")
         XCTAssertEqual(removingQueryParam(url: "https://a.com/path", name: "th"), "https://a.com/path")
+        XCTAssertEqual(removingQueryParam(url: "https://a.com/?%74h=dark&x=1", name: "th"), "https://a.com/?x=1")
     }
 
     func testDetectsMfsLinks() throws {

@@ -15,7 +15,8 @@ let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
 let DARK_THEME_COLOR_BOTTOM : UInt = 0x0E0D0D
 let LIGHT_THEME_COLOR_BOTTOM : UInt = 0xFBFBFB
-// MFS Link canvas colors, so the native background has no seam with the page.
+// MFS Link canvas colors (--color-bg-canvas-dark/light in FrontFin/link
+// packages/ui/src/styles/tailwind.css), so the native background has no seam with the page.
 let MFS_DARK_THEME_COLOR : UInt = 0x1C1C1C
 let MFS_LIGHT_THEME_COLOR : UInt = 0xF9F9F9
 
@@ -243,6 +244,7 @@ class LinkWebViewViewController: UIViewController {
     /// Host of the first page Link committed, after any redirects.
     private var linkHost: String?
     private var isDarkTheme = false
+    private var themeLinkUrl: String?
     private var themeColorTop = LIGHT_THEME_COLOR_TOP
     private var themeColorBottom = LIGHT_THEME_COLOR_BOTTOM
     
@@ -284,9 +286,9 @@ class LinkWebViewViewController: UIViewController {
         guard let catalogLink = configuration.catalogLink,
         let url = URL(string: catalogLink) else { return }
         
+        themeLinkUrl = catalogLink
         updateThemeVars(linkUrl: catalogLink)
-        view.backgroundColor = UIColorFromRGB(rgbValue: themeColorBottom)
-        statusBarBackgroundView.backgroundColor = UIColorFromRGB(rgbValue: themeColorTop)
+        applyThemeColors()
         
         let request = URLRequest(url: url)
         webView.load(request)
@@ -294,9 +296,6 @@ class LinkWebViewViewController: UIViewController {
         webView.addObserver(self, forKeyPath: "URL", options: .new, context: nil)
         webView.isOpaque = false
         webView.backgroundColor = .clear
-        // The scroll view fills the area under the home indicator and otherwise
-        // follows the device theme, not Link's.
-        webView.scrollView.backgroundColor = UIColorFromRGB(rgbValue: themeColorBottom)
         webView.scrollView.bounces = false
         
         let contentController = WKUserContentController()
@@ -332,6 +331,24 @@ class LinkWebViewViewController: UIViewController {
             : LIGHT_THEME_COLOR_BOTTOM
     }
     
+    private func applyThemeColors() {
+        view.backgroundColor = UIColorFromRGB(rgbValue: themeColorBottom)
+        statusBarBackgroundView.backgroundColor = UIColorFromRGB(rgbValue: themeColorTop)
+        // The scroll view fills the area under the home indicator and otherwise
+        // follows the device theme, not Link's.
+        webView.scrollView.backgroundColor = UIColorFromRGB(rgbValue: themeColorBottom)
+        setNeedsStatusBarAppearanceUpdate()
+    }
+
+    // A Link page that follows the device switches live, so the native colors follow too.
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        guard let themeLinkUrl,
+              traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle else { return }
+        updateThemeVars(linkUrl: themeLinkUrl)
+        applyThemeColors()
+    }
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return isDarkTheme ? .lightContent : .darkContent
     }
