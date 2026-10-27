@@ -181,7 +181,7 @@ class LinkWebViewViewController: UIViewController {
         return wkWebView
     }()
 
-    private let topBar: UIView = {
+    let topBar: UIView = {
         let view = UIView()
         view.isHidden = true
         view.contentMode = .scaleToFill
@@ -358,8 +358,14 @@ internal extension LinkWebViewViewController {
         if host == linkHost { return true }
         let labels = linkHost.split(separator: ".")
         guard labels.count > 2, !labels.allSatisfy({ Int($0) != nil }) else { return false }
-        let site = labels.dropFirst().joined(separator: ".")
-        return host == site || host.hasSuffix("." + site)
+        let site = Array(labels.dropFirst())
+        // No public-suffix list on iOS: treat `co.uk`-style endings as a suffix, not a site.
+        if site.count == 2, site[1].count == 2,
+           ["co", "com", "net", "org", "gov", "edu", "ac", "ne", "or"].contains(String(site[0])) {
+            return false
+        }
+        let siteName = site.joined(separator: ".")
+        return host == siteName || host.hasSuffix("." + siteName)
     }
 
     /// A navigation we stopped on purpose (e.g. a URL handed to Safari), not a failed load.
@@ -504,12 +510,18 @@ extension LinkWebViewViewController: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        pageCommitted(host: webView.url?.host)
+    }
+
+    func pageCommitted(host: String?) {
         if linkHost == nil {
-            linkHost = webView.url?.host?.lowercased()
+            linkHost = host?.lowercased()
         }
         // Redirects before this commit may have shown the bar before Link's host was known.
-        if Self.isLinkSite(webView.url?.host, linkHost: linkHost) {
+        // Re-arm it like a hidden page load, so a real failure still brings it back.
+        if Self.isLinkSite(host, linkHost: linkHost) {
             topBar.isHidden = true
+            showNativeNavBarDelayed = true
         }
     }
 

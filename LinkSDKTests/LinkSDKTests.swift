@@ -261,6 +261,8 @@ final class LinkSDKTests: XCTestCase {
             ("integration-api.meshconnect.com", "link.meshconnect.com"),
             ("web.meshconnect.com", "link.meshconnect.com"),
             ("192.168.1.5", "192.168.1.5"),
+            ("api.mesh.co.uk", "link.mesh.co.uk"),
+            ("api.mesh.io", "link.mesh.io"),
         ]
         for (host, linkHost) in cases {
             XCTAssertTrue(LinkWebViewViewController.isLinkSite(host, linkHost: linkHost), "\(host) on \(linkHost)")
@@ -277,6 +279,8 @@ final class LinkSDKTests: XCTestCase {
             ("api.meshpay.com", "link.dev.meshpay.com"),
             ("api.other.com", "localhost"),
             ("10.168.1.5", "192.168.1.5"),
+            ("hsbc.co.uk", "link.co.uk"),
+            ("anything.com.au", "pay.com.au"),
             (nil, "link.meshpay.com"),
             ("link.meshpay.com", nil),
         ]
@@ -297,6 +301,17 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertFalse(hidden("link.meshpay.com", "link.meshpay.com", offline))
         XCTAssertFalse(hidden("robinhood.com", "link.meshconnect.com", nil))
         XCTAssertFalse(hidden("link.meshpay.com", nil, nil))
+    }
+
+    func testNativeNavbarComesBackOnRealFailureAfterRedirectsAndCommit() throws {
+        let controller = LinkWebViewViewController(configuration: LinkConfiguration(linkToken: ""))
+        controller.showNativeNavbar(true)
+        controller.showNativeNavbar(true)
+        controller.pageCommitted(host: "link.meshpay.com")
+        XCTAssertTrue(controller.topBar.isHidden)
+
+        controller.showNativeNavbarAfterPageLoad(error: NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet))
+        XCTAssertFalse(controller.topBar.isHidden)
     }
 
 }
