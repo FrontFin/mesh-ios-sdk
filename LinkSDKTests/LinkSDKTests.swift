@@ -215,21 +215,21 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertEqual(LinkWebViewViewController.popupAction(sourceIsMainFrame: nil, url: URL(string: "javascript:alert(1)")), .ignore)
     }
 
-    // MARK: - MFS OAuth redirect
+    // MARK: - Link OAuth redirect
 
-    func testMfsOAuthRedirectMatchesEveryEnvironment() throws {
+    func testLinkOAuthRedirectMatchesEveryEnvironment() throws {
         for host in ["api.meshpay.com", "api.sbx.meshpay.com", "api.dev.meshpay.com", "API.MeshPay.com"] {
             let url = URL(string: "https://\(host)/v2/sessions/s1/child-sessions/c1:redirect?access_token=x&integrationId=i&sessionType=oauth")!
-            XCTAssertTrue(isMfsOAuthRedirect(url), host)
+            XCTAssertTrue(isLinkOAuthRedirect(url), host)
         }
     }
 
-    func testMfsOAuthRedirectHostStaysAllowlisted() throws {
+    func testLinkOAuthRedirectHostStaysAllowlisted() throws {
         // Both hold: the host is trusted, and only this one path leaves the webview.
         XCTAssertTrue(isWhitelistedOrigin(URL(string: "https://api.meshpay.com/v2/sessions")!))
     }
 
-    func testMfsOAuthRedirectRejectsLookalikes() throws {
+    func testLinkOAuthRedirectRejectsLookalikes() throws {
         let rejected = [
             "https://api.meshpay.com/v2/sessions/s1/child-sessions/c1:redirectevil",
             "https://api.meshpay.com/v2/sessions/s1/child-sessions",
@@ -245,8 +245,73 @@ final class LinkSDKTests: XCTestCase {
             "https://link.meshpay.com/?token=abc",
         ]
         for link in rejected {
-            XCTAssertFalse(isMfsOAuthRedirect(URL(string: link)!), link)
+            XCTAssertFalse(isLinkOAuthRedirect(URL(string: link)!), link)
         }
+    }
+
+    // MARK: - Native navbar
+
+    func testLinkSiteCoversLinkHostAndItsSiblings() throws {
+        let cases: [(host: String, linkHost: String)] = [
+            ("link.meshpay.com", "link.meshpay.com"),
+            ("api.meshpay.com", "link.meshpay.com"),
+            ("meshpay.com", "link.meshpay.com"),
+            ("API.MeshPay.com", "link.meshpay.com"),
+            ("api.dev.meshpay.com", "link.dev.meshpay.com"),
+            ("integration-api.meshconnect.com", "link.meshconnect.com"),
+            ("web.meshconnect.com", "link.meshconnect.com"),
+            ("192.168.1.5", "192.168.1.5"),
+            ("api.mesh.co.uk", "link.mesh.co.uk"),
+            ("api.mesh.io", "link.mesh.io"),
+        ]
+        for (host, linkHost) in cases {
+            XCTAssertTrue(LinkWebViewViewController.isLinkSite(host, linkHost: linkHost), "\(host) on \(linkHost)")
+        }
+    }
+
+    func testLinkSiteExcludesOtherSites() throws {
+        let cases: [(host: String?, linkHost: String?)] = [
+            ("robinhood.com", "link.meshconnect.com"),
+            ("exchange.gemini.com", "link.meshpay.com"),
+            ("link.meshconnect.com", "link.meshpay.com"),
+            ("evilmeshpay.com", "link.meshpay.com"),
+            ("meshpay.com.attacker.example", "link.meshpay.com"),
+            ("api.meshpay.com", "link.dev.meshpay.com"),
+            ("api.other.com", "localhost"),
+            ("10.168.1.5", "192.168.1.5"),
+            ("hsbc.co.uk", "link.co.uk"),
+            ("anything.com.au", "pay.com.au"),
+            (nil, "link.meshpay.com"),
+            ("link.meshpay.com", nil),
+        ]
+        for (host, linkHost) in cases {
+            XCTAssertFalse(LinkWebViewViewController.isLinkSite(host, linkHost: linkHost), "\(host ?? "nil") on \(linkHost ?? "nil")")
+        }
+    }
+
+    func testNativeNavbarStaysHiddenOnLinkSiteUnlessALoadReallyFails() throws {
+        let hidden = LinkWebViewViewController.keepsNativeNavbarHidden
+        let cancelled = NSError(domain: NSURLErrorDomain, code: NSURLErrorCancelled)
+        let interrupted = NSError(domain: "WebKitErrorDomain", code: 102)
+        let offline = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet)
+
+        XCTAssertTrue(hidden("link.meshpay.com", "link.meshpay.com", nil))
+        XCTAssertTrue(hidden("api.meshpay.com", "link.meshpay.com", cancelled))
+        XCTAssertTrue(hidden("link.meshpay.com", "link.meshpay.com", interrupted))
+        XCTAssertFalse(hidden("link.meshpay.com", "link.meshpay.com", offline))
+        XCTAssertFalse(hidden("robinhood.com", "link.meshconnect.com", nil))
+        XCTAssertFalse(hidden("link.meshpay.com", nil, nil))
+    }
+
+    func testNativeNavbarComesBackOnRealFailureAfterRedirectsAndCommit() throws {
+        let controller = LinkWebViewViewController(configuration: LinkConfiguration(linkToken: ""))
+        controller.showNativeNavbar(true)
+        controller.showNativeNavbar(true)
+        controller.pageCommitted(host: "link.meshpay.com")
+        XCTAssertTrue(controller.topBar.isHidden)
+
+        controller.showNativeNavbarAfterPageLoad(error: NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet))
+        XCTAssertFalse(controller.topBar.isHidden)
     }
 
     // MARK: - Theme
