@@ -65,7 +65,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        let settings = LinkSettings(language: "en-US",          // optional, locale identifier
+        let settings = LinkSettings(language: "system",         // optional, locale identifier or "system" for the device language
                                     displayFiatCurrency: "USD", // optional, preferred display fiat currency
                                     theme: .system)             // optional, preferred Link theme [light|dark|system]
         

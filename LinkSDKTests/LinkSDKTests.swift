@@ -366,9 +366,9 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertFalse(isDarkLinkTheme(linkUrl: "https://link.meshpay.com/?token=\(base64Url("{\"v\":1,\"c\":\"\"}"))", systemIsDark: true))
     }
 
-    private func catalogLink(for url: String, theme: LinkTheme?) -> String? {
+    private func catalogLink(for url: String, theme: LinkTheme? = nil, language: String? = nil) -> String? {
         let token = Data(url.utf8).base64EncodedString()
-        let settings = LinkSettings(theme: theme)
+        let settings = LinkSettings(language: language, theme: theme)
         return LinkConfiguration(linkToken: token, settings: settings, onIntegrationConnected: { _ in }).catalogLink
     }
 
@@ -392,6 +392,21 @@ final class LinkSDKTests: XCTestCase {
         let url = mfsLink(theme: nil, extra: "&th=dark")
         let link = try XCTUnwrap(catalogLink(for: url, theme: nil))
         XCTAssertTrue(link.contains("th=dark"))
+    }
+
+    func testSystemLanguageResolvesToDeviceLanguage() throws {
+        XCTAssertEqual(resolveLanguage("system", preferredLanguages: ["de-DE", "en-US"]), "de-DE")
+        XCTAssertEqual(resolveLanguage("system", preferredLanguages: ["pt_BR"]), "pt-BR")
+        XCTAssertEqual(resolveLanguage("system", preferredLanguages: ["th-TH-u-ca-buddhist"]), "th-TH")
+        XCTAssertEqual(resolveLanguage("system", preferredLanguages: []), "en")
+        XCTAssertEqual(resolveLanguage("es", preferredLanguages: ["de-DE"]), "es")
+        XCTAssertNil(resolveLanguage(nil, preferredLanguages: ["de-DE"]))
+    }
+
+    func testSystemLanguageNeverReachesLink() throws {
+        let link = try XCTUnwrap(catalogLink(for: "https://link.meshconnect.com/?clientId=c", language: "system"))
+        XCTAssertFalse(link.contains("lng=system"))
+        XCTAssertTrue(link.contains("lng="))
     }
 
     func testRemovingQueryParam() throws {

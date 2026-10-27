@@ -55,7 +55,7 @@ public class LinkConfiguration {
         let addURLParam: ((String, String) -> Void) = { key, value in
             catalogLink += "\(catalogLink.contains("?") ? "&" : "?")\(key)=\(value)"
         }
-        if let language = settings?.language {
+        if let language = resolveLanguage(settings?.language) {
             addURLParam("lng", language)
         }
         if let displayFiatCurrency = settings?.displayFiatCurrency {
@@ -142,7 +142,7 @@ public class LinkHandler {
     }
 
     public func showExitAlert() {
-        let locale = Locale(identifier: configuration.settings?.language ?? "en-US")
+        let locale = Locale(identifier: resolveLanguage(configuration.settings?.language) ?? "en-US")
         let title = localizedString(forKey: "onExit_alert_title", locale: locale)
         let message = localizedString(forKey: "onExit_alert_message", locale: locale)
         let exit = localizedString(forKey: "onExit_alert_exit", locale: locale)

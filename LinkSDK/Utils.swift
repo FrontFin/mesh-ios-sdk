@@ -81,6 +81,15 @@ func removingQueryParam(url: String, name: String) -> String {
     return base + (kept.isEmpty ? "" : "?" + kept.joined(separator: "&")) + fragment
 }
 
+/// "system" becomes the device language as a BCP-47 tag (e.g. de-DE), like the RN SDK,
+/// falling back to "en". Any other value is passed through.
+func resolveLanguage(_ language: String?, preferredLanguages: [String] = Locale.preferredLanguages) -> String? {
+    guard language == "system" else { return language }
+    guard let tag = preferredLanguages.first else { return "en" }
+    return tag.replacingOccurrences(of: "_", with: "-")
+        .replacingOccurrences(of: "-u-.*$", with: "", options: [.regularExpression, .caseInsensitive])
+}
+
 func decodeUrlSafeBase64Json(encodedString: String) -> [String: Any]? {
     guard let data = decodeUrlSafeBase64(encodedString: encodedString) else { return nil }
     return (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any]
