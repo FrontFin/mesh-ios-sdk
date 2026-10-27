@@ -15,6 +15,9 @@ let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
 let DARK_THEME_COLOR_BOTTOM : UInt = 0x0E0D0D
 let LIGHT_THEME_COLOR_BOTTOM : UInt = 0xFBFBFB
+// MFS Link canvas colors, so the native background has no seam with the page.
+let MFS_DARK_THEME_COLOR : UInt = 0x1C1C1C
+let MFS_LIGHT_THEME_COLOR : UInt = 0xF9F9F9
 
 let allowedUrls = [
     "https://link.trustwallet.com",
@@ -289,6 +292,9 @@ class LinkWebViewViewController: UIViewController {
         webView.addObserver(self, forKeyPath: "URL", options: .new, context: nil)
         webView.isOpaque = false
         webView.backgroundColor = .clear
+        // The scroll view fills the area under the home indicator and otherwise
+        // follows the device theme, not Link's.
+        webView.scrollView.backgroundColor = UIColorFromRGB(rgbValue: themeColorBottom)
         webView.scrollView.bounces = false
         
         let contentController = WKUserContentController()
@@ -302,14 +308,19 @@ class LinkWebViewViewController: UIViewController {
     }
     
     private func updateThemeVars(linkUrl: String){
-        let linkTheme = getThemeFromLinkUrl(linkUrl: linkUrl)
-        
-        isDarkTheme = linkTheme == "dark"
-            ? true
-            : linkTheme == "system"
-                ? webView.traitCollection.userInterfaceStyle == .dark
-                : false
-        
+        // Not in a window yet during viewDidLoad, so the style can still be unspecified.
+        var style = webView.traitCollection.userInterfaceStyle
+        if style == .unspecified {
+            style = UIScreen.main.traitCollection.userInterfaceStyle
+        }
+        isDarkTheme = isDarkLinkTheme(linkUrl: linkUrl, systemIsDark: style == .dark)
+
+        if isMfsLinkUrl(linkUrl: linkUrl) {
+            themeColorTop = isDarkTheme ? MFS_DARK_THEME_COLOR : MFS_LIGHT_THEME_COLOR
+            themeColorBottom = themeColorTop
+            return
+        }
+
         themeColorTop = isDarkTheme
             ? DARK_THEME_COLOR_TOP
             : LIGHT_THEME_COLOR_TOP
