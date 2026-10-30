@@ -55,6 +55,19 @@ public struct Account: Codable {
 public struct BrandInfo: Codable {
     public var brokerLogo: String
     public var brokerPrimaryColor: String?
+
+    private enum DecodingKeys: String, CodingKey {
+        case brokerLogo, brokerLogoUrl, brokerPrimaryColor
+    }
+
+    // MFS Link sends `brokerLogoUrl` (or no logo at all) instead of `brokerLogo`.
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: DecodingKeys.self)
+        brokerLogo = try container.decodeIfPresent(String.self, forKey: .brokerLogo)
+            ?? container.decodeIfPresent(String.self, forKey: .brokerLogoUrl)
+            ?? ""
+        brokerPrimaryColor = try container.decodeIfPresent(String.self, forKey: .brokerPrimaryColor)
+    }
 }
 
 public enum TransferFinishedPayload {

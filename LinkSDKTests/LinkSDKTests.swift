@@ -72,6 +72,35 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertTrue(catalogLink.contains("platform=iOS"), "catalogLink should contain platform=iOS param")
     }
 
+    // MARK: - Payloads
+
+    private func accessTokenPayload(brandInfo: String) throws -> AccessTokenPayload {
+        let json = """
+        {"accountTokens":[{"account":{"accountId":"conn-1","accountName":"MetaMask","frontAccountId":""},"accessToken":"conn-1","tokenId":"conn-1"}],
+         "brokerBrandInfo":\(brandInfo),"brokerType":"metamask","brokerName":"MetaMask"}
+        """
+        return try JSONDecoder().decode(AccessTokenPayload.self, from: Data(json.utf8))
+    }
+
+    func testAccessTokenPayloadWithBrokerLogo() throws {
+        let payload = try accessTokenPayload(brandInfo: ##"{"brokerLogo":"base64logo","brokerPrimaryColor":"#000"}"##)
+        XCTAssertEqual(payload.brokerBrandInfo.brokerLogo, "base64logo")
+        XCTAssertEqual(payload.brokerBrandInfo.brokerPrimaryColor, "#000")
+    }
+
+    func testAccessTokenPayloadFromMfsUsesBrokerLogoUrl() throws {
+        let payload = try accessTokenPayload(brandInfo: #"{"brokerLogoUrl":"https://cdn/logo.svg","logoLightUrl":"https://cdn/logo.svg","logoDarkUrl":"https://cdn/dark.svg"}"#)
+        XCTAssertEqual(payload.brokerBrandInfo.brokerLogo, "https://cdn/logo.svg")
+        XCTAssertEqual(payload.accountTokens.first?.account.accountId, "conn-1")
+        XCTAssertEqual(payload.brokerType, "metamask")
+    }
+
+    func testAccessTokenPayloadWithoutAnyLogo() throws {
+        let payload = try accessTokenPayload(brandInfo: "{}")
+        XCTAssertEqual(payload.brokerBrandInfo.brokerLogo, "")
+        XCTAssertNil(payload.brokerBrandInfo.brokerPrimaryColor)
+    }
+
     // MARK: - Injected scripts
 
     /// Runs `script` in a fresh JS context with `window` and an `alert` that
