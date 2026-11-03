@@ -95,6 +95,11 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertEqual(payload.brokerType, "metamask")
     }
 
+    func testAccessTokenPayloadPrefersBrokerLogoOverUrl() throws {
+        let payload = try accessTokenPayload(brandInfo: #"{"brokerLogo":"base64logo","brokerLogoUrl":"https://cdn/logo.svg"}"#)
+        XCTAssertEqual(payload.brokerBrandInfo.brokerLogo, "base64logo")
+    }
+
     func testAccessTokenPayloadWithoutAnyLogo() throws {
         let payload = try accessTokenPayload(brandInfo: "{}")
         XCTAssertEqual(payload.brokerBrandInfo.brokerLogo, "")
