@@ -177,6 +177,7 @@ final class LinkSDKTests: XCTestCase {
             "https://attacker.example/?u=https://robinhood.com",
             "http://robinhood.com/",
             "https://web3.okx.com/",
+            "https://applink.robinhood.com/u/connect?applicationId=x",
         ]
         for link in rejected {
             XCTAssertFalse(isWhitelistedOrigin(URL(string: link)!), link)

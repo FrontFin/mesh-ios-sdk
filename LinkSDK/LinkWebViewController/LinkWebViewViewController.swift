@@ -9,7 +9,7 @@ import UIKit
 @preconcurrency import WebKit
 import SafariServices
 
-let meshSDKVersion = "3.4.1"
+let meshSDKVersion = "3.4.2"
 
 let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
 let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
@@ -57,8 +57,11 @@ let whitelistedOrigins = [
 /// loaded in our own webview. `web3.okx.com` is OKX Wallet's connect/deep-link
 /// host, not OKX Exchange (why `.okx.com` is whitelisted in the first place),
 /// and needs to be handed to iOS like any other wallet link.
+/// `applink.robinhood.com` is the Robinhood Connect hand-off to the Robinhood
+/// app. Loaded in place it replaces Link, which then can't finish the transfer.
 let whitelistedOriginExceptions = [
-    "web3.okx.com"
+    "web3.okx.com",
+    "applink.robinhood.com"
 ]
 
 func isWhitelistedOrigin(_ url: URL) -> Bool {
