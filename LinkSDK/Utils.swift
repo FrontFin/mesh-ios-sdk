@@ -17,94 +17,225 @@ func UIColorFromRGB(rgbValue: UInt) -> UIColor {
     )
 }
 
-func getThemeFromLinkUrl(linkUrl: String) -> String? {
-    guard let encodedStyle = getQueryStringParameter(url: linkUrl, param: "link_style") else { return nil }
-    return decodeUrlSafeBase64Json(encodedString: encodedStyle)?["th"] as? String
+/// The URL Link opens, whether it opens dark, and the color around it.
+struct LinkURL {
+    let url: String
+    let isDarkTheme: Bool
+    let backgroundColor: UInt
 }
 
-/// Whether Link will render dark, resolved the way the page does so the native
-/// background matches it: the first `th` param wins, then legacy `link_style`,
-/// then the MFS token's theme. An MFS token without a theme follows the device;
-/// legacy links default to light.
-func isDarkLinkTheme(linkUrl: String, systemIsDark: Bool) -> Bool {
-    switch getQueryStringParameter(url: linkUrl, param: "th") {
-    case "dark": return true
-    case "light": return false
+/// Builds the Link URL in one pass, the same way as the other mobile SDKs: the params the app set
+/// (`th`, `lng`, `fiatCur`, plus `platform`) replace any already in the token URL, and the rest of
+/// the URL stays byte for byte. `th` is written when the app sets a theme (`system` is sent as
+/// `system`, so Link decides), and, on a legacy link, when the device decides: then the resolved
+/// theme is written, so Link and the native colors read the device the same way. Also returns the
+/// theme and color Link opens with, see `resolveLinkAppearance`.
+func buildLinkURL(linkUrl: String,
+                  settings: LinkSettings?,
+                  systemIsDark: Bool,
+                  preferredLanguages: [String] = Locale.preferredLanguages) -> LinkURL {
+    let query = QueryString(url: linkUrl)
+    let appTheme = settings?.theme
+    let appearance = resolveLinkAppearance(query: query, appTheme: appTheme, systemIsDark: systemIsDark)
+    var params: [(name: String, value: String)] = []
+    if let theme = appearance.themeToWrite ?? appTheme {
+        params.append(("th", theme.rawValue))
+    }
+    if let language = resolveLanguage(settings?.language, preferredLanguages: preferredLanguages) {
+        params.append(("lng", language))
+    }
+    if let currency = resolveCurrency(settings?.displayFiatCurrency) {
+        params.append(("fiatCur", currency))
+    }
+    params.append(("platform", "iOS"))
+    return LinkURL(url: query.replacing(params),
+                   isDarkTheme: appearance.isDarkTheme,
+                   backgroundColor: appearance.backgroundColor)
+}
+
+/// The theme Link opens in and the color around it.
+struct LinkAppearance {
+    let isDarkTheme: Bool
+    let backgroundColor: UInt
+    /// Set when a legacy link leaves the theme to the device, see `resolveLinkAppearance`.
+    let themeToWrite: LinkTheme?
+}
+
+// The color around Link when the page has no valid color of its own, per Link version.
+private let sessionColors = (dark: UInt(0x1C1C1C), light: UInt(0xF9F9F9))
+private let legacyColors = (dark: UInt(0x0E0D0D), light: UInt(0xFBFBFB))
+
+// Same shape Link accepts for a page color: #RGB, #RGBA, #RRGGBB or #RRGGBBAA.
+private let hexColor = try! NSRegularExpression(pattern: "^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")
+
+/// The theme Link opens in and the color around it, read from the URL the way the page reads it,
+/// so the status bar and background match with no visible seam. `appTheme` is the app's theme,
+/// which replaces the `th` in the URL.
+///
+/// Theme, first one set wins:
+/// 1. `th=light` or `th=dark` (the app's choice, or the one the token came with)
+/// 2. the theme in the session token, for a link that has one
+/// 3. `th=system` means the device on any link
+/// 4. `link_style.th` (legacy links only), `system` meaning the device
+/// 5. the device for a link with a session token, otherwise the default (dark, like link-v2)
+///
+/// Color: the page's own `bgd` (dark) or `bgl` (light) from the session token or `link_style`,
+/// otherwise the fallback pair of that Link version (a link with a session token, or a legacy link).
+///
+/// `themeToWrite` is set for a legacy link whose theme comes from the device. The WebView can read
+/// the device differently from the app, so the caller writes this resolved theme into the URL and
+/// Link follows the same reading as the native colors.
+func resolveLinkAppearance(query: QueryString, appTheme: LinkTheme?, systemIsDark: Bool) -> LinkAppearance {
+    let sessionToken = readSessionToken(query)
+    let linkStyle = sessionToken == nil ? decodeJsonParam(query.first("link_style")) : nil
+    let urlTheme = appTheme?.rawValue ?? query.first("th")
+
+    let choice = resolveChoice(urlTheme: urlTheme, sessionToken: sessionToken, linkStyle: linkStyle)
+    let theme: LinkTheme
+    switch choice {
+    case .fixed(let fixed): theme = fixed
+    case .device: theme = systemIsDark ? .dark : .light
+    }
+    let isDarkTheme = theme == .dark
+
+    let colors = sessionToken != nil ? sessionColors : legacyColors
+    let pageStyle = sessionToken ?? linkStyle
+    return LinkAppearance(
+        isDarkTheme: isDarkTheme,
+        backgroundColor: opaqueColor(pageStyle?[isDarkTheme ? "bgd" : "bgl"]) ?? (isDarkTheme ? colors.dark : colors.light),
+        themeToWrite: choice == .device && sessionToken == nil ? theme : nil)
+}
+
+private enum ThemeChoice: Equatable {
+    case fixed(LinkTheme)
+    case device
+}
+
+/// `light`, `dark` or the device, in the order described at `resolveLinkAppearance`.
+private func resolveChoice(urlTheme: String?, sessionToken: [String: Any]?, linkStyle: [String: Any]?) -> ThemeChoice {
+    if let theme = fixedTheme(urlTheme) { return .fixed(theme) }
+    switch sessionToken?["th"] as? String {
+    case "LINK_THEME_DARK": return .fixed(.dark)
+    case "LINK_THEME_LIGHT": return .fixed(.light)
     default: break
     }
+    if urlTheme == "system" { return .device }
+    let styleTheme = linkStyle?["th"] as? String
+    if let theme = fixedTheme(styleTheme) { return .fixed(theme) }
+    if styleTheme == "system" { return .device }
+    return sessionToken != nil ? .device : .fixed(.dark)
+}
 
-    switch getThemeFromLinkUrl(linkUrl: linkUrl) {
-    case "dark": return true
-    case "light": return false
-    case "system": return systemIsDark
-    default: break
+/// `light` and `dark` as they are, nil for anything else (`system` included).
+private func fixedTheme(_ value: String?) -> LinkTheme? {
+    switch value {
+    case "light": return .light
+    case "dark": return .dark
+    default: return nil
+    }
+}
+
+/// The session token's content (`token` param), checked the way Link checks it: a numeric `v` and
+/// a non-empty string `c`. Nil for a legacy link, which has no such token. The token is not
+/// signed, so nothing in it is trusted.
+private func readSessionToken(_ query: QueryString) -> [String: Any]? {
+    guard let token = decodeJsonParam(query.first("token")),
+          let version = token["v"] as? NSNumber, CFGetTypeID(version) != CFBooleanGetTypeID(),
+          let client = token["c"] as? String, !client.isEmpty else { return nil }
+    return token
+}
+
+/// A param holding base64 JSON (`token`, `link_style`). URL decoding turns its '+' into a space,
+/// so that's restored; the URL-safe alphabet and stripped padding are accepted too.
+private func decodeJsonParam(_ value: String?) -> [String: Any]? {
+    guard let value, !value.isEmpty else { return nil }
+    return decodeUrlSafeBase64Json(encodedString: value.replacingOccurrences(of: " ", with: "+"))
+}
+
+/// An opaque `0xRRGGBB` from a valid hex color, alpha dropped; nil for anything else.
+private func opaqueColor(_ value: Any?) -> UInt? {
+    guard let value = value as? String,
+          hexColor.firstMatch(in: value, range: NSRange(value.startIndex..., in: value)) != nil else { return nil }
+    let digits = value.dropFirst()
+    let full = digits.count <= 4 ? digits.flatMap { [$0, $0] } : Array(digits)
+    return UInt(String(full.prefix(6)), radix: 16)
+}
+
+/// A URL split into base, raw query pairs and fragment, so only the params we set change
+/// and everything else keeps its exact bytes (URLComponents could re-encode them).
+struct QueryString {
+    let base: Substring
+    let pairs: [Substring]
+    let fragment: Substring
+
+    // Letters, digits and -._~ are never encoded in a query.
+    private static let unreserved = CharacterSet(
+        charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~")
+
+    init(url: String) {
+        let hash = url.firstIndex(of: "#") ?? url.endIndex
+        let beforeFragment = url[..<hash]
+        fragment = url[hash...]
+        guard let queryStart = beforeFragment.firstIndex(of: "?") else {
+            base = beforeFragment
+            pairs = []
+            return
+        }
+        base = beforeFragment[..<queryStart]
+        // Empty parts are kept.
+        pairs = beforeFragment[beforeFragment.index(after: queryStart)...]
+            .split(separator: "&", omittingEmptySubsequences: false)
     }
 
-    guard let envelope = mfsTokenEnvelope(linkUrl: linkUrl) else { return false }
+    /// Value of the first `name` param (Link reads the first one), or nil when it's missing.
+    func first(_ name: String) -> String? {
+        for pair in pairs {
+            let parts = pair.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
+            if Self.decode(parts[0]) == name {
+                return parts.count > 1 ? Self.decode(parts[1]) : ""
+            }
+        }
+        return nil
+    }
 
-    switch envelope["th"] as? String {
-    case "LINK_THEME_DARK": return true
-    case "LINK_THEME_LIGHT": return false
-    default: return systemIsDark
+    /// The URL with `params` replacing any existing values, added before the fragment.
+    func replacing(_ params: [(name: String, value: String)]) -> String {
+        let names = Set(params.map(\.name))
+        let kept = pairs.filter { pair in
+            !names.contains(Self.decode(pair.prefix { $0 != "=" }))
+        }.map(String.init)
+        let added = params.map { name, value in
+            name + "=" + (value.addingPercentEncoding(withAllowedCharacters: Self.unreserved) ?? value)
+        }
+        return String(base) + "?" + (kept + added).joined(separator: "&") + fragment
+    }
+
+    private static func decode(_ value: Substring) -> String {
+        let spaced = value.replacingOccurrences(of: "+", with: " ")
+        // A malformed escape like %zz is kept as is.
+        return spaced.removingPercentEncoding ?? spaced
     }
 }
 
-func isMfsLinkUrl(linkUrl: String) -> Bool {
-    mfsTokenEnvelope(linkUrl: linkUrl) != nil
-}
-
-/// The decoded MFS `token` param, validated the way MFS Link does; nil for legacy links.
-private func mfsTokenEnvelope(linkUrl: String) -> [String: Any]? {
-    guard let encodedToken = getQueryStringParameter(url: linkUrl, param: "token"),
-          let envelope = decodeUrlSafeBase64Json(encodedString: encodedToken),
-          envelope["v"] is NSNumber,
-          let clientId = envelope["c"] as? String, !clientId.isEmpty else { return nil }
-    return envelope
-}
-
-/// Appends `name=value` to the query, before any fragment so Link still sees it.
-func addingQueryParam(url: String, name: String, value: String) -> String {
-    let hash = url.firstIndex(of: "#") ?? url.endIndex
-    let beforeFragment = url[..<hash]
-    let separator = beforeFragment.contains("?") ? "&" : "?"
-    return beforeFragment + separator + name + "=" + value + url[hash...]
-}
-
-/// Removes every `name` param from the query, leaving the rest of the URL byte for byte
-/// (rebuilding it with URLComponents could re-encode other params).
-func removingQueryParam(url: String, name: String) -> String {
-    let hash = url.firstIndex(of: "#") ?? url.endIndex
-    let fragment = url[hash...]
-    guard let queryStart = url[..<hash].firstIndex(of: "?") else { return url }
-    let base = url[..<queryStart]
-    let query = url[url.index(after: queryStart)..<hash]
-    let kept = query.split(separator: "&", omittingEmptySubsequences: false).filter {
-        // Decoded like URLComponents does, so this agrees with getQueryStringParameter.
-        $0.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
-            .first.map(String.init)?.removingPercentEncoding != name
-    }
-    return base + (kept.isEmpty ? "" : "?" + kept.joined(separator: "&")) + fragment
-}
-
-/// "system" becomes the device language as a BCP-47 tag (e.g. de-DE), like the RN SDK,
-/// falling back to "en". Any other value is passed through.
+/// The app's language as a BCP-47 tag (e.g. en-US), with "system" read from the device
+/// and falling back to "en"; nil when not set.
 func resolveLanguage(_ language: String?, preferredLanguages: [String] = Locale.preferredLanguages) -> String? {
-    guard language == "system" else { return language }
+    guard let trimmed = language?.trimmingCharacters(in: .whitespaces), !trimmed.isEmpty else { return nil }
+    guard trimmed == "system" else { return trimmed }
     guard let tag = preferredLanguages.first else { return "en" }
     return tag.replacingOccurrences(of: "_", with: "-")
         .replacingOccurrences(of: "-u-.*$", with: "", options: [.regularExpression, .caseInsensitive])
 }
 
+/// The app's display currency, or nil when it's not set.
+func resolveCurrency(_ currency: String?) -> String? {
+    guard let trimmed = currency?.trimmingCharacters(in: .whitespaces), !trimmed.isEmpty else { return nil }
+    return trimmed
+}
+
 func decodeUrlSafeBase64Json(encodedString: String) -> [String: Any]? {
     guard let data = decodeUrlSafeBase64(encodedString: encodedString) else { return nil }
     return (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any]
-}
-
-func getQueryStringParameter(url: String, param: String) -> String? {
-    guard let urlComponents = URLComponents(string: url),
-          let param = urlComponents.queryItems?.first(where: { $0.name == param })?.value
-    else { return nil }
-    return param
 }
 
 

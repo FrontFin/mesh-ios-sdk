@@ -349,7 +349,7 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertFalse(controller.topBar.isHidden)
     }
 
-    // MARK: - Theme
+    // MARK: - Link URL and native theme
 
     private func base64Url(_ json: String) -> String {
         Data(json.utf8).base64EncodedString()
@@ -358,121 +358,317 @@ final class LinkSDKTests: XCTestCase {
             .replacingOccurrences(of: "=", with: "")
     }
 
-    private func mfsLink(theme: String?, extra: String = "") -> String {
-        let th = theme.map { ",\"th\":\"\($0)\"" } ?? ""
-        return "https://link.meshpay.com/?token=\(base64Url("{\"v\":1,\"c\":\"client\"\(th)}"))\(extra)"
+    /// A link with a session token, the way the latest Link gets it. `envelope` is the token's JSON.
+    private func sessionLink(_ envelope: String = "{\"v\":1,\"c\":\"client\"}", extra: String = "") -> String {
+        "https://link.meshpay.com/?token=\(base64Url(envelope))&flow=%7B%7D\(extra)"
     }
 
-    func testFirstThParamWins() throws {
-        // Silent migration puts th=dark first; the SDK's own th is appended after it.
-        let link = mfsLink(theme: "LINK_THEME_LIGHT", extra: "&th=dark&th=light")
-        XCTAssertTrue(isDarkLinkTheme(linkUrl: link, systemIsDark: false))
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: "https://web.meshconnect.com/?th=light&th=dark", systemIsDark: true))
+    private func sessionLink(field: String, extra: String = "") -> String {
+        sessionLink("{\"v\":1,\"c\":\"client\",\(field)}", extra: extra)
     }
 
-    func testInvalidThParamIsIgnored() throws {
-        XCTAssertTrue(isDarkLinkTheme(linkUrl: mfsLink(theme: "LINK_THEME_DARK", extra: "&th=system"), systemIsDark: false))
+    /// A legacy link, with the client's style in link_style (standard base64, URL encoded).
+    private func legacyLink(_ style: String? = nil, extra: String = "") -> String {
+        var allowed = CharacterSet.alphanumerics
+        allowed.insert(charactersIn: "-._~")
+        let param = style.map {
+            "&link_style=" + Data($0.utf8).base64EncodedString().addingPercentEncoding(withAllowedCharacters: allowed)!
+        } ?? ""
+        return "https://link.meshconnect.com/?auth_code=x\(param)\(extra)"
     }
 
-    func testLegacyLinkStyleTheme() throws {
-        let style = { (th: String) in "https://web.meshconnect.com/?link_style=\(self.base64Url("{\"th\":\"\(th)\"}"))" }
-        XCTAssertTrue(isDarkLinkTheme(linkUrl: style("dark"), systemIsDark: false))
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: style("light"), systemIsDark: true))
-        XCTAssertTrue(isDarkLinkTheme(linkUrl: style("system"), systemIsDark: true))
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: style("system"), systemIsDark: false))
+    private let sessionLight = "{\"v\":1,\"c\":\"client\",\"th\":\"LINK_THEME_LIGHT\"}"
+
+    private func build(_ url: String,
+                       theme: LinkTheme? = nil,
+                       language: String? = nil,
+                       fiatCurrency: String? = nil,
+                       systemIsDark: Bool = false) -> LinkURL {
+        let settings = LinkSettings(language: language, displayFiatCurrency: fiatCurrency, theme: theme)
+        return buildLinkURL(linkUrl: url, settings: settings, systemIsDark: systemIsDark, preferredLanguages: ["de-DE"])
     }
 
-    func testMfsTokenTheme() throws {
-        XCTAssertTrue(isDarkLinkTheme(linkUrl: mfsLink(theme: "LINK_THEME_DARK"), systemIsDark: false))
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: mfsLink(theme: "LINK_THEME_LIGHT"), systemIsDark: true))
+    private func isDark(_ url: String, systemIsDark: Bool, appTheme: LinkTheme? = nil) -> Bool {
+        resolveLinkAppearance(query: QueryString(url: url), appTheme: appTheme, systemIsDark: systemIsDark).isDarkTheme
     }
 
-    func testMfsTokenWithoutThemeFollowsDevice() throws {
-        XCTAssertTrue(isDarkLinkTheme(linkUrl: mfsLink(theme: nil), systemIsDark: true))
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: mfsLink(theme: nil), systemIsDark: false))
-        XCTAssertTrue(isDarkLinkTheme(linkUrl: mfsLink(theme: "LINK_THEME_UNSPECIFIED"), systemIsDark: true))
+    private func background(_ url: String, systemIsDark: Bool = false) -> UInt {
+        resolveLinkAppearance(query: QueryString(url: url), appTheme: nil, systemIsDark: systemIsDark).backgroundColor
     }
 
-    func testLegacyLinkWithoutThemeStaysLight() throws {
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: "https://web.meshconnect.com/b2b-iframe/abc/broker-connect", systemIsDark: true))
-        // A token param that is not an MFS envelope is not treated as MFS.
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: "https://link.meshconnect.com/?token=\(base64Url("{\"a\":1}"))", systemIsDark: true))
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: "https://link.meshconnect.com/?token=not-base64", systemIsDark: true))
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: "https://link.meshpay.com/?token=\(base64Url("{\"v\":1,\"c\":\"\"}"))", systemIsDark: true))
+    private func themeToWrite(_ url: String, systemIsDark: Bool, appTheme: LinkTheme? = nil) -> LinkTheme? {
+        resolveLinkAppearance(query: QueryString(url: url), appTheme: appTheme, systemIsDark: systemIsDark).themeToWrite
     }
 
-    private func catalogLink(for url: String, theme: LinkTheme? = nil, language: String? = nil) -> String? {
-        let token = Data(url.utf8).base64EncodedString()
-        let settings = LinkSettings(language: language, theme: theme)
-        return LinkConfiguration(linkToken: token, settings: settings, onIntegrationConnected: { _ in }).catalogLink
+    // MARK: buildLinkURL
+
+    func testReplacesParamsAlreadyInTheTokenAndKeepsTheRest() throws {
+        let base = sessionLink(sessionLight)
+        let built = build("\(base)&th=dark&lng=fr&fiatCur=EUR&platform=web#f",
+                          theme: .light, language: "de", fiatCurrency: "USD")
+        XCTAssertEqual(built.url, "\(base)&th=light&lng=de&fiatCur=USD&platform=iOS#f")
+        XCTAssertFalse(built.isDarkTheme)
     }
 
-    func testAppThemeReplacesTokenTheme() throws {
-        let url = mfsLink(theme: nil, extra: "&flow=%7B%22flow%22%3A%22login%22%7D&th=dark")
-        let link = try XCTUnwrap(catalogLink(for: url, theme: .light))
-        XCTAssertEqual(URLComponents(string: link)?.queryItems?.filter { $0.name == "th" }.map(\.value), ["light"])
-        // Everything else in the token URL is kept byte for byte.
-        XCTAssertTrue(link.hasPrefix(mfsLink(theme: nil, extra: "&flow=%7B%22flow%22%3A%22login%22%7D&")))
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: link, systemIsDark: true))
+    func testTokenWithThTwiceEndsUpWithOne() throws {
+        let url = build("\(sessionLink(sessionLight))&th=dark&th=dark", theme: .light).url
+        XCTAssertEqual(url.components(separatedBy: "th=").count - 1, 1)
+        XCTAssertTrue(url.contains("&th=light"))
     }
 
-    func testLegacyLinkUrlUnchanged() throws {
-        // Legacy tokens carry the theme only inside link_style, so nothing is removed.
-        let url = "https://link.meshconnect.com/?clientId=c&auth_code=a-b_c&link_style=\(base64Url("{\"th\":\"system\"}"))"
-        XCTAssertEqual(catalogLink(for: url, theme: .dark), url + "&th=dark&platform=iOS")
-        XCTAssertEqual(catalogLink(for: url, theme: nil), url + "&platform=iOS")
+    func testWithoutAppThemeTheTokenThStaysAndDecidesTheNativeTheme() throws {
+        let base = sessionLink(sessionLight)
+        let session = build("\(base)&th=dark")
+        XCTAssertEqual(session.url, "\(base)&th=dark&platform=iOS")
+        XCTAssertTrue(session.isDarkTheme)
+        XCTAssertEqual(session.backgroundColor, 0x1C1C1C)
+
+        let legacy = build(legacyLink("{\"th\":\"light\"}"), systemIsDark: true)
+        XCTAssertFalse(legacy.isDarkTheme)
+        XCTAssertEqual(legacy.backgroundColor, 0xFBFBFB)
     }
 
-    func testTokenThemeKeptWithoutAppTheme() throws {
-        let url = mfsLink(theme: nil, extra: "&th=dark")
-        let link = try XCTUnwrap(catalogLink(for: url, theme: nil))
-        XCTAssertTrue(link.contains("th=dark"))
+    func testSystemIsSentAsSystemAndTheNativeThemeFollowsTheTokenThenTheDevice() throws {
+        for systemIsDark in [true, false] {
+            let built = build(sessionLink(sessionLight), theme: .system, systemIsDark: systemIsDark)
+            XCTAssertTrue(built.url.contains("&th=system&"))
+            // the token says light, so the device does not matter
+            XCTAssertFalse(built.isDarkTheme)
+
+            XCTAssertEqual(build(sessionLink(), theme: .system, systemIsDark: systemIsDark).isDarkTheme, systemIsDark)
+            XCTAssertEqual(build(legacyLink("{\"th\":\"light\"}"), theme: .system, systemIsDark: systemIsDark).isDarkTheme,
+                           systemIsDark)
+        }
+    }
+
+    func testLegacyLinkWritesLightOrDarkWhenTheDeviceDecides() throws {
+        let cases: [(String, LinkTheme?)] = [
+            (legacyLink(), .system),
+            (legacyLink("{\"th\":\"system\"}"), nil),
+            (legacyLink(extra: "&th=system"), nil),
+        ]
+        for (link, theme) in cases {
+            XCTAssertTrue(build(link, theme: theme, systemIsDark: true).isDarkTheme)
+            XCTAssertTrue(build(link, theme: theme, systemIsDark: true).url.contains("&th=dark&"))
+            XCTAssertTrue(build(link, theme: theme, systemIsDark: false).url.contains("&th=light&"))
+        }
+    }
+
+    func testLegacyLinkDoesNotWriteAThemeTheDeviceDoesNotDecide() throws {
+        let link = legacyLink()
+        XCTAssertEqual(build(link, systemIsDark: true).url, link + "&platform=iOS")
+        XCTAssertEqual(build("https://link.meshconnect.com/").url, "https://link.meshconnect.com/?platform=iOS")
+    }
+
+    func testSessionLinkKeepsSystemAsSystem() throws {
+        XCTAssertTrue(build(sessionLink(sessionLight), theme: .system, systemIsDark: true).url.contains("&th=system&"))
+        let link = sessionLink(sessionLight)
+        XCTAssertEqual(build(link, systemIsDark: true).url, link + "&platform=iOS")
+    }
+
+    func testSystemReplacesTheThDarkTheBackendAddsOnSilentMigration() throws {
+        let base = sessionLink(sessionLight)
+        XCTAssertEqual(build("\(base)&th=dark", theme: .system, systemIsDark: true).url, "\(base)&th=system&platform=iOS")
+    }
+
+    func testPageColorFromTheToken() throws {
+        let link = sessionLink(field: "\"bgl\":\"#112233\",\"bgd\":\"#445566\"")
+        XCTAssertEqual(build(link, theme: .dark).backgroundColor, 0x445566)
+        XCTAssertEqual(build(link, theme: .light, systemIsDark: true).backgroundColor, 0x112233)
+    }
+
+    func testOtherParamsKeptByteForByte() throws {
+        let url = "https://link.meshpay.com/?flow=%7B%22flow%22%3A%22login%22%7D&&a=1+2&th=dark#f?th=x"
+        XCTAssertEqual(build(url, theme: .light).url,
+                       "https://link.meshpay.com/?flow=%7B%22flow%22%3A%22login%22%7D&&a=1+2&th=light&platform=iOS#f?th=x")
+    }
+
+    func testEncodedParamNamesAreReplacedToo() throws {
+        XCTAssertEqual(build("https://a.com/?%74h=dark&x=1", theme: .light).url, "https://a.com/?x=1&th=light&platform=iOS")
+    }
+
+    func testNoQueryOrFragment() throws {
+        XCTAssertEqual(build("https://a.com/path").url, "https://a.com/path?platform=iOS")
+        XCTAssertEqual(build("https://a.com/#f", theme: .dark).url, "https://a.com/?th=dark&platform=iOS#f")
+    }
+
+    func testSystemLanguageIsSentAsTheFullDeviceTag() throws {
+        XCTAssertTrue(build(sessionLink(), language: "system").url.contains("&lng=de-DE&"))
+    }
+
+    func testBlankLanguageAndCurrencyAreNotSent() throws {
+        let link = sessionLink()
+        XCTAssertEqual(build(link, language: " ", fiatCurrency: " ").url, link + "&platform=iOS")
+    }
+
+    func testValuesAreTrimmedAndEncoded() throws {
+        XCTAssertTrue(build(sessionLink(), language: " pt-BR ", fiatCurrency: " EUR ").url.contains("&lng=pt-BR&fiatCur=EUR&"))
+        XCTAssertEqual(build("https://a.com/", language: "en US&x=1").url, "https://a.com/?lng=en%20US%26x%3D1&platform=iOS")
+    }
+
+    func testAThemeTheSDKDoesNotKnowCannotBeSet() throws {
+        XCTAssertNil(LinkTheme(rawValue: "blue"))
+    }
+
+    // MARK: Theme of a link with a session token
+
+    func testSessionThInTheUrlWinsOverTheTokenTheme() throws {
+        let dark = "\"th\":\"LINK_THEME_DARK\""
+        XCTAssertFalse(isDark(sessionLink(field: dark, extra: "&th=light"), systemIsDark: true))
+        XCTAssertTrue(isDark(sessionLink(field: "\"th\":\"LINK_THEME_LIGHT\"", extra: "&th=dark"), systemIsDark: false))
+        // the app's theme replaces the th in the URL
+        XCTAssertFalse(isDark(sessionLink(field: dark, extra: "&th=dark"), systemIsDark: true, appTheme: .light))
+    }
+
+    func testSessionThenTheTokenTheme() throws {
+        XCTAssertTrue(isDark(sessionLink(field: "\"th\":\"LINK_THEME_DARK\""), systemIsDark: false))
+        XCTAssertFalse(isDark(sessionLink(field: "\"th\":\"LINK_THEME_LIGHT\""), systemIsDark: true))
+    }
+
+    func testSessionTokenThemeWinsOverThSystem() throws {
+        XCTAssertFalse(isDark(sessionLink(field: "\"th\":\"LINK_THEME_LIGHT\"", extra: "&th=system"), systemIsDark: true))
+        XCTAssertTrue(isDark(sessionLink(field: "\"th\":\"LINK_THEME_DARK\"", extra: "&th=system"), systemIsDark: false))
+    }
+
+    func testSessionThenTheDevice() throws {
+        for extra in ["", "&th=system", "&th=blue", "&th="] {
+            XCTAssertTrue(isDark(sessionLink(extra: extra), systemIsDark: true))
+            XCTAssertFalse(isDark(sessionLink(extra: extra), systemIsDark: false))
+        }
+    }
+
+    func testSessionTokenThemeUnspecifiedOrUnknownFollowsTheDevice() throws {
+        for th in ["\"LINK_THEME_UNSPECIFIED\"", "\"constructor\"", "7", "null"] {
+            XCTAssertTrue(isDark(sessionLink(field: "\"th\":\(th)"), systemIsDark: true))
+            XCTAssertFalse(isDark(sessionLink(field: "\"th\":\(th)"), systemIsDark: false))
+        }
+    }
+
+    func testSessionLinkDoesNotReadLinkStyle() throws {
+        let style = legacyLink("{\"th\":\"dark\"}").components(separatedBy: "&link_style=")[1]
+        XCTAssertFalse(isDark(sessionLink(extra: "&link_style=\(style)"), systemIsDark: false))
+    }
+
+    func testATokenThatIsNotASessionTokenIsALegacyLink() throws {
+        let notSession = [
+            "{\"c\":\"client\",\"th\":\"LINK_THEME_DARK\"}",
+            "{\"v\":\"1\",\"c\":\"client\",\"th\":\"LINK_THEME_DARK\"}",
+            "{\"v\":true,\"c\":\"client\",\"th\":\"LINK_THEME_DARK\"}",
+            "{\"v\":1,\"c\":\"\",\"th\":\"LINK_THEME_DARK\"}",
+            "{\"v\":1,\"th\":\"LINK_THEME_DARK\"}",
+        ]
+        for envelope in notSession {
+            // light device, so only a legacy link gives dark here
+            XCTAssertTrue(isDark(sessionLink(envelope), systemIsDark: false), envelope)
+            XCTAssertEqual(background(sessionLink(envelope)), 0x0E0D0D, envelope)
+        }
+        XCTAssertTrue(isDark("https://link.meshpay.com/?token=not-json", systemIsDark: false))
+    }
+
+    // MARK: Theme of a legacy link
+
+    func testLegacyThInTheUrlWinsOverLinkStyle() throws {
+        XCTAssertFalse(isDark(legacyLink("{\"th\":\"dark\"}", extra: "&th=light"), systemIsDark: true))
+        XCTAssertTrue(isDark(legacyLink("{\"th\":\"light\"}", extra: "&th=dark"), systemIsDark: false))
+    }
+
+    func testLegacyThSystemMeansTheDeviceEvenWhenLinkStyleHasATheme() throws {
+        XCTAssertFalse(isDark(legacyLink("{\"th\":\"dark\"}", extra: "&th=system"), systemIsDark: false))
+        XCTAssertTrue(isDark(legacyLink("{\"th\":\"light\"}", extra: "&th=system"), systemIsDark: true))
+    }
+
+    func testLegacyThenLinkStyleTheme() throws {
+        XCTAssertFalse(isDark(legacyLink("{\"th\":\"light\"}"), systemIsDark: true))
+        XCTAssertTrue(isDark(legacyLink("{\"th\":\"dark\"}"), systemIsDark: false))
+        XCTAssertFalse(isDark(legacyLink("{\"th\":\"light\"}", extra: "&th=blue"), systemIsDark: true))
+        XCTAssertFalse(isDark(legacyLink("{\"th\":\"system\"}"), systemIsDark: false))
+        XCTAssertTrue(isDark(legacyLink("{\"th\":\"system\"}"), systemIsDark: true))
+    }
+
+    func testLegacyLinkStyleWithPlusReadAsSpaceOrStrippedPadding() throws {
+        // Standard base64 can carry '+', which URL decoding turns into a space.
+        let encoded = Data("{\"th\":\"light\",\"x\":\"?>\"}".utf8).base64EncodedString()
+        XCTAssertTrue(encoded.contains("+"))
+        let url = { (value: String) in "https://link.meshconnect.com/?link_style=\(value)" }
+        XCTAssertFalse(isDark(url(encoded.replacingOccurrences(of: "=", with: "")), systemIsDark: true))
+        XCTAssertFalse(isDark(url(encoded.replacingOccurrences(of: "+", with: " ")), systemIsDark: true))
+    }
+
+    func testLegacyThenTheDefaultDarkEvenOnALightDevice() throws {
+        XCTAssertTrue(isDark(legacyLink(), systemIsDark: false))
+        XCTAssertTrue(isDark("https://link.meshconnect.com/", systemIsDark: false))
+        for value in ["", "%%%", "bm90IGpzb24=", "e30=", "eyJ0aCI6IiJ9"] {
+            XCTAssertTrue(isDark("https://link.meshconnect.com/?link_style=\(value)", systemIsDark: false), value)
+        }
+    }
+
+    // MARK: Theme to write
+
+    func testThemeToWriteIsTheDeviceThemeOnALegacyLinkTheDeviceDecides() throws {
+        XCTAssertEqual(themeToWrite(legacyLink("{\"th\":\"system\"}"), systemIsDark: true), .dark)
+        XCTAssertEqual(themeToWrite(legacyLink(), systemIsDark: true, appTheme: .system), .dark)
+        XCTAssertEqual(themeToWrite(legacyLink(extra: "&th=system"), systemIsDark: false), .light)
+    }
+
+    func testThemeToWriteIsNilWhenTheDeviceDoesNotDecideOrTheLinkHasASessionToken() throws {
+        XCTAssertNil(themeToWrite(legacyLink(), systemIsDark: true))
+        XCTAssertNil(themeToWrite(legacyLink("{\"th\":\"light\"}"), systemIsDark: true))
+        XCTAssertNil(themeToWrite(sessionLink(), systemIsDark: true))
+        XCTAssertNil(themeToWrite(sessionLink(), systemIsDark: true, appTheme: .system))
+    }
+
+    // MARK: Background color
+
+    func testBackgroundIsBgdOnDarkAndBglOnLightFromTheTokenAndLinkStyle() throws {
+        let session = { (th: String) in self.sessionLink(field: "\"bgl\":\"#112233\",\"bgd\":\"#445566\"", extra: "&th=\(th)") }
+        XCTAssertEqual(background(session("dark")), 0x445566)
+        XCTAssertEqual(background(session("light"), systemIsDark: true), 0x112233)
+
+        let legacy = { (th: String) in self.legacyLink("{\"bgl\":\"#112233\",\"bgd\":\"#445566\"}", extra: "&th=\(th)") }
+        XCTAssertEqual(background(legacy("dark")), 0x445566)
+        XCTAssertEqual(background(legacy("light"), systemIsDark: true), 0x112233)
+    }
+
+    func testShortHexIsExpandedAndAlphaDropped() throws {
+        let color = { (bgd: String) in self.background(self.sessionLink(field: "\"bgd\":\"\(bgd)\"", extra: "&th=dark")) }
+        XCTAssertEqual(color("#abc"), 0xAABBCC)
+        XCTAssertEqual(color("#abcd"), 0xAABBCC)
+        XCTAssertEqual(color("#11223344"), 0x112233)
+        XCTAssertEqual(color("#ABCDEF"), 0xABCDEF)
+    }
+
+    func testMissingOrInvalidColorFallsBackForEachThemeOnItsOwn() throws {
+        for bad in ["\"red\"", "\"rgb(1,2,3)\"", "\"#12\"", "\"#12345\"", "\"#ggg\"", "\"\"", "123", "null"] {
+            XCTAssertEqual(background(sessionLink(field: "\"bgd\":\(bad)", extra: "&th=dark")), 0x1C1C1C, bad)
+        }
+        let onlyLight = sessionLink(field: "\"bgl\":\"#123456\"")
+        XCTAssertEqual(background(onlyLight + "&th=dark"), 0x1C1C1C)
+        XCTAssertEqual(background(onlyLight + "&th=light", systemIsDark: true), 0x123456)
+    }
+
+    func testFallbackPairOfTheLinkVersion() throws {
+        XCTAssertEqual(background(sessionLink(extra: "&th=light")), 0xF9F9F9)
+        XCTAssertEqual(background(legacyLink()), 0x0E0D0D)
+        XCTAssertEqual(background(legacyLink("{\"th\":\"light\"}"), systemIsDark: true), 0xFBFBFB)
     }
 
     func testSystemLanguageResolvesToDeviceLanguage() throws {
         XCTAssertEqual(resolveLanguage("system", preferredLanguages: ["de-DE", "en-US"]), "de-DE")
         XCTAssertEqual(resolveLanguage("system", preferredLanguages: ["pt_BR"]), "pt-BR")
         XCTAssertEqual(resolveLanguage("system", preferredLanguages: ["th-TH-u-ca-buddhist"]), "th-TH")
+        XCTAssertEqual(resolveLanguage(" system ", preferredLanguages: ["en-US"]), "en-US")
         XCTAssertEqual(resolveLanguage("system", preferredLanguages: []), "en")
         XCTAssertEqual(resolveLanguage("es", preferredLanguages: ["de-DE"]), "es")
         XCTAssertNil(resolveLanguage(nil, preferredLanguages: ["de-DE"]))
+        XCTAssertNil(resolveLanguage("", preferredLanguages: ["de-DE"]))
     }
 
-    func testSystemLanguageNeverReachesLink() throws {
-        let link = try XCTUnwrap(catalogLink(for: "https://link.meshconnect.com/?clientId=c", language: "system"))
-        XCTAssertFalse(link.contains("lng=system"))
-        XCTAssertTrue(link.contains("lng="))
-    }
-
-    func testAddingQueryParamKeepsFragmentLast() throws {
-        XCTAssertEqual(addingQueryParam(url: "https://a.com/?x=1#f", name: "th", value: "light"), "https://a.com/?x=1&th=light#f")
-        XCTAssertEqual(addingQueryParam(url: "https://a.com/#f", name: "th", value: "light"), "https://a.com/?th=light#f")
-        XCTAssertEqual(addingQueryParam(url: "https://a.com/", name: "th", value: "light"), "https://a.com/?th=light")
-    }
-
-    func testAppThemeReplacesTokenThemeBeforeFragment() throws {
-        let link = try XCTUnwrap(catalogLink(for: "https://link.meshpay.com/?x=1&th=dark#f", theme: .light))
-        XCTAssertEqual(link, "https://link.meshpay.com/?x=1&th=light&platform=iOS#f")
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: link, systemIsDark: true))
-    }
-
-    func testRemovingQueryParam() throws {
-        XCTAssertEqual(removingQueryParam(url: "https://a.com/?th=dark", name: "th"), "https://a.com/")
-        XCTAssertEqual(removingQueryParam(url: "https://a.com/?x=1&th=dark&thx=2&th=light#f", name: "th"), "https://a.com/?x=1&thx=2#f")
-        XCTAssertEqual(removingQueryParam(url: "https://a.com/path", name: "th"), "https://a.com/path")
-        XCTAssertEqual(removingQueryParam(url: "https://a.com/?%74h=dark&x=1", name: "th"), "https://a.com/?x=1")
-        XCTAssertEqual(removingQueryParam(url: "https://a.com/#f?th=dark", name: "th"), "https://a.com/#f?th=dark")
-    }
-
-    func testDetectsMfsLinks() throws {
-        XCTAssertTrue(isMfsLinkUrl(linkUrl: mfsLink(theme: nil, extra: "&th=dark")))
-        XCTAssertFalse(isMfsLinkUrl(linkUrl: "https://web.meshconnect.com/b2b-iframe/abc/broker-connect?th=dark"))
-        XCTAssertFalse(isMfsLinkUrl(linkUrl: "https://link.meshconnect.com/?token=\(base64Url("{\"a\":1}"))"))
-    }
-
-    func testLinkStyleBeatsMfsTokenTheme() throws {
-        let link = mfsLink(theme: "LINK_THEME_DARK", extra: "&link_style=\(base64Url("{\"th\":\"light\"}"))")
-        XCTAssertFalse(isDarkLinkTheme(linkUrl: link, systemIsDark: true))
+    func testCatalogLinkUsesBuildLinkURL() throws {
+        let token = Data("https://link.meshpay.com/?th=dark".utf8).base64EncodedString()
+        let configuration = LinkConfiguration(linkToken: token,
+                                              settings: LinkSettings(theme: .light),
+                                              onIntegrationConnected: { _ in })
+        XCTAssertEqual(configuration.catalogLink, "https://link.meshpay.com/?th=light&platform=iOS")
     }
 
 }
