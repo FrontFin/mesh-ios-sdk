@@ -237,7 +237,7 @@ class LinkWebViewViewController: UIViewController {
     private var showNativeNavBarDelayed = false
     /// Host of the first page Link committed, after any redirects.
     private var linkHost: String?
-    private var isDarkTheme = false
+    private var isDarkBackground = false
     
     let jsMessageHandler = "jsMessageHandler"
 
@@ -282,7 +282,7 @@ class LinkWebViewViewController: UIViewController {
         guard let linkURL = configuration.linkURL(systemIsDark: style == .dark),
               let url = URL(string: linkURL.url) else { return }
 
-        applyTheme(isDarkTheme: linkURL.isDarkTheme, backgroundColor: linkURL.backgroundColor)
+        applyTheme(backgroundColor: linkURL.backgroundColor)
 
         let request = URLRequest(url: url)
         webView.load(request)
@@ -304,8 +304,9 @@ class LinkWebViewViewController: UIViewController {
     
     // Called once, before Link loads. Like the page, the native colors don't follow
     // a device switch while Link is open.
-    private func applyTheme(isDarkTheme: Bool, backgroundColor: UInt) {
-        self.isDarkTheme = isDarkTheme
+    private func applyTheme(backgroundColor: UInt) {
+        // Icons follow the color, not the theme: a client's page color can be light on a dark theme.
+        isDarkBackground = isDarkColor(backgroundColor)
         let color = UIColorFromRGB(rgbValue: backgroundColor)
         view.backgroundColor = color
         statusBarBackgroundView.backgroundColor = color
@@ -316,7 +317,7 @@ class LinkWebViewViewController: UIViewController {
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return isDarkTheme ? .lightContent : .darkContent
+        return isDarkBackground ? .lightContent : .darkContent
     }
     
     @objc func closeTapped() {

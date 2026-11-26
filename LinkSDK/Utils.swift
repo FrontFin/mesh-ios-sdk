@@ -161,6 +161,12 @@ private func opaqueColor(_ value: Any?) -> UInt? {
     return UInt(String(full.prefix(6)), radix: 16)
 }
 
+/// Whether `rgb` (`0xRRGGBB`) is dark, so light status bar icons stay readable on it.
+func isDarkColor(_ rgb: UInt) -> Bool {
+    let red = Double((rgb >> 16) & 0xFF), green = Double((rgb >> 8) & 0xFF), blue = Double(rgb & 0xFF)
+    return (0.299 * red + 0.587 * green + 0.114 * blue) / 255 < 0.5
+}
+
 /// A URL split into base, raw query pairs and fragment, so only the params we set change
 /// and everything else keeps its exact bytes (URLComponents could re-encode them).
 struct QueryString {

@@ -652,6 +652,16 @@ final class LinkSDKTests: XCTestCase {
         XCTAssertEqual(background(legacyLink("{\"th\":\"light\"}"), systemIsDark: true), 0xFBFBFB)
     }
 
+    func testStatusBarIconsFollowTheBackgroundColor() throws {
+        XCTAssertTrue(isDarkColor(0x1C1C1C))
+        XCTAssertTrue(isDarkColor(0x0E0D0D))
+        XCTAssertFalse(isDarkColor(0xF9F9F9))
+        XCTAssertFalse(isDarkColor(0xFFFFFF))
+        // a client's light page color on a dark theme
+        XCTAssertFalse(isDarkColor(0xEEEEEE))
+        XCTAssertTrue(isDarkColor(0x000000))
+    }
+
     func testSystemLanguageResolvesToDeviceLanguage() throws {
         XCTAssertEqual(resolveLanguage("system", preferredLanguages: ["de-DE", "en-US"]), "de-DE")
         XCTAssertEqual(resolveLanguage("system", preferredLanguages: ["pt_BR"]), "pt-BR")
