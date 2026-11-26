@@ -660,6 +660,9 @@ final class LinkSDKTests: XCTestCase {
         // a client's light page color on a dark theme
         XCTAssertFalse(isDarkColor(0xEEEEEE))
         XCTAssertTrue(isDarkColor(0x000000))
+        // a mid green: black icons have the better contrast (8.1 against 2.6)
+        XCTAssertFalse(isDarkColor(0x00BB00))
+        XCTAssertTrue(isDarkColor(0x1A2440))
     }
 
     func testSystemLanguageResolvesToDeviceLanguage() throws {

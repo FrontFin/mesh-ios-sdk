@@ -161,10 +161,15 @@ private func opaqueColor(_ value: Any?) -> UInt? {
     return UInt(String(full.prefix(6)), radix: 16)
 }
 
-/// Whether `rgb` (`0xRRGGBB`) is dark, so light status bar icons stay readable on it.
+/// Whether light status bar icons read better than dark ones on `rgb` (`0xRRGGBB`): true when white
+/// has the higher WCAG contrast ratio against the color.
 func isDarkColor(_ rgb: UInt) -> Bool {
-    let red = Double((rgb >> 16) & 0xFF), green = Double((rgb >> 8) & 0xFF), blue = Double(rgb & 0xFF)
-    return (0.299 * red + 0.587 * green + 0.114 * blue) / 255 < 0.5
+    func linear(_ value: UInt) -> Double {
+        let channel = Double(value) / 255
+        return channel <= 0.03928 ? channel / 12.92 : pow((channel + 0.055) / 1.055, 2.4)
+    }
+    let luminance = 0.2126 * linear((rgb >> 16) & 0xFF) + 0.7152 * linear((rgb >> 8) & 0xFF) + 0.0722 * linear(rgb & 0xFF)
+    return 1.05 / (luminance + 0.05) > (luminance + 0.05) / 0.05
 }
 
 /// A URL split into base, raw query pairs and fragment, so only the params we set change
