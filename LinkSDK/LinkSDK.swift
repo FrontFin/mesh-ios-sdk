@@ -45,41 +45,32 @@ public class LinkConfiguration {
     var onExit: ((Bool?) -> Void)?
     var linkViewController: LinkWebViewViewController?
 
-    var catalogLink: String? {
+    /// The Link URL inside the token, or nil when the token isn't one.
+    private var tokenLink: String? {
         guard let linkTokenData = Data(base64Encoded: linkToken),
-              var catalogLink = String(data: linkTokenData, encoding: .utf8),
-              let url = URL(string: catalogLink),
+              let tokenLink = String(data: linkTokenData, encoding: .utf8),
+              let url = URL(string: tokenLink),
               UIApplication.shared.canOpenURL(url) else {
             return nil
         }
-        let addURLParam: ((String, String) -> Void) = { key, value in
-            catalogLink = addingQueryParam(url: catalogLink, name: key, value: value)
-        }
-        if let language = resolveLanguage(settings?.language) {
-            addURLParam("lng", language)
-        }
-        if let displayFiatCurrency = settings?.displayFiatCurrency {
-            addURLParam("fiatCur", displayFiatCurrency)
-        }
-        if var theme = settings?.theme {
-            // The token can already carry a th (MFS silent migration adds th=dark);
-            // the app's theme replaces it.
-            catalogLink = removingQueryParam(url: catalogLink, name: "th")
-            if theme == .system {
-                theme = UIScreen.main.traitCollection.userInterfaceStyle == .dark ? .dark : .light
-            }
-            addURLParam("th", theme.rawValue)
-        }
-        addURLParam("platform", "iOS")
-        return catalogLink
+        return tokenLink
+    }
+
+    /// The URL Link opens, with the app's settings applied, and the theme it opens in.
+    func linkURL(systemIsDark: Bool) -> LinkURL? {
+        tokenLink.map { buildLinkURL(linkUrl: $0, settings: settings, systemIsDark: systemIsDark) }
+    }
+
+    var catalogLink: String? {
+        linkURL(systemIsDark: UIScreen.main.traitCollection.userInterfaceStyle == .dark)?.url
     }
     
     public var isLinkTokenValid: Bool {
-        catalogLink != nil
+        tokenLink != nil
     }
-    
+
     public var isTransferLink: Bool {
-        catalogLink?.contains("transfer_token") ?? false
+        tokenLink?.contains("transfer_token") ?? false
     }
 
     public init(linkToken: String,

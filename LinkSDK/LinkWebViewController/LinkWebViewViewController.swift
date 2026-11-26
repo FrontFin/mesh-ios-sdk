@@ -9,16 +9,7 @@ import UIKit
 @preconcurrency import WebKit
 import SafariServices
 
-let meshSDKVersion = "3.4.2"
-
-let DARK_THEME_COLOR_TOP : UInt = 0x1E1E24
-let LIGHT_THEME_COLOR_TOP : UInt = 0xF3F4F5
-let DARK_THEME_COLOR_BOTTOM : UInt = 0x0E0D0D
-let LIGHT_THEME_COLOR_BOTTOM : UInt = 0xFBFBFB
-// MFS Link canvas colors (--color-bg-canvas-dark/light in FrontFin/link
-// packages/ui/src/styles/tailwind.css), so the native background has no seam with the page.
-let MFS_DARK_THEME_COLOR : UInt = 0x1C1C1C
-let MFS_LIGHT_THEME_COLOR : UInt = 0xF9F9F9
+let meshSDKVersion = "3.4.3"
 
 let allowedUrls = [
     "https://link.trustwallet.com",
@@ -246,9 +237,7 @@ class LinkWebViewViewController: UIViewController {
     private var showNativeNavBarDelayed = false
     /// Host of the first page Link committed, after any redirects.
     private var linkHost: String?
-    private var isDarkTheme = false
-    private var themeColorTop = LIGHT_THEME_COLOR_TOP
-    private var themeColorBottom = LIGHT_THEME_COLOR_BOTTOM
+    private var isDarkBackground = false
     
     let jsMessageHandler = "jsMessageHandler"
 
@@ -285,12 +274,16 @@ class LinkWebViewViewController: UIViewController {
     }
     
     func setupWebView() {
-        guard let catalogLink = configuration.catalogLink,
-        let url = URL(string: catalogLink) else { return }
-        
-        updateThemeVars(linkUrl: catalogLink)
-        applyThemeColors()
-        
+        // Not in a window yet during viewDidLoad, so the style can still be unspecified.
+        var style = webView.traitCollection.userInterfaceStyle
+        if style == .unspecified {
+            style = UIScreen.main.traitCollection.userInterfaceStyle
+        }
+        guard let linkURL = configuration.linkURL(systemIsDark: style == .dark),
+              let url = URL(string: linkURL.url) else { return }
+
+        applyTheme(backgroundColor: linkURL.backgroundColor)
+
         let request = URLRequest(url: url)
         webView.load(request)
         webView.navigationDelegate = self
@@ -309,42 +302,22 @@ class LinkWebViewViewController: UIViewController {
         }
     }
     
-    // Resolved once, like the page: Link reads the device theme only when it loads,
-    // so following a mid-session switch here would split the native side from it.
-    private func updateThemeVars(linkUrl: String){
-        // Not in a window yet during viewDidLoad, so the style can still be unspecified.
-        var style = webView.traitCollection.userInterfaceStyle
-        if style == .unspecified {
-            style = UIScreen.main.traitCollection.userInterfaceStyle
-        }
-        isDarkTheme = isDarkLinkTheme(linkUrl: linkUrl, systemIsDark: style == .dark)
-
-        if isMfsLinkUrl(linkUrl: linkUrl) {
-            themeColorTop = isDarkTheme ? MFS_DARK_THEME_COLOR : MFS_LIGHT_THEME_COLOR
-            themeColorBottom = themeColorTop
-            return
-        }
-
-        themeColorTop = isDarkTheme
-            ? DARK_THEME_COLOR_TOP
-            : LIGHT_THEME_COLOR_TOP
-        
-        themeColorBottom = isDarkTheme
-            ? DARK_THEME_COLOR_BOTTOM
-            : LIGHT_THEME_COLOR_BOTTOM
-    }
-    
-    private func applyThemeColors() {
-        view.backgroundColor = UIColorFromRGB(rgbValue: themeColorBottom)
-        statusBarBackgroundView.backgroundColor = UIColorFromRGB(rgbValue: themeColorTop)
+    // Called once, before Link loads. Like the page, the native colors don't follow
+    // a device switch while Link is open.
+    private func applyTheme(backgroundColor: UInt) {
+        // Icons follow the color, not the theme: a client's page color can be light on a dark theme.
+        isDarkBackground = isDarkColor(backgroundColor)
+        let color = UIColorFromRGB(rgbValue: backgroundColor)
+        view.backgroundColor = color
+        statusBarBackgroundView.backgroundColor = color
         // The scroll view fills the area under the home indicator and otherwise
         // follows the device theme, not Link's.
-        webView.scrollView.backgroundColor = UIColorFromRGB(rgbValue: themeColorBottom)
+        webView.scrollView.backgroundColor = color
         setNeedsStatusBarAppearanceUpdate()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return isDarkTheme ? .lightContent : .darkContent
+        return isDarkBackground ? .lightContent : .darkContent
     }
     
     @objc func closeTapped() {
